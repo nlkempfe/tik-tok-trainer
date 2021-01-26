@@ -20,12 +20,19 @@ before_all do
 end
 
 platform :ios do
-  desc "Description of what the lane does"
+  desc "Build the app in Ad-Hoc mode to verify it compiles"
   lane :build do
     match(type: "adhoc")
-    gym(scheme: 'TikTokTrainer', clean: true)
+    gym(scheme: 'TikTokTrainer', clean: true, export_method: "ad-hoc")
   end
+
   lane :test do
     run_tests(scheme: "TikTokTrainer")
+  end
+
+  lane :beta do
+    match(type: "appstore")
+    gym(scheme: 'TikTokTrainer', export_method: "app-store")
+    upload_to_testflight
   end
 end

@@ -46,3 +46,8 @@ blocks:
       secrets:
         - name: fastlane-env
         - name: ios-cert-repo
+promotions:
+  - name: TestFlight deploy
+    pipeline_file: beta-deploy.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'develop'"
