@@ -29,7 +29,7 @@ platform :ios do
         export_options: {
         provisioningProfiles: { 
           "dev.hunterjarrell.t3" => "match AdHoc dev.hunterjarrell.t3",
-      }
+      })
   end
 
   lane :test do
