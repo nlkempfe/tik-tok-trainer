@@ -20,21 +20,12 @@ platform :ios do
     setup_semaphore
   end
 
-  desc "Build the app in Ad-Hoc mode to verify it compiles"
+  desc "Build the app to verify it compiles"
   lane :build do
-    match(type: "adhoc")
-
-    settings_to_override = {
-      :BUNDLE_IDENTIFIER => "dev.hunterjarrell.t3",
-      :PROVISIONING_PROFILE_SPECIFIER => "match AdHoc dev.hunterjarrell.t3",
-      :DEVELOPMENT_TEAM => "7MQQ25XHJC"
-    }
-
+    match(type: "appstore")
     gym(scheme: 'TikTokTrainer',
         clean: true,
-        export_method: "ad-hoc",
-        xcargs: settings_to_override
-        )
+        export_method: "app-store")
   end
 
   lane :test do
