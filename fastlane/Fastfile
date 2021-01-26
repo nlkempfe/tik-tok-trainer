@@ -15,15 +15,15 @@
 
 default_platform(:ios)
 
-before_all do
-  setup_semaphore
-end
-
 platform :ios do
+  before_all do
+    setup_semaphore
+  end
+
   desc "Build the app in Ad-Hoc mode to verify it compiles"
   lane :build do
     match(type: "adhoc")
-    gym(scheme: 'TikTokTrainer', clean: true, export_method: "ad-hoc")
+    gym(scheme: 'TikTokTrainer', clean: true, export_method: "development")
   end
 
   lane :test do
