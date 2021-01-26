@@ -14,7 +14,7 @@ blocks:
         commands:
           - checkout develop
           - cache restore
-          - gem install bundler -v '2.1.4'
+          - gem install bundler -v '2.2.6'
           - bundle install --path vendor/bundle
           - cache store
       jobs:
@@ -22,6 +22,8 @@ blocks:
           commands:
             - bundle exec xcversion select 12.0.1
             - bundle exec fastlane test
+      secrets:
+        - name: fastlane-env
   - name: Fastlane Build
     task:
       env_vars:
@@ -37,5 +39,10 @@ blocks:
       jobs:
         - name: bundle exec fastlane build
           commands:
+            - chmod 0600 ~/.keys/*
+            - ssh-add ~/.keys/*
             - bundle exec xcversion select 12.0.1
             - bundle exec fastlane build
+      secrets:
+        - name: fastlane-env
+        - name: ios-cert-repo
