@@ -21,6 +21,10 @@ end
 
 platform :ios do
   desc "Description of what the lane does"
+  lane :build do
+    match(type: "adhoc")
+    gym(scheme: 'TikTokTrainer', clean: true)
+  end
   lane :test do
     run_tests(scheme: "TikTokTrainer")
   end
