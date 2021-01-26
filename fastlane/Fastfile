@@ -22,6 +22,11 @@ platform :ios do
 
   desc "Build the app in Ad-Hoc mode to verify it compiles"
   lane :build do
+    settings_to_override = {
+      :BUNDLE_IDENTIFIER => "dev.hunterjarrell.t3",
+      :PROVISIONING_PROFILE_SPECIFIER => "match AdHoc dev.hunterjarrell.t3"
+    }
+
     match(type: "adhoc")
     gym(scheme: 'TikTokTrainer', clean: true, export_method: "development")
   end
