@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites name='TikTokTrainerTests.xctest' tests='4' failures='0'>
+  <testsuite name='TikTokTrainerUITests.TikTokTrainerUITests' tests='2' failures='0'>
+    <testcase classname='TikTokTrainerUITests.TikTokTrainerUITests' name='testExample' time='1.680'/>
+    <testcase classname='TikTokTrainerUITests.TikTokTrainerUITests' name='testLaunchPerformance' time='14.266'/>
+  </testsuite>
+  <testsuite name='TikTokTrainerTests.TikTokTrainerTests' tests='2' failures='0'>
+    <testcase classname='TikTokTrainerTests.TikTokTrainerTests' name='testExample' time='0.000'/>
+    <testcase classname='TikTokTrainerTests.TikTokTrainerTests' name='testPerformanceExample' time='0.265'/>
+  </testsuite>
+</testsuites>
