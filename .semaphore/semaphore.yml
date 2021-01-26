@@ -33,7 +33,7 @@ blocks:
         commands:
           - checkout
           - cache restore
-          - gem install bundler -v '2.1.4'
+          - gem install bundler -v '2.2.6'
           - bundle install --path vendor/bundle
           - cache store
       jobs:
