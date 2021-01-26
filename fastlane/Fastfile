@@ -28,7 +28,10 @@ platform :ios do
     }
 
     match(type: "adhoc")
-    gym(scheme: 'TikTokTrainer', clean: true, export_method: "development")
+    gym(scheme: 'TikTokTrainer',
+        clean: true,
+        export_method: "ad-hoc",
+        xcargs: settings_to_override)
   end
 
   lane :test do
