@@ -20,10 +20,30 @@ or alternatively using `brew install fastlane`
 ```
 fastlane ios build
 ```
-Build the app in Ad-Hoc mode to verify it compiles
+Build the app to verify it compiles
 ### ios test
 ```
 fastlane ios test
+```
+
+### ios lint_all
+```
+fastlane ios lint_all
+```
+
+### ios lint
+```
+fastlane ios lint
+```
+
+### ios lint_tests
+```
+fastlane ios lint_tests
+```
+
+### ios lint_ui_tests
+```
+fastlane ios lint_ui_tests
 ```
 
 ### ios beta

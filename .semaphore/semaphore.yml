@@ -24,6 +24,25 @@ blocks:
             - bundle exec fastlane test
       secrets:
         - name: fastlane-env
+  - name: Fastlane SwiftLint
+    task:
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+      prologue:
+        commands:
+          - checkout develop
+          - cache restore
+          - gem install bundler -v '2.2.6'
+          - bundle install --path vendor/bundle
+          - cache store
+      jobs:
+        - name: bundle exec fastlane lint_all
+          commands:
+            - bundle exec xcversion select 12.3
+            - bundle exec fastlane lint_all
+      secrets:
+        - name: fastlane-env
   - name: Fastlane Build
     task:
       env_vars:
