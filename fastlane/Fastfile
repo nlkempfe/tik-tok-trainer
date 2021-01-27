@@ -41,15 +41,15 @@ platform :ios do
   end
 
   lane :lint do
-    swiftlint(path: "TikTokTrainer")
+    swiftlint(path: "TikTokTrainer", executable: "Pods/SwiftLint/swiftlint")
   end
 
   lane :lint_tests do
-    swiftlint(path: "TikTokTrainerTests")
+    swiftlint(path: "TikTokTrainerTests", executable: "Pods/SwiftLint/swiftlint")
   end
 
   lane :lint_ui_tests do
-    swiftlint(path: "TikTokTrainerUITests")
+    swiftlint(path: "TikTokTrainerUITests", executable: "Pods/SwiftLint/swiftlint")
   end
 
   lane :beta do
