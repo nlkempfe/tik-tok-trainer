@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import Photos
 
 struct ContentView: View {
     var body: some View {
@@ -69,7 +70,7 @@ struct CameraView: View {
                 Spacer()
                 HStack {
                     if camera.isTaken {
-                        Button(action: {camera.stopRecord(flashlight: flashlight)}, label: {
+                        Button(action: {camera.stopRecord()}, label: {
                             ZStack {
                                 Circle()
                                     .fill(Color.red)
@@ -81,7 +82,7 @@ struct CameraView: View {
                         })
                     }
                     else {
-                        Button(action: {camera.startRecord(flashlight: flashlight)}, label: {
+                        Button(action: {camera.startRecord()}, label: {
                             ZStack {
                                 Circle()
                                     .stroke(Color.white, lineWidth: 2)
@@ -99,17 +100,20 @@ struct CameraView: View {
     }
 }
 
-class CameraModel: NSObject, ObservableObject {
+class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate {
     @Published var isTaken = false
     @Published var session = AVCaptureSession()
     @Published var alert = false
     @Published var backCameraOn = true
-    @Published var output = AVCaptureVideoDataOutput()
+    @Published var output = AVCaptureMovieFileOutput()
     @Published var preview : AVCaptureVideoPreviewLayer!
     @Published var backCamera : AVCaptureDevice!
     @Published var frontCamera : AVCaptureDevice!
     @Published var backInput : AVCaptureInput!
     @Published var frontInput : AVCaptureInput!
+    @Published var outputURL: URL!
+    @Published var isRecording = false
+    @Published var view = UIView(frame: UIScreen.main.bounds)
     
     func Check() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -139,13 +143,14 @@ class CameraModel: NSObject, ObservableObject {
             self.session.sessionPreset = .photo
         }
         self.session.automaticallyConfiguresCaptureDeviceForWideColor = true
+        self.session.sessionPreset = AVCaptureSession.Preset.high
                     
         //setup inputs
         //get back camera
         if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
             self.backCamera = device
         } else {
-            //handle this appropriately for production purposes
+            // Change this for CICD
             fatalError("no back camera")
         }
                     
@@ -153,61 +158,103 @@ class CameraModel: NSObject, ObservableObject {
         if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
             self.frontCamera = device
         } else {
+            // Change this for CICD
             fatalError("no front camera")
         }
     
         guard let bInput = try? AVCaptureDeviceInput(device: backCamera) else {
+            // Change this for CICD
             fatalError("could not create input device from back camera")
         }
         backInput = bInput
         if !session.canAddInput(backInput) {
+            // Change this for CICD
             fatalError("could not add back camera input to capture session")
         }
                     
         guard let fInput = try? AVCaptureDeviceInput(device: frontCamera) else {
+            // Change this for CICD
             fatalError("could not create input device from front camera")
         }
         frontInput = fInput
         if !session.canAddInput(frontInput) {
+            // Change this for CICD
             fatalError("could not add front camera input to capture session")
         }
         
+
         self.session.addInput(backInput)
             
-        //setup outputs
+        //setup output
         self.session.addOutput(self.output)
                     
         //commit configuration
         self.session.commitConfiguration()
+        
+        // start session
+        self.session.startRunning()
 
     }
     
-    func setupOutputs(){
-        let videoQueue = DispatchQueue(label: "videoQueue", qos: .userInteractive)
-        output.setSampleBufferDelegate(self, queue: videoQueue)
-            
-        if session.canAddOutput(output) {
-            session.addOutput(output)
-        } else {
-            fatalError("could not add video output")
+    func startRecord() {
+        self.isTaken.toggle()
+        if self.output.isRecording == false {
+            let device = self.backCameraOn ? self.backCamera : self.frontCamera
+            if (device?.isSmoothAutoFocusSupported)! {
+                do {
+                    try device?.lockForConfiguration()
+                    device?.isSmoothAutoFocusEnabled = false
+                    device?.unlockForConfiguration()
+                } catch {
+                    print("Error setting configuration: \(error)")
+                }
+            }
+            self.outputURL = tempURL()
+            self.output.startRecording(to: self.outputURL, recordingDelegate: self)
         }
-        //deal with the orientation
-        output.connections.first?.videoOrientation = .portrait
+        else {
+            stopRecord()
+        }
     }
     
-    func startRecord(flashlight: FlashlightModel) {
-        self.isTaken.toggle()
-        if(flashlight.isOn) {
-            flashlight.toggleFlash()
+    func stopRecord() {
+        if self.output.isRecording == true {
+            self.output.stopRecording()
         }
+        self.isTaken.toggle()
+        saveVideo()
     }
     
-    func stopRecord(flashlight: FlashlightModel) {
-        self.isTaken.toggle()
-        if(flashlight.isOn) {
-            flashlight.toggleFlash()
+    func tempURL() -> URL? {
+        let directory = NSTemporaryDirectory() as NSString
+        
+        if directory != "" {
+            let path = directory.appendingPathComponent(NSUUID().uuidString + ".mp4")
+            return URL(fileURLWithPath: path)
         }
         
+        return nil
+    }
+    
+    func saveVideo() {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
+        })
+    }
+    
+    func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+        
+    }
+
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+        if (error != nil) {
+            print("Error recording movie: \(error!.localizedDescription)")
+        } else {
+            
+            _ = outputURL as URL
+            
+        }
+        outputURL = nil
     }
     
     func switchCameraInput(){
@@ -231,10 +278,15 @@ class CameraModel: NSObject, ObservableObject {
            //commit config
            session.commitConfiguration()
        }
-}
-
-extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    
+    func setupPreviewLayer() {
+        self.preview = AVCaptureVideoPreviewLayer(session: self.session)
+        self.preview.frame = view.frame
+        self.preview.videoGravity = .resizeAspectFill
+        self.view.layer.addSublayer(self.preview)
+    }
+    
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         
     }
 }
@@ -250,8 +302,7 @@ struct CameraPreview: UIViewRepresentable {
         
         camera.preview.videoGravity = .resizeAspectFill
         view.layer.addSublayer(camera.preview)
-        
-        camera.session.startRunning()
+
         return view
     }
     
