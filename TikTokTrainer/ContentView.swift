@@ -93,12 +93,13 @@ struct CameraView: View {
             }
         }
         .onAppear(perform: {
-            camera.Check()
+            camera.check()
         })
     }
 }
 
-class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate {
+class CameraModel: NSObject, ObservableObject,
+                   AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate {
     @Published var isTaken = false
     @Published var session = AVCaptureSession()
     @Published var alert = false
@@ -113,7 +114,7 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
     @Published var isRecording = false
     @Published var view = UIView(frame: UIScreen.main.bounds)
 
-    func Check() {
+    func check() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             setUp()
@@ -238,11 +239,14 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
         })
     }
 
-    func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+    func capture(_ captureOutput: AVCaptureFileOutput!,
+                 didStartRecordingToOutputFileAt fileURL: URL!,
+                 fromConnections connections: [Any]!) {
 
     }
 
-    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!,
+                 error: Error!) {
         if error != nil {
             print("Error recording movie: \(error!.localizedDescription)")
         } else {
@@ -282,7 +286,10 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
         self.view.layer.addSublayer(self.preview)
     }
 
-    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+    func fileOutput(_ output: AVCaptureFileOutput,
+                    didFinishRecordingTo outputFileURL: URL,
+                    from connections: [AVCaptureConnection],
+                    error: Error?) {
 
     }
 }
