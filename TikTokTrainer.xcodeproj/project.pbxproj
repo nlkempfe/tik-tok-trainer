@@ -157,7 +157,6 @@
 				E63226C6660A03A93E3B0101 /* Pods-TikTokTrainerTests.debug.xcconfig */,
 				0B3D9C90BC6B8791664CDE5F /* Pods-TikTokTrainerTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
