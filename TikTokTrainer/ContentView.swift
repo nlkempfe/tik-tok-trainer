@@ -113,6 +113,7 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
     @Published var frontInput : AVCaptureInput!
     @Published var outputURL: URL!
     @Published var isRecording = false
+    @Published var view = UIView(frame: UIScreen.main.bounds)
     
     func Check() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -149,7 +150,7 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
         if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
             self.backCamera = device
         } else {
-            //handle this appropriately for production purposes
+            // Change this for CICD
             fatalError("no back camera")
         }
                     
@@ -157,22 +158,27 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
         if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
             self.frontCamera = device
         } else {
+            // Change this for CICD
             fatalError("no front camera")
         }
     
         guard let bInput = try? AVCaptureDeviceInput(device: backCamera) else {
+            // Change this for CICD
             fatalError("could not create input device from back camera")
         }
         backInput = bInput
         if !session.canAddInput(backInput) {
+            // Change this for CICD
             fatalError("could not add back camera input to capture session")
         }
                     
         guard let fInput = try? AVCaptureDeviceInput(device: frontCamera) else {
+            // Change this for CICD
             fatalError("could not create input device from front camera")
         }
         frontInput = fInput
         if !session.canAddInput(frontInput) {
+            // Change this for CICD
             fatalError("could not add front camera input to capture session")
         }
         
@@ -184,6 +190,9 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
                     
         //commit configuration
         self.session.commitConfiguration()
+        
+        // start session
+        self.session.startRunning()
 
     }
     
@@ -270,6 +279,13 @@ class CameraModel: NSObject, ObservableObject, AVCaptureFileOutputRecordingDeleg
            session.commitConfiguration()
        }
     
+    func setupPreviewLayer() {
+        self.preview = AVCaptureVideoPreviewLayer(session: self.session)
+        self.preview.frame = view.frame
+        self.preview.videoGravity = .resizeAspectFill
+        self.view.layer.addSublayer(self.preview)
+    }
+    
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         
     }
@@ -286,8 +302,7 @@ struct CameraPreview: UIViewRepresentable {
         
         camera.preview.videoGravity = .resizeAspectFill
         view.layer.addSublayer(camera.preview)
-        
-        camera.session.startRunning()
+
         return view
     }
     
