@@ -137,14 +137,25 @@ class CameraModel: NSObject, ObservableObject,
             self.toggleFlash()
         }
 
-        saveVideo()
+        let when = DispatchTime.now() + 0.1
+        DispatchQueue.main.asyncAfter(deadline: when) {
+            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.outputURL.path) {
+                UISaveVideoAtPathToSavedPhotosAlbum(
+                    self.outputURL.path,
+                    nil,
+                    nil,
+                    nil
+                )
+            }
+        }
+
     }
 
     func tempURL() -> URL? {
         let directory = NSTemporaryDirectory() as NSString
 
         if directory != "" {
-            let path = directory.appendingPathComponent(NSUUID().uuidString + ".mp4")
+            let path = directory.appendingPathComponent(NSUUID().uuidString + ".mov")
             return URL(fileURLWithPath: path)
         }
 
@@ -152,33 +163,33 @@ class CameraModel: NSObject, ObservableObject,
     }
 
     func saveVideo() {
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
-        }) { saved, error in
-            if saved {
-                // todo
-            } else {
-                print(error as Any)
+        // todo
+    }
+
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!,
+                 error: Error!) {
+        print("captured")
+        if error != nil {
+            print("Error recording movie: \(error!.localizedDescription)")
+        } else {
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
+            }) { saved, error in
+                if saved {
+                    // todo
+                } else {
+                    print(error as Any)
+                }
             }
+
         }
+        outputURL = nil
     }
 
     func capture(_ captureOutput: AVCaptureFileOutput!,
                  didStartRecordingToOutputFileAt fileURL: URL!,
                  fromConnections connections: [Any]!) {
 
-    }
-
-    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!,
-                 error: Error!) {
-        if error != nil {
-            print("Error recording movie: \(error!.localizedDescription)")
-        } else {
-
-            _ = outputURL as URL
-
-        }
-        outputURL = nil
     }
 
     func switchCameraInput() {
