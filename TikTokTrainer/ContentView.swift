@@ -23,7 +23,6 @@ struct ContentView_Previews: PreviewProvider {
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
-    @StateObject var flashlight = FlashlightModel()
     var body: some View {
         ZStack {
 
@@ -44,24 +43,26 @@ struct CameraView: View {
                                 })
                                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                                 .padding(.trailing, 10)
-                                if !flashlight.isOn {
-                                    Button(action: {flashlight.isOn.toggle()}, label: {
-                                        Image(systemName: "bolt")
-                                            .foregroundColor(.white)
-                                            .padding()
-                                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                                        })
-                                        .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                        .padding(.trailing, 10)
-                                    } else {
-                                    Button(action: {flashlight.isOn.toggle()}, label: {
-                                        Image(systemName: "bolt.fill")
-                                            .foregroundColor(.white)
-                                            .padding()
-                                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                                        })
-                                        .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                        .padding(.trailing, 10)
+                                if camera.backCameraOn {
+                                    if !camera.flashlightOn {
+                                        Button(action: {camera.toggleFlash()}, label: {
+                                            Image(systemName: "bolt")
+                                                .foregroundColor(.white)
+                                                .padding()
+                                                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                                            })
+                                            .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                                            .padding(.trailing, 10)
+                                        } else {
+                                            Button(action: {camera.toggleFlash()}, label: {
+                                            Image(systemName: "bolt.fill")
+                                                .foregroundColor(.white)
+                                                .padding()
+                                                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                                            })
+                                            .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                                            .padding(.trailing, 10)
+                                    }
                                 }
                             }
                         }
@@ -104,6 +105,7 @@ class CameraModel: NSObject, ObservableObject,
     @Published var session = AVCaptureSession()
     @Published var alert = false
     @Published var backCameraOn = true
+    @Published var flashlightOn = false
     @Published var output = AVCaptureMovieFileOutput()
     @Published var preview: AVCaptureVideoPreviewLayer!
     @Published var backCamera: AVCaptureDevice!
@@ -263,20 +265,21 @@ class CameraModel: NSObject, ObservableObject,
            // reconfigure the input
            session.beginConfiguration()
            if backCameraOn {
-                session.removeInput(self.backInput)
-                session.addInput(self.frontInput)
-                backCameraOn = false
+                self.session.removeInput(self.backInput)
+                self.session.addInput(self.frontInput)
+                self.backCameraOn = false
+                self.flashlightOn = false
            } else {
-                session.removeInput(self.frontInput)
-                session.addInput(self.backInput)
-                backCameraOn = true
+                self.session.removeInput(self.frontInput)
+                self.session.addInput(self.backInput)
+                self.backCameraOn = true
            }
 
            // deal with the connection again for portrait mode
-           output.connections.first?.videoOrientation = .portrait
+            self.output.connections.first?.videoOrientation = .portrait
 
            // commit config
-           session.commitConfiguration()
+            self.session.commitConfiguration()
        }
 
     func setupPreviewLayer() {
@@ -284,6 +287,33 @@ class CameraModel: NSObject, ObservableObject,
         self.preview.frame = view.frame
         self.preview.videoGravity = .resizeAspectFill
         self.view.layer.addSublayer(self.preview)
+    }
+
+    func toggleFlash() {
+        self.flashlightOn.toggle()
+        if self.backCameraOn {
+            guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
+            guard device.hasTorch else { return }
+
+            do {
+                try device.lockForConfiguration()
+
+                if device.torchMode == AVCaptureDevice.TorchMode.on {
+                    device.torchMode = AVCaptureDevice.TorchMode.off
+                } else {
+                    do {
+                        try device.setTorchModeOn(level: 1.0)
+                    } catch {
+                        print(error)
+                    }
+                }
+                device.unlockForConfiguration()
+            } catch {
+                print(error)
+            }
+        } else {
+            print("Back camera needs to be selected for flash")
+        }
     }
 
     func fileOutput(_ output: AVCaptureFileOutput,
@@ -311,32 +341,5 @@ struct CameraPreview: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
 
-    }
-}
-
-class FlashlightModel: ObservableObject {
-    @Published var isOn = false
-
-    func toggleFlash() {
-        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
-        guard device.hasTorch else { return }
-
-        do {
-            try device.lockForConfiguration()
-
-            if device.torchMode == AVCaptureDevice.TorchMode.on {
-                device.torchMode = AVCaptureDevice.TorchMode.off
-            } else {
-                do {
-                    try device.setTorchModeOn(level: 1.0)
-                } catch {
-                    print(error)
-                }
-            }
-
-            device.unlockForConfiguration()
-        } catch {
-            print(error)
-        }
     }
 }
