@@ -132,11 +132,11 @@ class CameraModel: NSObject, ObservableObject,
             self.output.stopRecording()
         }
         self.isTaken.toggle()
-        
+
         if self.flashlightOn {
             self.toggleFlash()
         }
-        
+
         saveVideo()
     }
 
@@ -157,8 +157,7 @@ class CameraModel: NSObject, ObservableObject,
         }) { saved, error in
             if saved {
                 // todo
-            }
-            else {
+            } else {
                 print(error as Any)
             }
         }
