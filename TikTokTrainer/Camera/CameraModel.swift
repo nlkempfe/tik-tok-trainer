@@ -9,15 +9,20 @@ import Foundation
 import AVFoundation
 import SwiftUI
 import Photos
+import Vision
+import VideoToolbox
 
 class CameraModel: NSObject, ObservableObject,
-                   AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate {
+                   AVCaptureFileOutputRecordingDelegate,
+                   AVCaptureMetadataOutputObjectsDelegate,
+                   AVCaptureVideoDataOutputSampleBufferDelegate {
     @Published var isTaken = false
     @Published var session = AVCaptureSession()
     @Published var hasPermission = true
     @Published var backCameraOn = true
     @Published var flashlightOn = false
     @Published var output = AVCaptureMovieFileOutput()
+    @Published var dataOutput = AVCaptureVideoDataOutput()
     @Published var preview: AVCaptureVideoPreviewLayer!
     @Published var backCamera: AVCaptureDevice!
     @Published var frontCamera: AVCaptureDevice!
@@ -26,6 +31,12 @@ class CameraModel: NSObject, ObservableObject,
     @Published var outputURL: URL!
     @Published var isRecording = false
     @Published var view = UIView(frame: UIScreen.main.bounds)
+    
+    private var currentFrame: CGImage!
+    
+    private let sessionQueue = DispatchQueue(
+        label: "T3.cameraQueue")
+
 
     func check() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -96,8 +107,12 @@ class CameraModel: NSObject, ObservableObject,
 
         self.session.addInput(backInput)
 
+        self.dataOutput.alwaysDiscardsLateVideoFrames = true
+        self.dataOutput.setSampleBufferDelegate(self, queue: sessionQueue)
         // setup output
-        self.session.addOutput(self.output)
+//        self.session.addOutput(self.output)
+        self.session.addOutput(dataOutput)
+        
 
         // commit configuration
         self.session.commitConfiguration()
@@ -251,4 +266,88 @@ class CameraModel: NSObject, ObservableObject,
                     error: Error?) {
 
     }
+    
+    
+    
+    // MARK: - AVCAPTUREVIDEODATAOUPUT
+    
+    func bodyPoseHandler(request: VNRequest, error: Error?) {
+        guard let observations =
+                request.results as? [VNRecognizedPointsObservation] else { return }
+        
+        // Process each observation to find the recognized body pose points.
+        observations.forEach { processObservation($0) }
+    }
+    func processObservation(_ observation: VNRecognizedPointsObservation) {
+        // Retrieve all torso points.
+        guard let recognizedPoints =
+                try? observation.recognizedPoints(forGroupKey: .bodyLandmarkRegionKeyTorso) else {
+            return
+        }
+        
+        // Torso point keys in a clockwise ordering.
+        let torsoKeys: [VNRecognizedPointKey] = [
+            .bodyLandmarkKeyNeck,
+            .bodyLandmarkKeyRightShoulder,
+            .bodyLandmarkKeyRightHip,
+            .bodyLandmarkKeyRoot,
+            .bodyLandmarkKeyLeftHip,
+            .bodyLandmarkKeyLeftShoulder
+        ]
+        
+        // Retrieve the CGPoints containing the normalized X and Y coordinates.
+        let imagePoints: [CGPoint] = torsoKeys.compactMap {
+            guard let point = recognizedPoints[$0], point.confidence > 0 else { return nil }
+            
+            // Translate the point from normalized-coordinates to image coordinates.
+            return VNImagePointForNormalizedPoint(point.location,
+                                                  Int(currentFrame.width),
+                                                  Int(currentFrame.height))
+        }
+        
+        // Draw the points onscreen.
+        for i in imagePoints {
+            print(i)
+        }
+    }
+    
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        if let pixelBuffer = sampleBuffer.imageBuffer {
+            // Attempt to lock the image buffer to gain access to its memory.
+            guard CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly) == kCVReturnSuccess
+                else {
+                    return
+            }
+
+            // Create Core Graphics image placeholder.
+            var cgImage: CGImage?
+
+            // Create a Core Graphics bitmap image from the pixel buffer.
+            VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
+
+            // Release the image buffer.
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
+            
+            let requestHandler = VNImageRequestHandler(cgImage: cgImage!)
+
+
+            // Create a new request to recognize a human body pose.
+            let request = VNDetectHumanBodyPoseRequest(completionHandler: bodyPoseHandler)
+
+            self.currentFrame = cgImage
+
+            do {
+                // Perform the body pose-detection request.
+                try requestHandler.perform([request])
+            } catch {
+                print("Unable to perform the request: \(error).")
+            }
+
+//            DispatchQueue.main.sync {
+//                delegate.videoCapture(self, didCaptureFrame: image)
+//            }
+        }
+    }
+    
+    
 }
