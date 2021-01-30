@@ -23,14 +23,15 @@ struct ContentView_Previews: PreviewProvider {
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
+    @StateObject var permissions = PermissionModel()
     var body: some View {
         ZStack {
 
             // Going to be camera preview
             CameraPreview(camera: camera)
                 .ignoresSafeArea(.all, edges: .all)
-
             VStack {
+                if !camera.hasPermission {
                     HStack {
                         Spacer()
                         if !camera.isTaken {
@@ -39,7 +40,7 @@ struct CameraView: View {
                                     Image(systemName: "arrow.triangle.2.circlepath.camera")
                                         .foregroundColor(.white)
                                         .padding()
-                                        .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                                        .clipShape(Circle())
                                 })
                                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                                 .padding(.trailing, 10)
@@ -49,7 +50,7 @@ struct CameraView: View {
                                             Image(systemName: "bolt")
                                                 .foregroundColor(.white)
                                                 .padding()
-                                                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                                                .clipShape(Circle())
                                             })
                                             .scaleEffect(CGSize(width: 1.5, height: 1.5))
                                             .padding(.trailing, 10)
@@ -58,7 +59,7 @@ struct CameraView: View {
                                             Image(systemName: "bolt.fill")
                                                 .foregroundColor(.white)
                                                 .padding()
-                                                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                                                .clipShape(Circle())
                                             })
                                             .scaleEffect(CGSize(width: 1.5, height: 1.5))
                                             .padding(.trailing, 10)
@@ -91,6 +92,16 @@ struct CameraView: View {
                     }
                 }
                 .frame(height: 75)
+                }
+                else {
+                    HStack {
+                        Button(action: {permissions.permissionDenied()}, label: {
+                            ZStack {
+                                Text("Enable camera access to continue")
+                            }
+                        })
+                    }
+                }
             }
         }
         .onAppear(perform: {
