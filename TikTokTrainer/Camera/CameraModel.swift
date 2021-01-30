@@ -14,7 +14,7 @@ class CameraModel: NSObject, ObservableObject,
                    AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate {
     @Published var isTaken = false
     @Published var session = AVCaptureSession()
-    @Published var alert = false
+    @Published var alert = true
     @Published var backCameraOn = true
     @Published var flashlightOn = false
     @Published var output = AVCaptureMovieFileOutput()
@@ -47,6 +47,7 @@ class CameraModel: NSObject, ObservableObject,
     }
 
     func setUp() {
+        self.alert.toggle()
         // start configuration
         self.session.beginConfiguration()
 

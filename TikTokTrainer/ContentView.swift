@@ -23,14 +23,15 @@ struct ContentView_Previews: PreviewProvider {
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
+    @StateObject var permissions = PermissionModel()
     var body: some View {
         ZStack {
 
             // Going to be camera preview
             CameraPreview(camera: camera)
                 .ignoresSafeArea(.all, edges: .all)
-
             VStack {
+                if !camera.alert {
                     HStack {
                         Spacer()
                         if !camera.isTaken {
@@ -91,6 +92,16 @@ struct CameraView: View {
                     }
                 }
                 .frame(height: 75)
+                }
+                else {
+                    HStack {
+                        Button(action: {permissions.permissionDenied()}, label: {
+                            ZStack {
+                                Text("Enable camera access to continue")
+                            }
+                        })
+                    }
+                }
             }
         }
         .onAppear(perform: {
