@@ -14,7 +14,7 @@ class CameraModel: NSObject, ObservableObject,
                    AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate {
     @Published var isTaken = false
     @Published var session = AVCaptureSession()
-    @Published var alert = true
+    @Published var hasPermission = true
     @Published var backCameraOn = true
     @Published var flashlightOn = false
     @Published var output = AVCaptureMovieFileOutput()
@@ -39,7 +39,6 @@ class CameraModel: NSObject, ObservableObject,
                 }
             }
         case .denied:
-            self.alert.toggle()
             return
         default:
             return
@@ -47,7 +46,7 @@ class CameraModel: NSObject, ObservableObject,
     }
 
     func setUp() {
-        self.alert.toggle()
+        self.hasPermission.toggle()
         // start configuration
         self.session.beginConfiguration()
 
@@ -161,10 +160,6 @@ class CameraModel: NSObject, ObservableObject,
         }
 
         return nil
-    }
-
-    func saveVideo() {
-        // todo
     }
 
     func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!,
