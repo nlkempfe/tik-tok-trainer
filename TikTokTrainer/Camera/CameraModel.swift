@@ -11,6 +11,7 @@ import SwiftUI
 import Photos
 import Vision
 import VideoToolbox
+import MetalKit
 
 class CameraModel: NSObject, ObservableObject,
                    AVCaptureFileOutputRecordingDelegate,
@@ -32,6 +33,27 @@ class CameraModel: NSObject, ObservableObject,
     @Published var isRecording = false
     @Published var view = UIView(frame: UIScreen.main.bounds)
     
+    var boundsWidth: CGFloat!
+    var boundsHeight: CGFloat!
+    
+    var drawn = false
+    
+    var imagePoints: [CGPoint]!
+    
+    //metal
+    var metalDevice : MTLDevice!
+    var metalCommandQueue : MTLCommandQueue!
+    
+    //core image
+    var ciContext : CIContext!
+    
+    var currentCIImage : CIImage?
+    
+    let fadeFilter = CIFilter(name: "CIPhotoEffectFade")
+    let sepiaFilter = CIFilter(name: "CISepiaTone")
+    
+    let mtkView = MTKView()
+    
     private var currentFrame: CGImage!
     
     private let sessionQueue = DispatchQueue(
@@ -41,12 +63,12 @@ class CameraModel: NSObject, ObservableObject,
     func check() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            setUp()
+            setupMetal()
             return
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { (status) in
                 if status {
-                    self.setUp()
+                    self.setupMetal()
                 }
             }
         case .denied:
@@ -109,9 +131,13 @@ class CameraModel: NSObject, ObservableObject,
 
         self.dataOutput.alwaysDiscardsLateVideoFrames = true
         self.dataOutput.setSampleBufferDelegate(self, queue: sessionQueue)
-        // setup output
-//        self.session.addOutput(self.output)
+        
+        // TODO: setup file capture output
+        // self.session.addOutput(self.output)
+        
         self.session.addOutput(dataOutput)
+        
+        self.dataOutput.connections.first?.videoOrientation = .portrait
         
 
         // commit configuration
@@ -121,7 +147,63 @@ class CameraModel: NSObject, ObservableObject,
         self.session.startRunning()
 
     }
+    
+    //MARK:- Metal
+    func setupMetal(){
+        //fetch the default gpu of the device (only one on iOS devices)
+        metalDevice = MTLCreateSystemDefaultDevice()
+        
+        //tell our MTKView which gpu to use
+        mtkView.device = metalDevice
+        
+        //tell our MTKView to use explicit drawing meaning we have to call .draw() on it
+        mtkView.isPaused = true
+        mtkView.enableSetNeedsDisplay = false
+        
+        //create a command queue to be able to send down instructions to the GPU
+        metalCommandQueue = metalDevice.makeCommandQueue()
+        
+        //conform to our MTKView's delegate
+        mtkView.delegate = self
+        
+        //let it's drawable texture be writen to
+        mtkView.framebufferOnly = false
+        
+        mtkView.frame = UIScreen.main.bounds
+        boundsWidth = UIScreen.main.bounds.width
+        boundsHeight = UIScreen.main.bounds.height
 
+        print(mtkView.frame.size)
+        mtkView.enableSetNeedsDisplay = true
+        
+        setupCoreImage()
+    }
+    
+    //MARK:- Core Image
+    func setupCoreImage(){
+        ciContext = CIContext(mtlDevice: metalDevice)
+        setupFilters()
+        setUp()
+    }
+    
+    //MARK: -TODO: Draw Points on Image
+    func setupFilters(){
+        sepiaFilter?.setValue(NSNumber(value: 1), forKeyPath: "inputIntensity")
+    }
+    
+    func applyFilters(inputImage image: CIImage) -> CIImage? {
+        var filteredImage : CIImage?
+        
+        //apply filters
+        sepiaFilter?.setValue(image, forKeyPath: kCIInputImageKey)
+        filteredImage = sepiaFilter?.outputImage
+              
+        fadeFilter?.setValue(image, forKeyPath: kCIInputImageKey)
+        filteredImage = fadeFilter?.outputImage
+        return filteredImage
+    }
+    
+    // MARK: - Recording
     func startRecord() {
         self.isTaken.toggle()
         if self.output.isRecording == false {
@@ -203,6 +285,7 @@ class CameraModel: NSObject, ObservableObject,
 
     }
 
+    // MARK: - Camera Toggles
     func switchCameraInput() {
            // don't let user spam the button, fun for the user, not fun for performance
 
@@ -221,17 +304,11 @@ class CameraModel: NSObject, ObservableObject,
 
            // deal with the connection again for portrait mode
             self.output.connections.first?.videoOrientation = .portrait
+            self.dataOutput.connections.first?.videoOrientation = .portrait
 
            // commit config
             self.session.commitConfiguration()
        }
-
-    func setupPreviewLayer() {
-        self.preview = AVCaptureVideoPreviewLayer(session: self.session)
-        self.preview.frame = view.frame
-        self.preview.videoGravity = .resizeAspectFill
-        self.view.layer.addSublayer(self.preview)
-    }
 
     func toggleFlash() {
         self.flashlightOn.toggle()
@@ -269,7 +346,7 @@ class CameraModel: NSObject, ObservableObject,
     
     
     
-    // MARK: - AVCAPTUREVIDEODATAOUPUT
+    // MARK: - Vision
     
     func bodyPoseHandler(request: VNRequest, error: Error?) {
         guard let observations =
@@ -296,22 +373,35 @@ class CameraModel: NSObject, ObservableObject,
         ]
         
         // Retrieve the CGPoints containing the normalized X and Y coordinates.
-        let imagePoints: [CGPoint] = torsoKeys.compactMap {
+        imagePoints = torsoKeys.compactMap {
             guard let point = recognizedPoints[$0], point.confidence > 0 else { return nil }
             
             // Translate the point from normalized-coordinates to image coordinates.
             return VNImagePointForNormalizedPoint(point.location,
-                                                  Int(currentFrame.width),
-                                                  Int(currentFrame.height))
+                                                  Int(boundsWidth),
+                                                  Int(boundsHeight))
         }
         
         // Draw the points onscreen.
-        for i in imagePoints {
-            print(i)
-        }
+//        for i in imagePoints {
+//            print(i)
+//        }
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        //try and get a CVImageBuffer out of the sample buffer
+        guard let cvBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        
+        //get a CIImage out of the CVImageBuffer
+        let ciImage = CIImage(cvImageBuffer: cvBuffer)
+        
+        // TODO: Draw points on top of this image
+        guard let filteredCIImage = applyFilters(inputImage: ciImage) else {
+            return
+        }
+
         if let pixelBuffer = sampleBuffer.imageBuffer {
             // Attempt to lock the image buffer to gain access to its memory.
             guard CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly) == kCVReturnSuccess
@@ -327,7 +417,7 @@ class CameraModel: NSObject, ObservableObject,
 
             // Release the image buffer.
             CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-            
+
             let requestHandler = VNImageRequestHandler(cgImage: cgImage!)
 
 
@@ -342,6 +432,17 @@ class CameraModel: NSObject, ObservableObject,
             } catch {
                 print("Unable to perform the request: \(error).")
             }
+            
+            if imagePoints != nil {
+                var testCgImage = self.ciContext.createCGImage(filteredCIImage, from: filteredCIImage.extent)
+                self.currentCIImage = CIImage(image: drawRectangleOnImage(image: UIImage(cgImage: testCgImage!)))
+                drawn.toggle()
+            }
+            else {
+                self.currentCIImage = filteredCIImage
+            }
+            
+            mtkView.draw()
 
 //            DispatchQueue.main.sync {
 //                delegate.videoCapture(self, didCaptureFrame: image)
@@ -349,5 +450,66 @@ class CameraModel: NSObject, ObservableObject,
         }
     }
     
+    // MARK: - Testing stuff
+    func drawRectangleOnImage(image: UIImage) -> UIImage {
+        let imageSize = image.size
+        let scale: CGFloat = 0
+        UIGraphicsBeginImageContext(imageSize)
+        let context = UIGraphicsGetCurrentContext()
+        for i in imagePoints {
+        image.draw(at: CGPoint.zero)
+        let rectangle = CGRect(x: i.x, y: i.y, width: 20, height: 20)
+
+            context!.setFillColor(UIColor.green.cgColor)
+            context!.addRect(rectangle)
+            
+        }
+        context!.drawPath(using: .fill)
+        
+        imagePoints = nil
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!
+    }
+}
+
+extension CameraModel : MTKViewDelegate {
+    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        //tells us the drawable's size has changed
+    }
     
+    func draw(in view: MTKView) {
+        //create command buffer for ciContext to use to encode it's rendering instructions to our GPU
+        guard let commandBuffer = metalCommandQueue.makeCommandBuffer() else {
+            return
+        }
+        
+        //make sure we actually have a ciImage to work with
+        guard let ciImage = currentCIImage else {
+            return
+        }
+        
+        //make sure the current drawable object for this metal view is available (it's not in use by the previous draw cycle)
+        guard let currentDrawable = view.currentDrawable else {
+            return
+        }
+
+        //make sure frame is centered on screen
+        let heightOfciImage = ciImage.extent.height
+        let heightOfDrawable = view.drawableSize.height
+        let yOffsetFromBottom = (heightOfDrawable - heightOfciImage)/2
+        
+        //render into the metal texture
+        self.ciContext.render(ciImage,
+                              to: currentDrawable.texture,
+                   commandBuffer: commandBuffer,
+                          bounds: CGRect(origin: CGPoint(x: 0, y: -yOffsetFromBottom), size: view.drawableSize),
+                      colorSpace: CGColorSpaceCreateDeviceRGB())
+        
+        //register where to draw the instructions in the command buffer once it executes
+        commandBuffer.present(currentDrawable)
+        //commit the command to the queue so it executes
+        commandBuffer.commit()
+    }
 }

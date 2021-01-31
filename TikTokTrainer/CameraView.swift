@@ -9,18 +9,6 @@ import SwiftUI
 import AVFoundation
 import Photos
 
-struct ContentView: View {
-    var body: some View {
-        CameraView()
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
 struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
@@ -107,5 +95,11 @@ struct CameraView: View {
         .onAppear(perform: {
             camera.check()
         })
+    }
+}
+
+struct CameraView_Previews: PreviewProvider {
+    static var previews: some View {
+        CameraView()
     }
 }

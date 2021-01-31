@@ -13,15 +13,20 @@ struct CameraPreview: UIViewRepresentable {
     @ObservedObject var camera: CameraModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = UIView(frame: UIScreen.main.bounds)
+        camera.view.backgroundColor = .black
+        camera.mtkView.translatesAutoresizingMaskIntoConstraints = false
+        camera.view.addSubview(camera.mtkView)
+        print(camera.mtkView
+        )
 
-        camera.preview = AVCaptureVideoPreviewLayer(session: camera.session)
-        camera.preview.frame = view.frame
+        NSLayoutConstraint.activate([
+            camera.mtkView.bottomAnchor.constraint(equalTo: camera.view.bottomAnchor),
+            camera.mtkView.trailingAnchor.constraint(equalTo: camera.view.trailingAnchor),
+            camera.mtkView.leadingAnchor.constraint(equalTo: camera.view.leadingAnchor),
+            camera.mtkView.topAnchor.constraint(equalTo: camera.view.topAnchor)
+        ])
 
-        camera.preview.videoGravity = .resizeAspectFill
-        view.layer.addSublayer(camera.preview)
-
-        return view
+        return camera.view
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
