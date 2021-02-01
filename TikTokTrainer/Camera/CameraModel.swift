@@ -79,6 +79,7 @@ class CameraModel: NSObject, ObservableObject,
     }
 
     func setUp() {
+        print(UIScreen.main.bounds)
         self.hasPermission.toggle()
         // start configuration
         self.session.beginConfiguration()
@@ -357,29 +358,39 @@ class CameraModel: NSObject, ObservableObject,
     }
     func processObservation(_ observation: VNRecognizedPointsObservation) {
         // Retrieve all torso points.
-        guard let recognizedPoints =
-                try? observation.recognizedPoints(forGroupKey: .bodyLandmarkRegionKeyTorso) else {
+        guard let recognizedPointsTorso =
+                try? observation.recognizedPoints(forGroupKey: .all) else {
             return
         }
         
-        // Torso point keys in a clockwise ordering.
-        let torsoKeys: [VNRecognizedPointKey] = [
+        //  point keys in a clockwise ordering.
+        let keys: [VNRecognizedPointKey] = [
             .bodyLandmarkKeyNeck,
             .bodyLandmarkKeyRightShoulder,
+            .bodyLandmarkKeyRightElbow,
+            .bodyLandmarkKeyRightWrist,
             .bodyLandmarkKeyRightHip,
+            .bodyLandmarkKeyRightKnee,
+            .bodyLandmarkKeyRightAnkle,
             .bodyLandmarkKeyRoot,
+            .bodyLandmarkKeyLeftAnkle,
+            .bodyLandmarkKeyLeftKnee,
+            .bodyLandmarkKeyLeftElbow,
             .bodyLandmarkKeyLeftHip,
+            .bodyLandmarkKeyLeftWrist,
+            .bodyLandmarkKeyLeftElbow,
             .bodyLandmarkKeyLeftShoulder
         ]
         
         // Retrieve the CGPoints containing the normalized X and Y coordinates.
-        imagePoints = torsoKeys.compactMap {
-            guard let point = recognizedPoints[$0], point.confidence > 0 else { return nil }
+        imagePoints = keys.compactMap {
+            guard let point = recognizedPointsTorso[$0], point.confidence > 0 else { return nil }
             
             // Translate the point from normalized-coordinates to image coordinates.
+            print(point.location)
             return VNImagePointForNormalizedPoint(point.location,
-                                                  Int(boundsWidth),
-                                                  Int(boundsHeight))
+                                                  1080,
+                                                  1920)
         }
         
         // Draw the points onscreen.
@@ -436,7 +447,6 @@ class CameraModel: NSObject, ObservableObject,
             if imagePoints != nil {
                 var testCgImage = self.ciContext.createCGImage(filteredCIImage, from: filteredCIImage.extent)
                 self.currentCIImage = CIImage(image: drawRectangleOnImage(image: UIImage(cgImage: testCgImage!)))
-                drawn.toggle()
             }
             else {
                 self.currentCIImage = filteredCIImage
@@ -453,18 +463,29 @@ class CameraModel: NSObject, ObservableObject,
     // MARK: - Testing stuff
     func drawRectangleOnImage(image: UIImage) -> UIImage {
         let imageSize = image.size
+        print(imageSize)
         let scale: CGFloat = 0
         UIGraphicsBeginImageContext(imageSize)
         let context = UIGraphicsGetCurrentContext()
+        var rects = [CGRect]()
+        var points = [CGPoint]()
         for i in imagePoints {
-        image.draw(at: CGPoint.zero)
-        let rectangle = CGRect(x: i.x, y: i.y, width: 20, height: 20)
-
+            image.draw(at: CGPoint.zero)
+            let rectangle = CGRect(x: i.x, y: 1920 - i.y, width: 20, height: 20)
             context!.setFillColor(UIColor.green.cgColor)
-            context!.addRect(rectangle)
-            
+            rects.append(rectangle)
         }
+        
+        for i in imagePoints {
+            points.append(CGPoint(x: i.x, y: 1920 - i.y))
+        }
+        context!.setStrokeColor(UIColor.green.cgColor)
+        context!.setLineWidth(5)
+        context!.addRects(rects)
         context!.drawPath(using: .fill)
+        context!.addLines(between: points)
+        context!.drawPath(using: .stroke)
+        
         
         imagePoints = nil
 
