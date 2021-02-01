@@ -22,7 +22,7 @@ struct CameraView: View {
                 if !camera.hasPermission {
                     HStack {
                         Spacer()
-                        if !camera.isTaken {
+                        if !camera.isCameraOn {
                             VStack {
                                 Button(action: {camera.switchCameraInput()}, label: {
                                     Image(systemName: "arrow.triangle.2.circlepath.camera")
@@ -58,7 +58,7 @@ struct CameraView: View {
                     }
                 Spacer()
                 HStack {
-                    if camera.isTaken {
+                    if camera.isCameraOn {
                         Button(action: {camera.stopRecord()}, label: {
                             ZStack {
                                 Circle()
@@ -70,7 +70,7 @@ struct CameraView: View {
                             }
                         })
                     } else {
-                        Button(action: {camera.startRecord()}, label: {
+                        Button(action: {camera.toggleRecord()}, label: {
                             ZStack {
                                 Circle()
                                     .stroke(Color.white, lineWidth: 2)
@@ -80,8 +80,7 @@ struct CameraView: View {
                     }
                 }
                 .frame(height: 75)
-                }
-                else {
+                } else {
                     HStack {
                         Button(action: {permissions.permissionDenied()}, label: {
                             ZStack {

@@ -16,8 +16,6 @@ struct CameraPreview: UIViewRepresentable {
         camera.view.backgroundColor = .black
         camera.mtkView.translatesAutoresizingMaskIntoConstraints = false
         camera.view.addSubview(camera.mtkView)
-        print(camera.mtkView
-        )
 
         NSLayoutConstraint.activate([
             camera.mtkView.bottomAnchor.constraint(equalTo: camera.view.bottomAnchor),
