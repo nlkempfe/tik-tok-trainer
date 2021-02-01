@@ -426,16 +426,14 @@ class CameraModel: NSObject, ObservableObject,
         UIGraphicsBeginImageContext(imageSize)
         let context = UIGraphicsGetCurrentContext()
 
-        // holds joint points
-        var rects = [CGRect]()
-
-        // collect all joints
+        // draw all joints
+        context!.setFillColor(UIColor.green.cgColor)
         for i in imagePoints {
             image.draw(at: CGPoint.zero)
             let rectangle = CGRect(x: i.value.x, y: 1920 - i.value.y, width: 20, height: 20)
-            context!.setFillColor(UIColor.green.cgColor)
-            rects.append(rectangle)
+            context!.addEllipse(in: rectangle)
         }
+        context!.drawPath(using: .fill)
 
         // connect joints
         context!.setStrokeColor(UIColor.green.cgColor)
@@ -529,10 +527,6 @@ class CameraModel: NSObject, ObservableObject,
             context!.addLines(between: [CGPoint(x: imagePoints["right_eye_joint"]!.x, y: 1920 - imagePoints["right_eye_joint"]!.y), CGPoint(x: imagePoints["right_ear_joint"]!.x, y: 1920 - imagePoints["right_ear_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
-
-        // draw joints
-        context!.addRects(rects)
-        context!.drawPath(using: .fill)
 
         // remove points after drawn
         imagePoints.removeAll()
