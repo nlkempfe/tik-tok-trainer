@@ -16,6 +16,7 @@ struct CameraPreview: UIViewRepresentable {
         camera.view.backgroundColor = .black
         camera.mtkView.translatesAutoresizingMaskIntoConstraints = false
         camera.view.addSubview(camera.mtkView)
+        camera.view.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         NSLayoutConstraint.activate([
             camera.mtkView.bottomAnchor.constraint(equalTo: camera.view.bottomAnchor),
@@ -28,6 +29,6 @@ struct CameraPreview: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-
+        // don't need to do anything here yet
     }
 }

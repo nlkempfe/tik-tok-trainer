@@ -19,7 +19,7 @@ class CameraModel: NSObject, ObservableObject,
                    AVCaptureVideoDataOutputSampleBufferDelegate {
 
     // toggles
-    @Published var backCameraOn = true
+    @Published var backCameraOn = false
     @Published var flashlightOn = false
     @Published var isCameraOn = false
     @Published var isRecording = false
@@ -119,7 +119,7 @@ class CameraModel: NSObject, ObservableObject,
             fatalError("could not add front camera input to capture session")
         }
 
-        self.cameraSession.addInput(backInput)
+        self.cameraSession.addInput(frontInput)
 
         self.dataOutput.alwaysDiscardsLateVideoFrames = true
         self.dataOutput.setSampleBufferDelegate(self, queue: sessionQueue)
@@ -270,10 +270,12 @@ class CameraModel: NSObject, ObservableObject,
                 self.cameraSession.addInput(self.frontInput)
                 self.backCameraOn = false
                 self.flashlightOn = false
+                self.view.transform = CGAffineTransform(scaleX: -1, y: 1)
            } else {
                 self.cameraSession.removeInput(self.frontInput)
                 self.cameraSession.addInput(self.backInput)
                 self.backCameraOn = true
+                self.view.transform = CGAffineTransform(scaleX: 1, y: 1)
            }
 
             // deal with the connection again for portrait mode
