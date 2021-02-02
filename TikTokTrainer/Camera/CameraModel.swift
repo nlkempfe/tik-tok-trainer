@@ -35,6 +35,7 @@ class CameraModel: NSObject, ObservableObject,
     @Published var hasPermission = true
     @Published var outputURL: URL!
     @Published var view = UIView(frame: UIScreen.main.bounds)
+    @Published var imageBounds: CGSize!
 
     // joint data
     var imagePoints: [String: CGPoint] = [:]
@@ -48,9 +49,9 @@ class CameraModel: NSObject, ObservableObject,
     var ciContext: CIContext!
     var currentCIImage: CIImage?
 
-    // queue for processing video data
-    private let sessionQueue = DispatchQueue(
-        label: "T3.cameraQueue")
+    // queue for processing video data to posenet
+    private let posenetDataQueue = DispatchQueue(
+        label: "T3.posenetDataQueue")
 
     func check() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -122,12 +123,12 @@ class CameraModel: NSObject, ObservableObject,
         self.cameraSession.addInput(frontInput)
 
         self.dataOutput.alwaysDiscardsLateVideoFrames = true
-        self.dataOutput.setSampleBufferDelegate(self, queue: sessionQueue)
+        self.dataOutput.setSampleBufferDelegate(self, queue: posenetDataQueue)
+        
 
         // TODO: setup file capture output, this is gonna be interesting because we should sync it up with MTKView
-        // self.session.addOutput(self.output)
-
-        self.cameraSession.addOutput(dataOutput)
+        //self.cameraSession.addOutput(self.fileOutput)
+        self.cameraSession.addOutput(self.dataOutput)
 
         self.dataOutput.connections.first?.videoOrientation = .portrait
 
@@ -365,7 +366,7 @@ class CameraModel: NSObject, ObservableObject,
             if i.value.confidence <= 0 || !keys.contains(i.key) {
                 continue
             }
-            imagePoints[i.key.rawValue] = VNImagePointForNormalizedPoint(i.value.location, 1080, 1920)
+            imagePoints[i.key.rawValue] = VNImagePointForNormalizedPoint(i.value.location, Int(self.imageBounds.width), Int(self.imageBounds.height))
         }
     }
 
@@ -391,7 +392,13 @@ class CameraModel: NSObject, ObservableObject,
 
             // Create a Core Graphics bitmap image from the pixel buffer.
             VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
-
+            
+            if self.imageBounds == nil {
+                DispatchQueue.main.async {
+                    self.imageBounds = UIImage(cgImage: cgImage!).size
+                }
+            }
+            
             // Release the image buffer.
             CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
 
@@ -432,7 +439,7 @@ class CameraModel: NSObject, ObservableObject,
         context!.setFillColor(UIColor.green.cgColor)
         for i in imagePoints {
             image.draw(at: CGPoint.zero)
-            let rectangle = CGRect(x: i.value.x, y: 1920 - i.value.y, width: 20, height: 20)
+            let rectangle = CGRect(x: i.value.x, y: self.imageBounds.height - i.value.y, width: 20, height: 20)
             context!.addEllipse(in: rectangle)
         }
         context!.drawPath(using: .fill)
@@ -441,92 +448,92 @@ class CameraModel: NSObject, ObservableObject,
         context!.setStrokeColor(UIColor.green.cgColor)
         context!.setLineWidth(3)
         if imagePoints["neck_1_joint"] != nil && imagePoints["right_shoulder_1_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["neck_1_joint"]!.x, y: 1920 - imagePoints["neck_1_joint"]!.y), CGPoint(x: imagePoints["right_shoulder_1_joint"]!.x, y: 1920 - imagePoints["right_shoulder_1_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["neck_1_joint"]!.x, y: self.imageBounds.height - imagePoints["neck_1_joint"]!.y), CGPoint(x: imagePoints["right_shoulder_1_joint"]!.x, y: self.imageBounds.height - imagePoints["right_shoulder_1_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["neck_1_joint"] != nil && imagePoints["left_shoulder_1_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["neck_1_joint"]!.x, y: 1920 - imagePoints["neck_1_joint"]!.y), CGPoint(x: imagePoints["left_shoulder_1_joint"]!.x, y: 1920 - imagePoints["left_shoulder_1_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["neck_1_joint"]!.x, y: self.imageBounds.height - imagePoints["neck_1_joint"]!.y), CGPoint(x: imagePoints["left_shoulder_1_joint"]!.x, y: self.imageBounds.height - imagePoints["left_shoulder_1_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["left_forearm_joint"] != nil && imagePoints["left_shoulder_1_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["left_forearm_joint"]!.x, y: 1920 - imagePoints["left_forearm_joint"]!.y), CGPoint(x: imagePoints["left_shoulder_1_joint"]!.x, y: 1920 - imagePoints["left_shoulder_1_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["left_forearm_joint"]!.x, y: self.imageBounds.height - imagePoints["left_forearm_joint"]!.y), CGPoint(x: imagePoints["left_shoulder_1_joint"]!.x, y: self.imageBounds.height - imagePoints["left_shoulder_1_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["left_forearm_joint"] != nil && imagePoints["left_hand_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["left_forearm_joint"]!.x, y: 1920 - imagePoints["left_forearm_joint"]!.y), CGPoint(x: imagePoints["left_hand_joint"]!.x, y: 1920 - imagePoints["left_hand_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["left_forearm_joint"]!.x, y: self.imageBounds.height - imagePoints["left_forearm_joint"]!.y), CGPoint(x: imagePoints["left_hand_joint"]!.x, y: self.imageBounds.height - imagePoints["left_hand_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["right_forearm_joint"] != nil && imagePoints["right_shoulder_1_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["right_forearm_joint"]!.x, y: 1920 - imagePoints["right_forearm_joint"]!.y), CGPoint(x: imagePoints["right_shoulder_1_joint"]!.x, y: 1920 - imagePoints["right_shoulder_1_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["right_forearm_joint"]!.x, y: self.imageBounds.height - imagePoints["right_forearm_joint"]!.y), CGPoint(x: imagePoints["right_shoulder_1_joint"]!.x, y: self.imageBounds.height - imagePoints["right_shoulder_1_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["right_forearm_joint"] != nil && imagePoints["right_hand_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["right_forearm_joint"]!.x, y: 1920 - imagePoints["right_forearm_joint"]!.y), CGPoint(x: imagePoints["right_hand_joint"]!.x, y: 1920 - imagePoints["right_hand_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["right_forearm_joint"]!.x, y: self.imageBounds.height - imagePoints["right_forearm_joint"]!.y), CGPoint(x: imagePoints["right_hand_joint"]!.x, y: self.imageBounds.height - imagePoints["right_hand_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["root"] != nil && imagePoints["left_upLeg_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["root"]!.x, y: 1920 - imagePoints["root"]!.y), CGPoint(x: imagePoints["left_upLeg_joint"]!.x, y: 1920 - imagePoints["left_upLeg_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["root"]!.x, y: self.imageBounds.height - imagePoints["root"]!.y), CGPoint(x: imagePoints["left_upLeg_joint"]!.x, y: self.imageBounds.height - imagePoints["left_upLeg_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["root"] != nil && imagePoints["neck_1_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["root"]!.x, y: 1920 - imagePoints["root"]!.y), CGPoint(x: imagePoints["neck_1_joint"]!.x, y: 1920 - imagePoints["neck_1_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["root"]!.x, y: self.imageBounds.height - imagePoints["root"]!.y), CGPoint(x: imagePoints["neck_1_joint"]!.x, y: self.imageBounds.height - imagePoints["neck_1_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["left_leg_joint"] != nil && imagePoints["left_upLeg_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["left_leg_joint"]!.x, y: 1920 - imagePoints["left_leg_joint"]!.y), CGPoint(x: imagePoints["left_upLeg_joint"]!.x, y: 1920 - imagePoints["left_upLeg_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["left_leg_joint"]!.x, y: self.imageBounds.height - imagePoints["left_leg_joint"]!.y), CGPoint(x: imagePoints["left_upLeg_joint"]!.x, y: self.imageBounds.height - imagePoints["left_upLeg_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["left_leg_joint"] != nil && imagePoints["left_foot_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["left_leg_joint"]!.x, y: 1920 - imagePoints["left_leg_joint"]!.y), CGPoint(x: imagePoints["left_foot_joint"]!.x, y: 1920 - imagePoints["left_foot_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["left_leg_joint"]!.x, y: self.imageBounds.height - imagePoints["left_leg_joint"]!.y), CGPoint(x: imagePoints["left_foot_joint"]!.x, y: self.imageBounds.height - imagePoints["left_foot_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["root"] != nil && imagePoints["right_upLeg_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["root"]!.x, y: 1920 - imagePoints["root"]!.y), CGPoint(x: imagePoints["right_upLeg_joint"]!.x, y: 1920 - imagePoints["right_upLeg_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["root"]!.x, y: self.imageBounds.height - imagePoints["root"]!.y), CGPoint(x: imagePoints["right_upLeg_joint"]!.x, y: self.imageBounds.height - imagePoints["right_upLeg_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["right_leg_joint"] != nil && imagePoints["right_upLeg_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["right_leg_joint"]!.x, y: 1920 - imagePoints["right_leg_joint"]!.y), CGPoint(x: imagePoints["right_upLeg_joint"]!.x, y: 1920 - imagePoints["right_upLeg_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["right_leg_joint"]!.x, y: self.imageBounds.height - imagePoints["right_leg_joint"]!.y), CGPoint(x: imagePoints["right_upLeg_joint"]!.x, y: self.imageBounds.height - imagePoints["right_upLeg_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["right_leg_joint"] != nil && imagePoints["right_foot_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["right_leg_joint"]!.x, y: 1920 - imagePoints["right_leg_joint"]!.y), CGPoint(x: imagePoints["right_foot_joint"]!.x, y: 1920 - imagePoints["right_foot_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["right_leg_joint"]!.x, y: self.imageBounds.height - imagePoints["right_leg_joint"]!.y), CGPoint(x: imagePoints["right_foot_joint"]!.x, y: self.imageBounds.height - imagePoints["right_foot_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["neck_1_joint"] != nil && imagePoints["head_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["neck_1_joint"]!.x, y: 1920 - imagePoints["neck_1_joint"]!.y), CGPoint(x: imagePoints["head_joint"]!.x, y: 1920 - imagePoints["head_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["neck_1_joint"]!.x, y: self.imageBounds.height - imagePoints["neck_1_joint"]!.y), CGPoint(x: imagePoints["head_joint"]!.x, y: self.imageBounds.height - imagePoints["head_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["left_eye_joint"] != nil && imagePoints["head_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["left_eye_joint"]!.x, y: 1920 - imagePoints["left_eye_joint"]!.y), CGPoint(x: imagePoints["head_joint"]!.x, y: 1920 - imagePoints["head_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["left_eye_joint"]!.x, y: self.imageBounds.height - imagePoints["left_eye_joint"]!.y), CGPoint(x: imagePoints["head_joint"]!.x, y: self.imageBounds.height - imagePoints["head_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["left_eye_joint"] != nil && imagePoints["left_ear_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["left_eye_joint"]!.x, y: 1920 - imagePoints["left_eye_joint"]!.y), CGPoint(x: imagePoints["left_ear_joint"]!.x, y: 1920 - imagePoints["left_ear_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["left_eye_joint"]!.x, y: self.imageBounds.height - imagePoints["left_eye_joint"]!.y), CGPoint(x: imagePoints["left_ear_joint"]!.x, y: self.imageBounds.height - imagePoints["left_ear_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["right_eye_joint"] != nil && imagePoints["head_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["right_eye_joint"]!.x, y: 1920 - imagePoints["right_eye_joint"]!.y), CGPoint(x: imagePoints["head_joint"]!.x, y: 1920 - imagePoints["head_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["right_eye_joint"]!.x, y: self.imageBounds.height - imagePoints["right_eye_joint"]!.y), CGPoint(x: imagePoints["head_joint"]!.x, y: self.imageBounds.height - imagePoints["head_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
         if imagePoints["right_eye_joint"] != nil && imagePoints["right_ear_joint"] != nil {
-            context!.addLines(between: [CGPoint(x: imagePoints["right_eye_joint"]!.x, y: 1920 - imagePoints["right_eye_joint"]!.y), CGPoint(x: imagePoints["right_ear_joint"]!.x, y: 1920 - imagePoints["right_ear_joint"]!.y)])
+            context!.addLines(between: [CGPoint(x: imagePoints["right_eye_joint"]!.x, y: self.imageBounds.height - imagePoints["right_eye_joint"]!.y), CGPoint(x: imagePoints["right_ear_joint"]!.x, y: self.imageBounds.height - imagePoints["right_ear_joint"]!.y)])
             context!.drawPath(using: .stroke)
         }
 
