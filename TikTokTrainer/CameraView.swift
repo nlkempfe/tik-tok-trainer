@@ -12,6 +12,7 @@ import Photos
 struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
+    
     var body: some View {
         ZStack {
             // Going to be camera preview
@@ -45,29 +46,8 @@ struct CameraView: View {
                         }
                     }
                     Spacer()
-                    HStack {
-                        if camera.isCameraOn {
-                            Button(action: {camera.stopRecord()}, label: {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.red)
-                                        .frame(width: 65, height: 65)
-                                    Circle()
-                                        .stroke(Color.red, lineWidth: 2)
-                                        .frame(width: 75, height: 75)
-                                }
-                            })
-                        } else {
-                            Button(action: {camera.toggleRecord()}, label: {
-                                ZStack {
-                                    Circle()
-                                        .stroke(Color.white, lineWidth: 2)
-                                        .frame(width: 75, height: 75)
-                                }
-                            })
-                        }
-                    }
-                    .frame(height: 75)
+                    RecordButton(camera: camera)
+                        .frame(height: 75)
                 } else {
                     HStack {
                         Button(action: {permissions.permissionDenied()}, label: {
@@ -82,6 +62,34 @@ struct CameraView: View {
         .onAppear(perform: {
             camera.check()
         })
+    }
+}
+
+struct RecordButton: View {
+    @ObservedObject var camera: CameraModel
+    
+    var body: some View {
+        HStack {
+            Button(action: {
+                    camera.isCameraOn ?
+                        camera.stopRecord() : camera.toggleRecord()
+            }, label: {
+                ZStack {
+                    if camera.isCameraOn {
+                        Circle()
+                            .fill(Color.red)
+                            .frame(width: 65, height: 65)
+                        Circle()
+                            .stroke(Color.red, lineWidth: 2)
+                            .frame(width: 75, height: 75)
+                    } else {
+                        Circle()
+                            .stroke(Color.white, lineWidth: 2)
+                            .frame(width: 75, height: 75)
+                    }
+                }
+            })
+        }
     }
 }
 
