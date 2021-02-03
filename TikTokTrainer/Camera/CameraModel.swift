@@ -162,6 +162,9 @@ class CameraModel: NSObject, ObservableObject,
 
         // setting this so that we dont *need* to draw on the image (when there's no points to draw)
         mtkView.enableSetNeedsDisplay = true
+        
+        // fixes bounds issues for iphone max models
+        mtkView.contentScaleFactor = UIScreen.main.nativeScale
 
         setupCoreImage()
     }
@@ -420,7 +423,7 @@ class CameraModel: NSObject, ObservableObject,
             } else {
                 self.currentCIImage = ciImage
             }
-
+            
             // render metal view
             mtkView.draw()
 
@@ -571,16 +574,11 @@ extension CameraModel: MTKViewDelegate {
             return
         }
 
-        // make sure frame is centered on screen
-        let heightOfciImage = ciImage.extent.height
-        let heightOfDrawable = view.drawableSize.height
-        let yOffsetFromBottom = (heightOfDrawable - heightOfciImage)/2
-
         // render into the metal texture
         self.ciContext.render(ciImage,
                               to: currentDrawable.texture,
                    commandBuffer: commandBuffer,
-                          bounds: CGRect(origin: CGPoint(x: 0, y: -yOffsetFromBottom), size: view.drawableSize),
+                          bounds: CGRect(origin: CGPoint(x: 0, y: 0), size: view.drawableSize),
                       colorSpace: CGColorSpaceCreateDeviceRGB())
 
         // register where to draw the instructions in the command buffer once it executes
