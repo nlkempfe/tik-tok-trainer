@@ -15,6 +15,7 @@
 			dependencies = (
 			);
 			name = SwiftLint;
+			productName = SwiftLint;
 		};
 /* End PBXAggregateTarget section */
 
@@ -71,15 +72,15 @@
 		59C3E6BF36BBF7AE922888DAF2CDBA8F /* Pods-TikTokTrainerTests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TikTokTrainerTests-Info.plist"; sourceTree = "<group>"; };
 		73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7A7D23C31434E3F3CE61A875A19F46DD /* Pods-TikTokTrainer-TikTokTrainerUITests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TikTokTrainer-TikTokTrainerUITests-acknowledgements.plist"; sourceTree = "<group>"; };
-		7AE07D9687DB32727D1B408D817EE5EF /* Pods_TikTokTrainerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_TikTokTrainerTests.framework; path = "Pods-TikTokTrainerTests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AE07D9687DB32727D1B408D817EE5EF /* Pods_TikTokTrainerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EAB1DA481EDDC005A251D3A5E6BE4CD /* SwiftLint.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftLint.release.xcconfig; sourceTree = "<group>"; };
 		83DEE24B24A3A44D165E60B53950DA0F /* Pods-TikTokTrainerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TikTokTrainerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		89EAF436FBDF33380462997714F90D96 /* Pods-TikTokTrainer-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TikTokTrainer-acknowledgements.markdown"; sourceTree = "<group>"; };
 		97BECBB92AB00986CE062190FBF4C5B4 /* Pods-TikTokTrainer-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TikTokTrainer-umbrella.h"; sourceTree = "<group>"; };
-		985CD87916C6E0594BFF082B8F07CC27 /* Pods_TikTokTrainer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_TikTokTrainer.framework; path = "Pods-TikTokTrainer.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		985CD87916C6E0594BFF082B8F07CC27 /* Pods_TikTokTrainer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		987416570FFAA5950A84DA3FC8E9D246 /* Pods-TikTokTrainerTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TikTokTrainerTests-acknowledgements.plist"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9F5DA28AA3E7A0076CDF1DC0071A3F19 /* Pods_TikTokTrainer_TikTokTrainerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_TikTokTrainer_TikTokTrainerUITests.framework; path = "Pods-TikTokTrainer-TikTokTrainerUITests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9F5DA28AA3E7A0076CDF1DC0071A3F19 /* Pods_TikTokTrainer_TikTokTrainerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer_TikTokTrainerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDEF161320C72151DE463C310841CF68 /* Pods-TikTokTrainer-TikTokTrainerUITests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-TikTokTrainer-TikTokTrainerUITests-dummy.m"; sourceTree = "<group>"; };
 		C45A94EF22B49934652D6DB04C23047E /* Pods-TikTokTrainerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TikTokTrainerTests.release.xcconfig"; sourceTree = "<group>"; };
 		CDCD9480EB9DFF1ABC9F14AC9EAC63CA /* Pods-TikTokTrainer-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TikTokTrainer-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -218,7 +219,6 @@
 			children = (
 				7FDA596DBE0337ACDFE55A210D54EF26 /* Support Files */,
 			);
-			name = SwiftLint;
 			path = SwiftLint;
 			sourceTree = "<group>";
 		};
@@ -332,7 +332,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1240;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 9.3";
@@ -713,7 +713,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -804,7 +804,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
