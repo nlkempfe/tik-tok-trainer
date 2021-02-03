@@ -17,6 +17,7 @@ struct CameraView: View {
 
             // Going to be camera preview
             CameraPreview(camera: camera)
+                .ignoresSafeArea()
             VStack {
                 if !camera.hasPermission {
                     HStack {

@@ -34,7 +34,7 @@ class CameraModel: NSObject, ObservableObject,
     @Published var dataOutput = AVCaptureVideoDataOutput()
     @Published var hasPermission = true
     @Published var outputURL: URL!
-    @Published var view = UIView(frame: UIScreen.main.bounds)
+    @Published var view = UIView(frame: UIScreen.main.nativeBounds)
     @Published var imageBounds: CGSize!
 
     // joint data
