@@ -423,15 +423,6 @@ class CameraModel: NSObject, ObservableObject,
             } else {
                 self.currentCIImage = ciImage
             }
-
-            DispatchQueue.main.async {
-                print(self.mtkView.frame)
-                print(self.mtkView.bounds)
-                
-                print(self.view.frame)
-                print(self.view.bounds)
-            }
-            
             
             // render metal view
             mtkView.draw()
@@ -583,16 +574,11 @@ extension CameraModel: MTKViewDelegate {
             return
         }
 
-        // make sure frame is centered on screen
-        let heightOfciImage = ciImage.extent.height
-        let heightOfDrawable = view.drawableSize.height
-        let yOffsetFromBottom = (heightOfDrawable - heightOfciImage)/2
-
         // render into the metal texture
         self.ciContext.render(ciImage,
                               to: currentDrawable.texture,
                    commandBuffer: commandBuffer,
-                          bounds: CGRect(origin: CGPoint(x: 0, y: -yOffsetFromBottom), size: view.drawableSize),
+                          bounds: CGRect(origin: CGPoint(x: 0, y: 0), size: view.drawableSize),
                       colorSpace: CGColorSpaceCreateDeviceRGB())
 
         // register where to draw the instructions in the command buffer once it executes

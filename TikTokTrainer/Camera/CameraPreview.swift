@@ -16,12 +16,11 @@ struct CameraPreview: UIViewRepresentable {
         camera.view.backgroundColor = .black
         camera.mtkView.translatesAutoresizingMaskIntoConstraints = false
         camera.view.addSubview(camera.mtkView)
-        print(camera.mtkView.frame)
+        camera.view.transform = CGAffineTransform(scaleX: -1, y: 1)
+        print(camera.view.bounds)
         print(camera.mtkView.bounds)
         
-        print(camera.view.frame)
-        print(camera.view.bounds)
-        camera.view.transform = CGAffineTransform(scaleX: -1, y: 1)
+        print(camera.view.bottomAnchor)
 
         NSLayoutConstraint.activate([
             camera.mtkView.bottomAnchor.constraint(equalTo: camera.view.bottomAnchor),
