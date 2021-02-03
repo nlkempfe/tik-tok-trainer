@@ -336,29 +336,28 @@ class CameraModel: NSObject, ObservableObject,
                 try? observation.recognizedPoints(forGroupKey: .all) else {
             return
         }
-        VNHumanBodyPoseObservation.JointName.neck
         //  point keys in a clockwise ordering.
         let keys: [VNRecognizedPointKey] = [
-            .bodyLandmarkKeyNeck,
-            .bodyLandmarkKeyRightShoulder,
-            .bodyLandmarkKeyRightElbow,
-            .bodyLandmarkKeyRightWrist,
-            .bodyLandmarkKeyRightHip,
-            .bodyLandmarkKeyRightKnee,
-            .bodyLandmarkKeyRightAnkle,
-            .bodyLandmarkKeyRoot,
-            .bodyLandmarkKeyLeftAnkle,
-            .bodyLandmarkKeyLeftKnee,
-            .bodyLandmarkKeyLeftElbow,
-            .bodyLandmarkKeyLeftHip,
-            .bodyLandmarkKeyLeftWrist,
-            .bodyLandmarkKeyLeftElbow,
-            .bodyLandmarkKeyLeftShoulder,
-            .bodyLandmarkKeyNose,
-            .bodyLandmarkKeyLeftEye,
-            .bodyLandmarkKeyRightEye,
-            .bodyLandmarkKeyLeftEar,
-            .bodyLandmarkKeyRightEar
+            VNHumanBodyPoseObservation.JointName.neck.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightShoulder.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightElbow.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightWrist.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightHip.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightKnee.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightAnkle.rawValue,
+            VNHumanBodyPoseObservation.JointName.root.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftAnkle.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftKnee.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftElbow.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftHip.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftWrist.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftElbow.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftShoulder.rawValue,
+            VNHumanBodyPoseObservation.JointName.nose.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftEye.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightEye.rawValue,
+            VNHumanBodyPoseObservation.JointName.leftEar.rawValue,
+            VNHumanBodyPoseObservation.JointName.rightEar.rawValue,
         ]
         
         // collect all non-nil points
@@ -475,7 +474,7 @@ class CameraModel: NSObject, ObservableObject,
             ("right_eye_joint", "head_joint"),
             ("right_eye_joint", "right_ear_joint"),
         ]
-
+        
         for (firstPoint, secondPoint) in drawingPairs {
             drawLine(context: context, firstPoint: imagePoints[firstPoint], secondPoint: imagePoints[secondPoint])
         }
