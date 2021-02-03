@@ -424,6 +424,15 @@ class CameraModel: NSObject, ObservableObject,
                 self.currentCIImage = ciImage
             }
 
+            DispatchQueue.main.async {
+                print(self.mtkView.frame)
+                print(self.mtkView.bounds)
+                
+                print(self.view.frame)
+                print(self.view.bounds)
+            }
+            
+            
             // render metal view
             mtkView.draw()
 

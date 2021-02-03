@@ -13,10 +13,14 @@ struct CameraPreview: UIViewRepresentable {
     @ObservedObject var camera: CameraModel
 
     func makeUIView(context: Context) -> some UIView {
-        camera.view.sizeToFit()
         camera.view.backgroundColor = .black
         camera.mtkView.translatesAutoresizingMaskIntoConstraints = false
         camera.view.addSubview(camera.mtkView)
+        print(camera.mtkView.frame)
+        print(camera.mtkView.bounds)
+        
+        print(camera.view.frame)
+        print(camera.view.bounds)
         camera.view.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         NSLayoutConstraint.activate([
@@ -32,4 +36,5 @@ struct CameraPreview: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context: Context) {
         // don't need to do anything here yet
     }
+    
 }
