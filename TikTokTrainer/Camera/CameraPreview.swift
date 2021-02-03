@@ -13,6 +13,7 @@ struct CameraPreview: UIViewRepresentable {
     @ObservedObject var camera: CameraModel
 
     func makeUIView(context: Context) -> some UIView {
+        camera.view.sizeToFit()
         camera.view.backgroundColor = .black
         camera.mtkView.translatesAutoresizingMaskIntoConstraints = false
         camera.view.addSubview(camera.mtkView)
