@@ -162,6 +162,9 @@ class CameraModel: NSObject, ObservableObject,
 
         // setting this so that we dont *need* to draw on the image (when there's no points to draw)
         mtkView.enableSetNeedsDisplay = true
+        
+        // fixes bounds issues for iphone max models
+        mtkView.contentScaleFactor = UIScreen.main.nativeScale
 
         setupCoreImage()
     }
