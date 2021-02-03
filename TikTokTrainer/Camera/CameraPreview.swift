@@ -17,6 +17,10 @@ struct CameraPreview: UIViewRepresentable {
         camera.mtkView.translatesAutoresizingMaskIntoConstraints = false
         camera.view.addSubview(camera.mtkView)
         camera.view.transform = CGAffineTransform(scaleX: -1, y: 1)
+        print(camera.view.bounds)
+
+        
+        print(camera.view.bottomAnchor)
 
         NSLayoutConstraint.activate([
             camera.mtkView.bottomAnchor.constraint(equalTo: camera.view.bottomAnchor),
@@ -24,6 +28,8 @@ struct CameraPreview: UIViewRepresentable {
             camera.mtkView.leadingAnchor.constraint(equalTo: camera.view.leadingAnchor),
             camera.mtkView.topAnchor.constraint(equalTo: camera.view.topAnchor)
         ])
+        
+        print(camera.mtkView.bounds)
 
         return camera.view
     }
@@ -31,4 +37,5 @@ struct CameraPreview: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context: Context) {
         // don't need to do anything here yet
     }
+    
 }
