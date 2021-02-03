@@ -14,7 +14,6 @@ struct CameraView: View {
     @StateObject var permissions = PermissionModel()
     var body: some View {
         ZStack {
-
             // Going to be camera preview
             CameraPreview(camera: camera)
                 .ignoresSafeArea(.all, edges: .all)
@@ -33,53 +32,42 @@ struct CameraView: View {
                                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                                 .padding(.trailing, 10)
                                 if camera.backCameraOn {
-                                    if !camera.flashlightOn {
-                                        Button(action: {camera.toggleFlash()}, label: {
-                                            Image(systemName: "bolt")
-                                                .foregroundColor(.white)
-                                                .padding()
-                                                .clipShape(Circle())
-                                            })
-                                            .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                            .padding(.trailing, 10)
-                                        } else {
-                                            Button(action: {camera.toggleFlash()}, label: {
-                                            Image(systemName: "bolt.fill")
-                                                .foregroundColor(.white)
-                                                .padding()
-                                                .clipShape(Circle())
-                                            })
-                                            .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                            .padding(.trailing, 10)
-                                    }
+                                    Button(action: {camera.toggleFlash()}, label: {
+                                        Image(systemName: camera.flashlightOn ? "bolt.fill" : "bolt")
+                                            .foregroundColor(.white)
+                                            .padding()
+                                            .clipShape(Circle())
+                                    })
+                                    .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                                    .padding(.trailing, 10)
                                 }
                             }
                         }
                     }
-                Spacer()
-                HStack {
-                    if camera.isCameraOn {
-                        Button(action: {camera.stopRecord()}, label: {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.red)
-                                    .frame(width: 65, height: 65)
-                                Circle()
-                                    .stroke(Color.red, lineWidth: 2)
-                                    .frame(width: 75, height: 75)
-                            }
-                        })
-                    } else {
-                        Button(action: {camera.toggleRecord()}, label: {
-                            ZStack {
-                                Circle()
-                                    .stroke(Color.white, lineWidth: 2)
-                                    .frame(width: 75, height: 75)
-                            }
-                        })
+                    Spacer()
+                    HStack {
+                        if camera.isCameraOn {
+                            Button(action: {camera.stopRecord()}, label: {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.red)
+                                        .frame(width: 65, height: 65)
+                                    Circle()
+                                        .stroke(Color.red, lineWidth: 2)
+                                        .frame(width: 75, height: 75)
+                                }
+                            })
+                        } else {
+                            Button(action: {camera.toggleRecord()}, label: {
+                                ZStack {
+                                    Circle()
+                                        .stroke(Color.white, lineWidth: 2)
+                                        .frame(width: 75, height: 75)
+                                }
+                            })
+                        }
                     }
-                }
-                .frame(height: 75)
+                    .frame(height: 75)
                 } else {
                     HStack {
                         Button(action: {permissions.permissionDenied()}, label: {
