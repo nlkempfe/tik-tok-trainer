@@ -162,6 +162,9 @@ class CameraModel: NSObject, ObservableObject,
 
         // setting this so that we dont *need* to draw on the image (when there's no points to draw)
         mtkView.enableSetNeedsDisplay = true
+        
+        // fixes bounds issues for iphone max models
+        mtkView.contentScaleFactor = UIScreen.main.nativeScale
 
         setupCoreImage()
     }
@@ -421,6 +424,15 @@ class CameraModel: NSObject, ObservableObject,
                 self.currentCIImage = ciImage
             }
 
+            DispatchQueue.main.async {
+                print(self.mtkView.frame)
+                print(self.mtkView.bounds)
+                
+                print(self.view.frame)
+                print(self.view.bounds)
+            }
+            
+            
             // render metal view
             mtkView.draw()
 
