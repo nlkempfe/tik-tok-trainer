@@ -513,6 +513,9 @@ extension CameraModel: MTKViewDelegate {
             return
         }
         
+        // TODO: fix screen size scaling on max devices (temporary fix)
+        view.drawableSize = ciImage.extent.size
+        
         // make sure frame is centered on screen
         let heightOfciImage = ciImage.extent.height
         let heightOfDrawable = view.drawableSize.height
