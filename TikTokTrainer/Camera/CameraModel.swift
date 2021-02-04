@@ -566,10 +566,13 @@ extension CameraModel: MTKViewDelegate {
             return
         }
 
+
         // make sure the current drawable object for this metal view is available (it's not in use by the previous draw cycle)
         guard let currentDrawable = view.currentDrawable else {
             return
         }
+        
+        view.drawableSize = ciImage.extent.size
 
         // make sure frame is centered on screen
         let heightOfciImage = ciImage.extent.height
