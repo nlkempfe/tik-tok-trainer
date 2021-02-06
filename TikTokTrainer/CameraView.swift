@@ -12,7 +12,7 @@ import Photos
 struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
-    
+
     var body: some View {
         ZStack {
             // Going to be camera preview
@@ -67,7 +67,7 @@ struct CameraView: View {
 
 struct RecordButton: View {
     @ObservedObject var camera: CameraModel
-    
+
     var body: some View {
         HStack {
             Button(action: {
