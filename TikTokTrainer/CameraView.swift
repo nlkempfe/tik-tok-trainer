@@ -18,6 +18,9 @@ struct CameraView: View {
             // Going to be camera preview
             CameraPreview(camera: camera)
                 .ignoresSafeArea(.all, edges: .all)
+                .onTapGesture(count: 2) {
+                    camera.switchCameraInput()
+                }
             VStack {
                 if !camera.hasPermission {
                     HStack {
