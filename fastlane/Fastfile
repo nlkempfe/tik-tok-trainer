@@ -53,13 +53,22 @@ platform :ios do
   end
 
   lane :beta do
+    app_store_connect_api_key(
+      key_id: "VSG6RFG732",
+      issuer_id: "efa317d9-4a19-44f4-b2d4-52ba2e533aff",
+      key_filepath: File.expand_path("~/.appkeys/AuthKey_VSG6RFG732.p8"),
+      duration: 1200, # optional
+      in_house: false, # optional but may be required if using match/sigh
+    )
     match(type: "appstore")
     increment_build_number(
       build_number: latest_testflight_build_number + 1,
       xcodeproj: "TikTokTrainer.xcodeproj"
     )
     gym(scheme: 'TikTokTrainer', export_method: "app-store")
-    upload_to_testflight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
   end
 
   lane :setup_devices do
