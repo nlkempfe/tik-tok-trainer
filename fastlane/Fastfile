@@ -61,4 +61,8 @@ platform :ios do
     gym(scheme: 'TikTokTrainer', export_method: "app-store")
     upload_to_testflight
   end
+
+  lane :setup_devices do
+    register_devices(devices_file: "./devices.txt")
+  end
 end

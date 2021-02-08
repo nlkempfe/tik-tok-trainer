@@ -51,6 +51,11 @@ fastlane ios lint_ui_tests
 fastlane ios beta
 ```
 
+### ios setup_devices
+```
+fastlane ios setup_devices
+```
+
 
 ----
 
