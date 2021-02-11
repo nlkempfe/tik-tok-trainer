@@ -10,7 +10,7 @@ import Vision
 
 struct VideoDataSlice {
     let start: CMTime
-    let points: [VNRecognizedPointKey : VNRecognizedPoint]
+    let points: [VNRecognizedPointKey: VNRecognizedPoint]
 }
 
 struct ProcessedVideo {
@@ -20,10 +20,10 @@ struct ProcessedVideo {
 
 /// Process a Video from a URL and calls a callback with the processed results
 struct PoseNetProcessor {
-    
+
     private static let poseNetQueue = DispatchQueue(label: "t3.posenetproc")
     private static let videoWriteBlockingQueue = DispatchQueue(label: "t3.videowriteblocking")
-    
+
     /// Run PoseNet on the video at URL. This is run in an async workqueue and calls the callback on the main thread.
     ///
     /// Testing this function on an 18 second video takes about 9 seconds to fully process. Not sure how this will scale.
@@ -31,7 +31,7 @@ struct PoseNetProcessor {
     /// - Parameters:
     ///     - url: The **URL** for the video to process
     ///     - callback: The callback to call when the results are done processing
-    static func run(url: URL, callback: @escaping (Result<ProcessedVideo, Error>) -> ()) {
+    static func run(url: URL, callback: @escaping (Result<ProcessedVideo, Error>) -> Void) {
         var processed = ProcessedVideo(url: url)
         let v = VNVideoProcessor(url: url)
         let humanRequest = VNDetectHumanBodyPoseRequest(completionHandler: { request, err in
@@ -39,7 +39,7 @@ struct PoseNetProcessor {
             guard err == nil else { return callback(.failure(err!)) }
             guard let observations =
                     request.results as? [VNRecognizedPointsObservation] else { return }
-            
+
             observations.forEach {
                 guard let recognizedPoints =
                         try? $0.recognizedPoints(forGroupKey: .all) else {
