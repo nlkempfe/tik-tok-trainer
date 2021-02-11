@@ -17,7 +17,7 @@
 		0E1BDB8B25D5940800F6CFA8 /* PoseNetProcesser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1BDB8A25D5940800F6CFA8 /* PoseNetProcesser.swift */; };
 		5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F12871125C49FD50027DC22 /* CameraModel.swift */; };
 		5F12871725C4A06A0027DC22 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F12871625C4A06A0027DC22 /* CameraPreview.swift */; };
-		5F592D2C25C5BC840045F4ED /* PermissionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F592D2B25C5BC840045F4ED /* PermissionViewController.swift */; };
+		5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */; };
 		6E643D75B85123118238BF1F /* Pods_TikTokTrainer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */; };
 		8F00EDFE86F2717DCB81C0F5 /* Pods_TikTokTrainerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E232AF959113C366B24B77F /* Pods_TikTokTrainerTests.framework */; };
 /* End PBXBuildFile section */
@@ -59,7 +59,7 @@
 		5E17AF5505DAB7F3B67FF5E3 /* Pods-TikTokTrainer-TikTokTrainerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer-TikTokTrainerUITests.release.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer-TikTokTrainerUITests/Pods-TikTokTrainer-TikTokTrainerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		5F12871125C49FD50027DC22 /* CameraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraModel.swift; sourceTree = "<group>"; };
 		5F12871625C4A06A0027DC22 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
-		5F592D2B25C5BC840045F4ED /* PermissionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionViewController.swift; sourceTree = "<group>"; };
+		5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
 		6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86B37D709A7C4AB9FAE5379C /* Pods-TikTokTrainer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.release.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.release.xcconfig"; sourceTree = "<group>"; };
 		BE1EEFC47EAF41456E157D1F /* Pods-TikTokTrainer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -120,9 +120,9 @@
 		0E02D15225AFA56900004B2A /* TikTokTrainer */ = {
 			isa = PBXGroup;
 			children = (
+				0E1BDC0025D5F9DE00F6CFA8 /* UI */,
 				0E02D15325AFA56900004B2A /* TikTokTrainerApp.swift */,
-				0E02D15525AFA56900004B2A /* CameraView.swift */,
-				5F592D2B25C5BC840045F4ED /* PermissionViewController.swift */,
+				5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */,
 				5F12871B25C4A0820027DC22 /* Camera */,
 				0E02D15725AFA56A00004B2A /* Assets.xcassets */,
 				0E02D15C25AFA56A00004B2A /* Info.plist */,
@@ -158,6 +158,15 @@
 			path = TikTokTrainerUITests;
 			sourceTree = "<group>";
 		};
+		0E1BDC0025D5F9DE00F6CFA8 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				0E02D15525AFA56900004B2A /* CameraView.swift */,
+				5F12871625C4A06A0027DC22 /* CameraPreview.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		319528E4635EE3E982B41B73 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,7 +184,6 @@
 			isa = PBXGroup;
 			children = (
 				5F12871125C49FD50027DC22 /* CameraModel.swift */,
-				5F12871625C4A06A0027DC22 /* CameraPreview.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -201,6 +209,7 @@
 				0E02D14C25AFA56900004B2A /* Sources */,
 				0E02D14D25AFA56900004B2A /* Frameworks */,
 				0E02D14E25AFA56900004B2A /* Resources */,
+				0E1BDBEF25D5F82D00F6CFA8 /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -318,6 +327,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0E1BDBEF25D5F82D00F6CFA8 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nsource ~/.zshrc\nif command -v bundle >/dev/null; then\n  bundle exec swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
 		27DC053F6B776D71DCE457BE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -395,7 +422,7 @@
 				5F12871725C4A06A0027DC22 /* CameraPreview.swift in Sources */,
 				0E02D15425AFA56900004B2A /* TikTokTrainerApp.swift in Sources */,
 				5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */,
-				5F592D2C25C5BC840045F4ED /* PermissionViewController.swift in Sources */,
+				5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */,
 				0E1BDB8B25D5940800F6CFA8 /* PoseNetProcesser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

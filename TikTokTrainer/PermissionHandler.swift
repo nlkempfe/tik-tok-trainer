@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 class PermissionModel: ObservableObject {
-    func permissionDenied() {
+    func openPermissionsSettings() {
         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }
 }

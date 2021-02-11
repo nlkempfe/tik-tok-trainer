@@ -53,7 +53,7 @@ struct CameraView: View {
                         .frame(height: 75)
                 } else {
                     HStack {
-                        Button(action: {permissions.permissionDenied()}, label: {
+                        Button(action: {permissions.openPermissionsSettings()}, label: {
                             ZStack {
                                 Text("Enable camera access to continue")
                             }
