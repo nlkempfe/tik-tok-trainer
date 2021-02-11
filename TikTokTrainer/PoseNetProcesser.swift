@@ -57,7 +57,7 @@ struct PoseNetProcessor {
         poseNetQueue.async {
             do {
                 try v.addRequest(humanRequest, processingOptions: VNVideoProcessor.RequestProcessingOptions())
-                try v.analyze(CMTimeRange(start: CMTime.zero, duration: CMTime(seconds: 25, preferredTimescale: 24)))
+                try v.analyze(CMTimeRange(start: CMTime.zero, end: CMTime.indefinite))
             } catch {
                 print("Error processing PoseNet for Video with url \(url).\n Error: \(error)")
                 DispatchQueue.main.async {
