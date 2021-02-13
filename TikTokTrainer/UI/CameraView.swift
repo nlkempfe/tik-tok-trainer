@@ -15,12 +15,12 @@ struct CameraView: View {
 
     var body: some View {
         ZStack {
-            // Going to be camera preview
-            CameraPreview(camera: camera)
+//             Going to be camera preview
+            CameraPreview(currentImage: $camera.currentUIImage, result: $camera.currentResult)
                 .ignoresSafeArea(.all, edges: .all)
                 .onTapGesture(count: 2) {
                     camera.switchCameraInput()
-                }
+                }.zIndex(-1)
             VStack {
                 if !camera.hasPermission {
                     HStack {

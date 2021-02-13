@@ -34,20 +34,9 @@ class CameraModel: NSObject, ObservableObject,
     @Published var dataOutput = AVCaptureVideoDataOutput()
     @Published var hasPermission = true
     @Published var outputURL: URL!
-    @Published var view = UIView(frame: UIScreen.main.bounds)
     @Published var imageBounds: CGSize!
-
-    // joint data
-    var imagePoints: [String: CGPoint] = [:]
-
-    // metal
-    var metalDevice: MTLDevice!
-    var metalCommandQueue: MTLCommandQueue!
-    let mtkView = MTKView()
-
-    // core image
-    var ciContext: CIContext!
-    var currentCIImage: CIImage?
+    @Published var currentUIImage: UIImage? = nil
+    @Published var currentResult: PoseNetResult? = nil
 
     // queue for processing video data to posenet
     private let posenetDataQueue = DispatchQueue(
@@ -56,12 +45,12 @@ class CameraModel: NSObject, ObservableObject,
     func check() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            setupMetal()
+            setUp()
             return
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { (status) in
                 if status {
-                    self.setupMetal()
+                    self.setUp()
                 }
             }
         case .denied:
@@ -73,6 +62,7 @@ class CameraModel: NSObject, ObservableObject,
 
     func setUp() {
         self.hasPermission.toggle()
+
         // start configuration
         self.cameraSession.beginConfiguration()
 
@@ -136,40 +126,6 @@ class CameraModel: NSObject, ObservableObject,
 
         // start session
         self.cameraSession.startRunning()
-
-    }
-
-    // MARK: - Metal
-    func setupMetal() {
-        // fetch the default gpu of the device (only one on iOS devices)
-        metalDevice = MTLCreateSystemDefaultDevice()
-
-        // tell our MTKView which gpu to use
-        mtkView.device = metalDevice
-
-        // tell our MTKView to use explicit drawing meaning we have to call .draw() on it
-        mtkView.isPaused = true
-
-        // create a command queue to be able to send down instructions to the GPU
-        metalCommandQueue = metalDevice.makeCommandQueue()
-
-        // conform to our MTKView's delegate
-        mtkView.delegate = self
-
-        // let it's drawable texture be writen to
-        mtkView.framebufferOnly = false
-
-        // setting this so that we dont *need* to draw on the image (when there's no points to draw)
-        mtkView.enableSetNeedsDisplay = true
-
-        setupCoreImage()
-    }
-
-    // MARK: - Core Image
-    func setupCoreImage() {
-        // init core image context (used for camera feed + rendering drawing)
-        ciContext = CIContext(mtlDevice: metalDevice)
-        setUp()
     }
 
     // MARK: - Recording
@@ -270,12 +226,10 @@ class CameraModel: NSObject, ObservableObject,
             self.cameraSession.addInput(self.frontInput)
             self.backCameraOn = false
             self.flashlightOn = false
-            self.view.transform = CGAffineTransform(scaleX: -1, y: 1)
         } else {
             self.cameraSession.removeInput(self.frontInput)
             self.cameraSession.addInput(self.backInput)
             self.backCameraOn = true
-            self.view.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
 
         // deal with the connection again for portrait mode
@@ -335,49 +289,48 @@ class CameraModel: NSObject, ObservableObject,
                 try? observation.recognizedPoints(forGroupKey: .all) else {
             return
         }
+        
         //  point keys in a clockwise ordering.
-        let keys: [VNRecognizedPointKey] = [
-            VNHumanBodyPoseObservation.JointName.neck.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightShoulder.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightElbow.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightWrist.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightHip.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightKnee.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightAnkle.rawValue,
-            VNHumanBodyPoseObservation.JointName.root.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftAnkle.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftKnee.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftElbow.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftHip.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftWrist.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftElbow.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftShoulder.rawValue,
-            VNHumanBodyPoseObservation.JointName.nose.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftEye.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightEye.rawValue,
-            VNHumanBodyPoseObservation.JointName.leftEar.rawValue,
-            VNHumanBodyPoseObservation.JointName.rightEar.rawValue
+        let keys: [VNHumanBodyPoseObservation.JointName] = [
+            VNHumanBodyPoseObservation.JointName.neck,
+            VNHumanBodyPoseObservation.JointName.rightShoulder,
+            VNHumanBodyPoseObservation.JointName.rightElbow,
+            VNHumanBodyPoseObservation.JointName.rightWrist,
+            VNHumanBodyPoseObservation.JointName.rightHip,
+            VNHumanBodyPoseObservation.JointName.rightKnee,
+            VNHumanBodyPoseObservation.JointName.rightAnkle,
+            VNHumanBodyPoseObservation.JointName.root,
+            VNHumanBodyPoseObservation.JointName.leftAnkle,
+            VNHumanBodyPoseObservation.JointName.leftKnee,
+            VNHumanBodyPoseObservation.JointName.leftElbow,
+            VNHumanBodyPoseObservation.JointName.leftHip,
+            VNHumanBodyPoseObservation.JointName.leftWrist,
+            VNHumanBodyPoseObservation.JointName.leftElbow,
+            VNHumanBodyPoseObservation.JointName.leftShoulder,
+            VNHumanBodyPoseObservation.JointName.nose,
+            VNHumanBodyPoseObservation.JointName.leftEye,
+            VNHumanBodyPoseObservation.JointName.rightEye,
+            VNHumanBodyPoseObservation.JointName.leftEar,
+            VNHumanBodyPoseObservation.JointName.rightEar,
         ]
+        
+        var parsedPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
 
         // collect all non-nil points
         for pnt in recognizedPoints {
-            if pnt.value.confidence <= 0 || !keys.contains(pnt.key) {
+            let jointName = VNHumanBodyPoseObservation.JointName(rawValue: pnt.key)
+            if pnt.value.confidence <= 0 || !keys.contains(jointName) {
                 continue
             }
-            imagePoints[pnt.key.rawValue] = VNImagePointForNormalizedPoint(pnt.value.location, Int(self.imageBounds.width), Int(self.imageBounds.height))
+            parsedPoints[jointName] = pnt.value.location
+        }
+        
+        DispatchQueue.main.async {
+            self.currentResult = PoseNetResult(points: parsedPoints, imageSize: self.imageBounds)
         }
     }
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-
-        // try and get a CVImageBuffer out of the sample buffer
-        guard let cvBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            return
-        }
-
-        // get a CIImage out of the CVImageBuffer
-        let ciImage = CIImage(cvImageBuffer: cvBuffer)
-
         if let pixelBuffer = sampleBuffer.imageBuffer {
             // Attempt to lock the image buffer to gain access to its memory.
             guard CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly) == kCVReturnSuccess
@@ -390,10 +343,12 @@ class CameraModel: NSObject, ObservableObject,
 
             // Create a Core Graphics bitmap image from the pixel buffer.
             VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
-
+            
+            let uiImage = UIImage(cgImage: cgImage!).withHorizontallyFlippedOrientation()
+            
             if self.imageBounds == nil {
                 DispatchQueue.main.async {
-                    self.imageBounds = UIImage(cgImage: cgImage!).size
+                    self.imageBounds = uiImage.size
                 }
             }
 
@@ -412,122 +367,9 @@ class CameraModel: NSObject, ObservableObject,
                 print("Unable to perform the request: \(error).")
             }
 
-            // Draw points over image if joints are recognized, set image to default camera feed otherwise
-            if imagePoints.count > 0 {
-                self.currentCIImage = CIImage(image: drawPose(image: UIImage(cgImage: self.ciContext.createCGImage(ciImage, from: ciImage.extent)!)))
-            } else {
-                self.currentCIImage = ciImage
+            DispatchQueue.main.async {
+                self.currentUIImage = uiImage
             }
-
-            // render metal view
-            mtkView.draw()
-
         }
-    }
-
-    // MARK: - Posenet Overlay
-
-    func drawLine(context: CGContext, firstPoint: CGPoint?, secondPoint: CGPoint?) {
-        if firstPoint != nil && secondPoint != nil {
-            context.addLines(between: [CGPoint(x: firstPoint!.x, y: self.imageBounds.height - firstPoint!.y), CGPoint(x: secondPoint!.x, y: self.imageBounds.height - secondPoint!.y)])
-            context.drawPath(using: .stroke)
-        }
-    }
-
-    func drawPose(image: UIImage) -> UIImage {
-        // configure context
-        let imageSize = image.size
-        UIGraphicsBeginImageContext(imageSize)
-        let context = UIGraphicsGetCurrentContext()!
-
-        // draw all joints
-        context.setFillColor(UIColor.green.cgColor)
-        for pnt in imagePoints {
-            image.draw(at: CGPoint.zero)
-            let rectangle = CGRect(x: pnt.value.x, y: self.imageBounds.height - pnt.value.y, width: 20, height: 20)
-            context.addEllipse(in: rectangle)
-        }
-        context.drawPath(using: .fill)
-
-        // connect joints
-        context.setStrokeColor(UIColor.green.cgColor)
-        context.setLineWidth(3)
-
-        let drawingPairs = [
-            ("neck_1_joint", "right_shoulder_1_joint"),
-            ("neck_1_joint", "left_shoulder_1_joint"),
-            ("left_forearm_joint", "left_shoulder_1_joint"),
-            ("left_forearm_joint", "left_hand_joint"),
-            ("right_forearm_joint", "right_shoulder_1_joint"),
-            ("right_forearm_joint", "right_hand_joint"),
-            ("root", "left_upLeg_joint"),
-            ("root", "neck_1_joint"),
-            ("left_leg_joint", "left_upLeg_joint"),
-            ("left_leg_joint", "left_foot_joint"),
-            ("root", "right_upLeg_joint"),
-            ("right_leg_joint", "right_upLeg_joint"),
-            ("right_leg_joint", "right_foot_joint"),
-            ("neck_1_joint", "head_joint"),
-            ("left_eye_joint", "head_joint"),
-            ("left_eye_joint", "left_ear_joint"),
-            ("right_eye_joint", "head_joint"),
-            ("right_eye_joint", "right_ear_joint")
-        ]
-
-        for (firstPoint, secondPoint) in drawingPairs {
-            drawLine(context: context, firstPoint: imagePoints[firstPoint], secondPoint: imagePoints[secondPoint])
-        }
-
-        // remove points after drawn
-        imagePoints.removeAll()
-
-        // return new image with joints/connections rendered
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return newImage!
-    }
-}
-
-// MARK: - MTK Protocols
-
-extension CameraModel: MTKViewDelegate {
-    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        // tells us the drawable's size has changed
-    }
-
-    func draw(in view: MTKView) {
-
-        // create command buffer for ciContext to use to encode it's rendering instructions to our GPU
-        guard let commandBuffer = metalCommandQueue.makeCommandBuffer() else {
-            return
-        }
-
-        // make sure we actually have a ciImage to work with
-        guard let ciImage = currentCIImage else {
-            return
-        }
-
-        // make sure the current drawable object for this metal view is available (it's not in use by the previous draw cycle)
-        guard let currentDrawable = view.currentDrawable else {
-            return
-        }
-
-        // make sure frame is centered on screen
-        let heightOfciImage = ciImage.extent.height
-        let heightOfDrawable = view.drawableSize.height
-        let yOffsetFromBottom = (heightOfDrawable - heightOfciImage)/2
-
-        // render into the metal texture
-        self.ciContext.render(ciImage,
-                              to: currentDrawable.texture,
-                              commandBuffer: commandBuffer,
-                              bounds: CGRect(origin: CGPoint(x: 0, y: -yOffsetFromBottom), size: view.drawableSize),
-                              colorSpace: CGColorSpaceCreateDeviceRGB())
-
-        // register where to draw the instructions in the command buffer once it executes
-        commandBuffer.present(currentDrawable)
-
-        // commit the command to the queue so it executes
-        commandBuffer.commit()
     }
 }
