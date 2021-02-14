@@ -15,17 +15,17 @@ struct CameraView: View {
 
     var body: some View {
         ZStack {
-//             Going to be camera preview
-            CameraPreview(currentImage: $camera.currentUIImage, result: $camera.currentResult)
+            CameraPreview(currentImage: $camera.currentUIImage,
+                          result: $camera.currentResult)
                 .ignoresSafeArea(.all, edges: .all)
                 .onTapGesture(count: 2) {
                     camera.switchCameraInput()
                 }.zIndex(-1)
             VStack {
-                if !camera.hasPermission {
+                if camera.hasPermission {
                     HStack {
                         Spacer()
-                        if !camera.isCameraOn {
+                        if !camera.inErrorState {
                             VStack {
                                 Button(action: {camera.switchCameraInput()}, label: {
                                     Image(systemName: "arrow.triangle.2.circlepath.camera")
@@ -35,7 +35,7 @@ struct CameraView: View {
                                 })
                                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                                 .padding(.trailing, 10)
-                                if camera.backCameraOn {
+                                if camera.currentOrientation == .back {
                                     Button(action: {camera.toggleFlash()}, label: {
                                         Image(systemName: camera.flashlightOn ? "bolt.fill" : "bolt")
                                             .foregroundColor(.white)
@@ -63,7 +63,7 @@ struct CameraView: View {
             }
         }
         .onAppear(perform: {
-            camera.check()
+            camera.checkPermissionsAndSetup()
         })
     }
 }
@@ -74,11 +74,11 @@ struct RecordButton: View {
     var body: some View {
         HStack {
             Button(action: {
-                    camera.isCameraOn ?
-                        camera.stopRecord() : camera.toggleRecord()
+                    camera.isRecording ?
+                        camera.stopRecording() : camera.startRecording()
             }, label: {
                 ZStack {
-                    if camera.isCameraOn {
+                    if camera.isRecording {
                         Circle()
                             .fill(Color.red)
                             .frame(width: 65, height: 65)

@@ -13,168 +13,226 @@ import Vision
 import VideoToolbox
 import MetalKit
 
-class CameraModel: NSObject, ObservableObject,
-                   AVCaptureFileOutputRecordingDelegate,
-                   AVCaptureMetadataOutputObjectsDelegate,
-                   AVCaptureVideoDataOutputSampleBufferDelegate {
+class CameraModel: NSObject,
+                   ObservableObject {
 
-    // toggles
-    @Published var backCameraOn = false
     @Published var flashlightOn = false
-    @Published var isCameraOn = false
     @Published var isRecording = false
-    @Published var backCamera: AVCaptureDevice!
-    @Published var frontCamera: AVCaptureDevice!
-    @Published var backInput: AVCaptureInput!
-    @Published var frontInput: AVCaptureInput!
+    @Published var isOverlayEnabled = true
+    @Published var inErrorState = false
+
+    @Published var hasPermission = true
+    @Published var currentUIImage: UIImage?
+    @Published var currentResult: PoseNetResult?
+    @Published var currentOrientation: AVCaptureDevice.Position = .front
 
     // camera feed
-    @Published var cameraSession = AVCaptureSession()
-    @Published var fileOutput = AVCaptureMovieFileOutput()
-    @Published var dataOutput = AVCaptureVideoDataOutput()
-    @Published var hasPermission = true
-    @Published var outputURL: URL!
-    @Published var imageBounds: CGSize!
-    @Published var currentUIImage: UIImage? = nil
-    @Published var currentResult: PoseNetResult? = nil
+    let cameraSession = AVCaptureSession()
+    var outputURL: URL!
+    var imageBounds: CGSize!
+    var frontCameraDevice: AVCaptureDevice?
+    var backCameraDevice: AVCaptureDevice?
+    let videoDataOutput = AVCaptureVideoDataOutput()
+    var videoFileOutputWriter: AVAssetWriter?
+    var videoFileOutputWriterInput: AVAssetWriterInput?
+    var videoFileOutputWriterPool: AVAssetWriterInputPixelBufferAdaptor?
+    var startTime: Double = 0
 
     // queue for processing video data to posenet
-    private let posenetDataQueue = DispatchQueue(
-        label: "T3.posenetDataQueue")
+    private let posenetDataQueue = DispatchQueue(label: "dev.hunterjarrell.t3.posenetDataQueue")
+    private let sessionQueue = DispatchQueue(label: "dev.hunterjarrell.t3.avSessionQueue")
 
-    func check() {
+    let approvedJointKeys: Set<VNHumanBodyPoseObservation.JointName> = [
+        .neck,
+        .rightShoulder,
+        .rightElbow,
+        .rightWrist,
+        .rightHip,
+        .rightKnee,
+        .rightAnkle,
+        .root,
+        .leftAnkle,
+        .leftKnee,
+        .leftElbow,
+        .leftHip,
+        .leftWrist,
+        .leftElbow,
+        .leftShoulder,
+        .nose,
+        .leftEye,
+        .rightEye,
+        .leftEar,
+        .rightEar
+    ]
+
+    func checkPermissionsAndSetup() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            setUp()
-            return
+            self.hasPermission = true
+            self.setup()
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { (status) in
                 if status {
-                    self.setUp()
+                    self.hasPermission = true
+                    self.setup()
+                } else {
+                    print("User denied access to video")
+                    self.hasPermission = false
                 }
             }
         case .denied:
-            return
+            print("Denied permissions")
+            self.hasPermission = false
         default:
-            return
+            print("Unknown Authorization Status!")
+            self.hasPermission = false
         }
     }
 
-    func setUp() {
-        self.hasPermission.toggle()
+    private func setupInput() -> Bool {
+        self.frontCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+        self.backCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
 
-        // start configuration
-        self.cameraSession.beginConfiguration()
-
-        // session specific configuration
-        if self.cameraSession.canSetSessionPreset(.photo) {
-            self.cameraSession.sessionPreset = .photo
-        }
-        self.cameraSession.automaticallyConfiguresCaptureDeviceForWideColor = true
-        self.cameraSession.sessionPreset = AVCaptureSession.Preset.high
-
-        // setup inputs
-        // get back camera
-        if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
-            self.backCamera = device
-        } else {
-            // Change this for CICD
-            fatalError("no back camera")
+        guard frontCameraDevice != nil && backCameraDevice != nil else {
+            print("Could not find a front camera nor back camera.")
+            return false
         }
 
-        // get front camera
-        if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
-            self.frontCamera = device
-        } else {
-            // Change this for CICD
-            fatalError("no front camera")
+        guard let device = self.currentOrientation == .front ? self.frontCameraDevice : self.backCameraDevice else {
+            print("Could not create device for current orientation \(currentOrientation)")
+            return false
         }
 
-        guard let bInput = try? AVCaptureDeviceInput(device: backCamera) else {
-            // Change this for CICD
-            fatalError("could not create input device from back camera")
-        }
-        backInput = bInput
-        if !cameraSession.canAddInput(backInput) {
-            // Change this for CICD
-            fatalError("could not add back camera input to capture session")
+        guard let input = try? AVCaptureDeviceInput(device: device) else {
+            print("Could not create input for device \(device)")
+            return false
         }
 
-        guard let fInput = try? AVCaptureDeviceInput(device: frontCamera) else {
-            // Change this for CICD
-            fatalError("could not create input device from front camera")
-        }
-        frontInput = fInput
-        if !cameraSession.canAddInput(frontInput) {
-            // Change this for CICD
-            fatalError("could not add front camera input to capture session")
+        self.cameraSession.inputs.forEach { existingInput in
+            self.cameraSession.removeInput(existingInput)
         }
 
-        self.cameraSession.addInput(frontInput)
+        guard self.cameraSession.canAddInput(input) else {
+            print("Cannot add input to session.")
+            return false
+        }
 
-        self.dataOutput.alwaysDiscardsLateVideoFrames = true
-        self.dataOutput.setSampleBufferDelegate(self, queue: posenetDataQueue)
-
-        // TODO: setup file capture output, this is gonna be interesting because we should sync it up with MTKView
-        // self.cameraSession.addOutput(self.fileOutput)
-        self.cameraSession.addOutput(self.dataOutput)
-
-        self.dataOutput.connections.first?.videoOrientation = .portrait
-
-        // commit configuration
-        self.cameraSession.commitConfiguration()
-
-        // start session
-        self.cameraSession.startRunning()
+        self.cameraSession.addInput(input)
+        return true
     }
 
-    // MARK: - Recording
-    func toggleRecord() {
-        self.isCameraOn.toggle()
-        if self.fileOutput.isRecording == false {
-            let device = self.backCameraOn ? self.backCamera : self.frontCamera
-            if (device?.isSmoothAutoFocusSupported)! {
-                do {
-                    try device?.lockForConfiguration()
-                    device?.isSmoothAutoFocusEnabled = false
-                    device?.unlockForConfiguration()
-                } catch {
-                    print("Error setting configuration: \(error)")
+    private func setupOutput() -> Bool {
+        self.cameraSession.outputs.forEach { existingOutput in
+            self.cameraSession.removeOutput(existingOutput)
+        }
+
+        self.videoDataOutput.alwaysDiscardsLateVideoFrames = true
+        self.videoDataOutput.setSampleBufferDelegate(self, queue: self.posenetDataQueue)
+
+        guard self.cameraSession.canAddOutput(self.videoDataOutput) else {
+            print("Cannot add video data output")
+            return false
+        }
+        self.cameraSession.addOutput(self.videoDataOutput)
+        self.videoDataOutput.connections.first?.videoOrientation = .portrait
+
+        return true
+    }
+
+    func setup() {
+        self.sessionQueue.async {
+            if self.cameraSession.isRunning {
+                self.cameraSession.stopRunning()
+            }
+
+            self.cameraSession.beginConfiguration()
+            if self.cameraSession.canSetSessionPreset(.high) {
+                self.cameraSession.sessionPreset = .high
+            }
+            self.cameraSession.automaticallyConfiguresCaptureDeviceForWideColor = true
+            let inputSuccess = self.setupInput()
+            if !inputSuccess {
+                self.currentOrientation = self.currentOrientation == .front ? .back : .front
+                let secondAttempt = self.setupInput()
+                guard secondAttempt else {
+                    self.inErrorState = true
+                    print("Could not setup camera input")
+                    return
                 }
             }
 
-            // generate a url for where this video will be saved
-            self.outputURL = tempURL()
-            self.fileOutput.startRecording(to: self.outputURL, recordingDelegate: self)
-        } else {
-            stopRecord()
+            let outputSuccess = self.setupOutput()
+            guard outputSuccess else {
+                self.inErrorState = true
+                print("Could not setup camera output")
+                return
+            }
+
+            self.cameraSession.commitConfiguration()
+            self.cameraSession.startRunning()
         }
     }
 
-    func stopRecord() {
-        if self.fileOutput.isRecording == true {
-            self.fileOutput.stopRecording()
+    // MARK: - Recording
+    func startRecording() {
+        guard !self.isRecording else { return }
+        self.isRecording = true
+        let device = self.currentOrientation == .front ? self.frontCameraDevice : self.backCameraDevice
+        if (device?.isSmoothAutoFocusSupported)! {
+            do {
+                try device?.lockForConfiguration()
+                device?.isSmoothAutoFocusEnabled = false
+                device?.unlockForConfiguration()
+            } catch {
+                print("Error setting configuration: \(error)")
+            }
         }
-        self.isCameraOn.toggle()
+
+        // generate a url for where this video will be saved
+        self.outputURL = tempURL()
+
+        do {
+            try self.videoFileOutputWriter = AVAssetWriter(outputURL: self.outputURL, fileType: .mov)
+            let videoSettings = self.videoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mov)
+            self.videoFileOutputWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+            self.videoFileOutputWriterInput?.expectsMediaDataInRealTime = true
+            self.videoFileOutputWriterPool = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: self.videoFileOutputWriterInput!,
+                                                                                  sourcePixelBufferAttributes: nil)
+            if self.videoFileOutputWriter?.canAdd(self.videoFileOutputWriterInput!) ?? false {
+                self.videoFileOutputWriter?.add(self.videoFileOutputWriterInput!)
+            } else {
+                self.isRecording = false
+            }
+
+            self.videoFileOutputWriter!.startWriting()
+            self.videoFileOutputWriter!.startSession(atSourceTime: .zero)
+        } catch {
+            print("Error setting up video file output. Error: \(error)")
+            self.isRecording = false
+        }
+    }
+
+    func stopRecording() {
+        self.isRecording = false
+        guard let output = self.videoFileOutputWriter else {
+            return
+        }
+        output.finishWriting {
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
+            }) { saved, error in
+                if saved {
+                    // todo
+                } else {
+                    print(error as Any)
+                }
+            }
+        }
 
         // turn off flashlight if it's on
         if self.flashlightOn {
             self.toggleFlash()
         }
-
-        // for some reason, this fixes the bug where you can only record 1 video without rebuilding the app
-        let when = DispatchTime.now() + 0.1
-        DispatchQueue.main.asyncAfter(deadline: when) {
-            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.outputURL.path) {
-                UISaveVideoAtPathToSavedPhotosAlbum(
-                    self.outputURL.path,
-                    nil,
-                    nil,
-                    nil
-                )
-            }
-        }
-
     }
 
     func tempURL() -> URL? {
@@ -188,150 +246,65 @@ class CameraModel: NSObject, ObservableObject,
         return nil
     }
 
-    // save recording to gallery
-    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!,
-                 error: Error!) {
-        print("captured")
-        if error != nil {
-            print("Error recording movie: \(error!.localizedDescription)")
-        } else {
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
-            }) { saved, error in
-                if saved {
-                    // todo
-                } else {
-                    print(error as Any)
-                }
-            }
-
-        }
-        outputURL = nil
-    }
-
-    func capture(_ captureOutput: AVCaptureFileOutput!,
-                 didStartRecordingToOutputFileAt fileURL: URL!,
-                 fromConnections connections: [Any]!) {
-        // protocol method
-    }
-
-    // MARK: - Camera Toggles
     func switchCameraInput() {
-        // don't let user spam the button, fun for the user, not fun for performance
-
-        // reconfigure the input
-        cameraSession.beginConfiguration()
-        if backCameraOn {
-            self.cameraSession.removeInput(self.backInput)
-            self.cameraSession.addInput(self.frontInput)
-            self.backCameraOn = false
-            self.flashlightOn = false
-        } else {
-            self.cameraSession.removeInput(self.frontInput)
-            self.cameraSession.addInput(self.backInput)
-            self.backCameraOn = true
-        }
-
-        // deal with the connection again for portrait mode
-        self.fileOutput.connections.first?.videoOrientation = .portrait
-        self.dataOutput.connections.first?.videoOrientation = .portrait
-
-        // commit config
-        self.cameraSession.commitConfiguration()
+        self.currentOrientation = self.currentOrientation == .front ? .back : .front
+        self.setup()
     }
 
     func toggleFlash() {
         self.flashlightOn.toggle()
-        if self.backCameraOn {
-            guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
-            guard device.hasTorch else { return }
+        guard self.currentOrientation == .back else { return }
 
-            do {
-                try device.lockForConfiguration()
+        guard let device = self.backCameraDevice else { return }
+        guard device.hasTorch else { return }
 
-                if device.torchMode == AVCaptureDevice.TorchMode.on {
-                    device.torchMode = AVCaptureDevice.TorchMode.off
-                } else {
-                    do {
-                        try device.setTorchModeOn(level: 1.0)
-                    } catch {
-                        print(error)
-                    }
-                }
-                device.unlockForConfiguration()
-            } catch {
-                print(error)
+        do {
+            try device.lockForConfiguration()
+
+            if device.torchMode == .on {
+                device.torchMode = .off
+            } else {
+                try device.setTorchModeOn(level: 1.0)
             }
-        } else {
-            print("Back camera needs to be selected for flash")
+            device.unlockForConfiguration()
+        } catch {
+            print("Could not toggle device flashlight. Error: \(error)")
         }
     }
+}
 
-    func fileOutput(_ output: AVCaptureFileOutput,
-                    didFinishRecordingTo outputFileURL: URL,
-                    from connections: [AVCaptureConnection],
-                    error: Error?) {
-
-    }
-
-    // MARK: - Vision
-
+// MARK: - Vision
+extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
     func bodyPoseHandler(request: VNRequest, error: Error?) {
-        guard let observations =
-                request.results as? [VNRecognizedPointsObservation] else { return }
+        guard let observations = request.results as? [VNRecognizedPointsObservation] else { return }
 
         // Process each observation to find the recognized body pose points.
         observations.forEach { processObservation($0) }
     }
+
     func processObservation(_ observation: VNRecognizedPointsObservation) {
         // Retrieve all joints.
-        guard let recognizedPoints =
-                try? observation.recognizedPoints(forGroupKey: .all) else {
-            return
-        }
-        
-        //  point keys in a clockwise ordering.
-        let keys: [VNHumanBodyPoseObservation.JointName] = [
-            VNHumanBodyPoseObservation.JointName.neck,
-            VNHumanBodyPoseObservation.JointName.rightShoulder,
-            VNHumanBodyPoseObservation.JointName.rightElbow,
-            VNHumanBodyPoseObservation.JointName.rightWrist,
-            VNHumanBodyPoseObservation.JointName.rightHip,
-            VNHumanBodyPoseObservation.JointName.rightKnee,
-            VNHumanBodyPoseObservation.JointName.rightAnkle,
-            VNHumanBodyPoseObservation.JointName.root,
-            VNHumanBodyPoseObservation.JointName.leftAnkle,
-            VNHumanBodyPoseObservation.JointName.leftKnee,
-            VNHumanBodyPoseObservation.JointName.leftElbow,
-            VNHumanBodyPoseObservation.JointName.leftHip,
-            VNHumanBodyPoseObservation.JointName.leftWrist,
-            VNHumanBodyPoseObservation.JointName.leftElbow,
-            VNHumanBodyPoseObservation.JointName.leftShoulder,
-            VNHumanBodyPoseObservation.JointName.nose,
-            VNHumanBodyPoseObservation.JointName.leftEye,
-            VNHumanBodyPoseObservation.JointName.rightEye,
-            VNHumanBodyPoseObservation.JointName.leftEar,
-            VNHumanBodyPoseObservation.JointName.rightEar,
-        ]
-        
+        guard let recognizedPoints = try? observation.recognizedPoints(forGroupKey: .all) else { return }
+
         var parsedPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
 
         // collect all non-nil points
         for pnt in recognizedPoints {
             let jointName = VNHumanBodyPoseObservation.JointName(rawValue: pnt.key)
-            if pnt.value.confidence <= 0 || !keys.contains(jointName) {
+            if pnt.value.confidence <= 0 || !approvedJointKeys.contains(jointName) {
                 continue
             }
             parsedPoints[jointName] = pnt.value.location
         }
-        
+
         DispatchQueue.main.async {
-            self.currentResult = PoseNetResult(points: parsedPoints, imageSize: self.imageBounds)
+            self.currentResult = PoseNetResult(points: parsedPoints)
         }
     }
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if let pixelBuffer = sampleBuffer.imageBuffer {
+            let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer).seconds
             // Attempt to lock the image buffer to gain access to its memory.
             guard CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly) == kCVReturnSuccess
             else {
@@ -343,28 +316,37 @@ class CameraModel: NSObject, ObservableObject,
 
             // Create a Core Graphics bitmap image from the pixel buffer.
             VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
-            
-            let uiImage = UIImage(cgImage: cgImage!).withHorizontallyFlippedOrientation()
-            
-            if self.imageBounds == nil {
-                DispatchQueue.main.async {
-                    self.imageBounds = uiImage.size
-                }
+
+            if self.isRecording && self.videoFileOutputWriterInput?.isReadyForMoreMediaData ?? false {
+                let time = CMTime(seconds: timestamp - self.startTime, preferredTimescale: CMTimeScale(600))
+                self.videoFileOutputWriterPool?.append(pixelBuffer, withPresentationTime: time)
             }
+
+            if !self.isRecording {
+                self.startTime = timestamp
+            }
+
+            let uiImage = UIImage(cgImage: cgImage!).withHorizontallyFlippedOrientation()
 
             // Release the image buffer.
             CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
 
-            let requestHandler = VNImageRequestHandler(cgImage: cgImage!)
+            if self.isOverlayEnabled {
+                let requestHandler = VNImageRequestHandler(cgImage: cgImage!)
 
-            // Create a new request to recognize a human body pose.
-            let request = VNDetectHumanBodyPoseRequest(completionHandler: bodyPoseHandler)
+                // Create a new request to recognize a human body pose.
+                let request = VNDetectHumanBodyPoseRequest(completionHandler: bodyPoseHandler)
 
-            do {
-                // Perform the body pose-detection request.
-                try requestHandler.perform([request])
-            } catch {
-                print("Unable to perform the request: \(error).")
+                do {
+                    // Perform the body pose-detection request.
+                    try requestHandler.perform([request])
+                } catch {
+                    print("Unable to perform the request: \(error).")
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.currentResult = nil
+                }
             }
 
             DispatchQueue.main.async {
