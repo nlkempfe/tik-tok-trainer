@@ -275,16 +275,26 @@ class CameraModel: NSObject,
 
 // MARK: - Vision
 extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
+    
+    func emptyPose() {
+        DispatchQueue.main.async {
+            self.currentResult = PoseNetResult(points: [:], imageSize: nil)
+        }
+    }
+    
     func bodyPoseHandler(request: VNRequest, error: Error?) {
-        guard let observations = request.results as? [VNRecognizedPointsObservation] else { return }
-
+        guard error == nil else { return emptyPose() }
+        guard let observations = request.results as? [VNRecognizedPointsObservation] else { return emptyPose() }
+        guard !observations.isEmpty else {return emptyPose()}
+        
         // Process each observation to find the recognized body pose points.
         observations.forEach { processObservation($0) }
     }
 
     func processObservation(_ observation: VNRecognizedPointsObservation) {
         // Retrieve all joints.
-        guard let recognizedPoints = try? observation.recognizedPoints(forGroupKey: .all) else { return }
+        guard let recognizedPoints = try? observation.recognizedPoints(forGroupKey: .all) else { return emptyPose() }
+        guard observation.confidence > 0.6 else { return emptyPose() }
 
         var parsedPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
 
@@ -298,7 +308,7 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
         }
 
         DispatchQueue.main.async {
-            self.currentResult = PoseNetResult(points: parsedPoints)
+            self.currentResult = PoseNetResult(points: parsedPoints, imageSize: nil)
         }
     }
 
@@ -342,11 +352,10 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
                     try requestHandler.perform([request])
                 } catch {
                     print("Unable to perform the request: \(error).")
+                    emptyPose()
                 }
             } else {
-                DispatchQueue.main.async {
-                    self.currentResult = nil
-                }
+                emptyPose()
             }
 
             DispatchQueue.main.async {

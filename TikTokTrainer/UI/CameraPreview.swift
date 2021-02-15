@@ -22,12 +22,14 @@ struct CameraPreview: View {
                     .scaledToFill()
                     .coordinateSpace(name: previewImageCoordName)
             }
-            GeometryReader { geo in
-                PoseNetOverlay(result: result,
-                               currentImage: currentImage,
-                               width: geo.frame(in: .named(previewImageCoordName)).maxX,
-                               height: geo.frame(in: .named(previewImageCoordName)).maxY)
-                    .stroke(Color.blue, lineWidth: 4)
+            if result != nil && !(result?.points.isEmpty ?? true) {
+                GeometryReader { geo in
+                    PoseNetOverlay(result: result,
+                                   currentImage: currentImage,
+                                   width: geo.frame(in: .named(previewImageCoordName)).maxX,
+                                   height: geo.frame(in: .named(previewImageCoordName)).maxY)
+                        .stroke(Color.blue, lineWidth: 4)
+                }
             }
         }.drawingGroup()
     }
