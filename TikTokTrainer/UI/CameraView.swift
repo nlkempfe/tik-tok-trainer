@@ -13,66 +13,30 @@ struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
 
-    var body: some View {
-        ZStack {
-            CameraPreview(currentImage: $camera.currentUIImage,
-                          result: $camera.currentResult,
-                          orientation: $camera.currentOrientation)
-                .ignoresSafeArea(.all, edges: .all)
-                .onTapGesture(count: 2) {
-                    camera.switchCameraInput()
-                }.zIndex(-1)
-            VStack {
-                if camera.hasPermission {
-                    HStack {
-                        Spacer()
-                        if !camera.inErrorState {
-                            VStack {
-                                Button(action: {camera.switchCameraInput()}, label: {
-                                    Image(systemName: "arrow.triangle.2.circlepath.camera")
-                                        .foregroundColor(.white)
-                                        .padding()
-                                        .clipShape(Circle())
-                                })
-                                .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                .padding(.trailing, 10)
-                                if camera.currentOrientation == .back {
-                                    Button(action: {camera.toggleFlash()}, label: {
-                                        Image(systemName: camera.flashlightOn ? "bolt.fill" : "bolt")
-                                            .foregroundColor(.white)
-                                            .padding()
-                                            .clipShape(Circle())
-                                    })
-                                    .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                    .padding(.trailing, 10)
-                                }
-                            }
-                        }
-                    }
-                    Spacer()
-                    RecordButton(camera: camera)
-                        .frame(height: 75)
-                } else {
-                    HStack {
-                        Button(action: {permissions.openPermissionsSettings()}, label: {
-                            ZStack {
-                                Text("Enable camera access to continue")
-                            }
-                        })
-                    }
-                }
+    var CameraControls: some View {
+        VStack {
+            Button(action: {camera.switchCameraInput()}, label: {
+                Image(systemName: "arrow.triangle.2.circlepath.camera")
+                    .foregroundColor(.white)
+                    .padding()
+                    .clipShape(Circle())
+            })
+            .scaleEffect(CGSize(width: 1.5, height: 1.5))
+            .padding(.trailing, 10)
+            if camera.currentOrientation == .back {
+                Button(action: {camera.toggleFlash()}, label: {
+                    Image(systemName: camera.flashlightOn ? "bolt.fill" : "bolt")
+                        .foregroundColor(.white)
+                        .padding()
+                        .clipShape(Circle())
+                })
+                .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                .padding(.trailing, 10)
             }
         }
-        .onAppear(perform: {
-            camera.checkPermissionsAndSetup()
-        })
     }
-}
-
-struct RecordButton: View {
-    @ObservedObject var camera: CameraModel
-
-    var body: some View {
+    
+    var RecordButton: some View {
         HStack {
             Button(action: {
                     camera.isRecording ?
@@ -95,10 +59,65 @@ struct RecordButton: View {
             })
         }
     }
+    
+    var body: some View {
+        ZStack {
+            CameraPreview(currentImage: $camera.currentUIImage,
+                          result: $camera.currentResult,
+                          orientation: $camera.currentOrientation)
+                .ignoresSafeArea(.all, edges: .all)
+                .onTapGesture(count: 2) {
+                    camera.switchCameraInput()
+                }.zIndex(-1)
+            VStack {
+                if camera.hasPermission {
+                    HStack {
+                        Spacer()
+                        if !camera.inErrorState {
+                            CameraControls
+                        }
+                    }
+                    Spacer()
+                    RecordButton
+                        .frame(height: 75)
+                } else {
+                    HStack {
+                        Button(action: {permissions.openPermissionsSettings()}, label: {
+                            ZStack {
+                                Text("Enable camera access to continue")
+                            }
+                        })
+                    }
+                }
+            }
+        }
+        .onAppear(perform: {
+            camera.checkPermissionsAndSetup()
+        })
+    }
 }
 
 struct CameraView_Previews: PreviewProvider {
+    static var cameraBack = CameraModel()
+    
     static var previews: some View {
-        CameraView()
+        Group {
+            CameraView()
+            CameraView()
+                .RecordButton
+                .background(Color.black)
+                .previewLayout(.sizeThatFits)
+            CameraView()
+                .CameraControls
+                .background(Color.black)
+                .previewLayout(.sizeThatFits)
+            CameraView(camera: cameraBack)
+                .CameraControls
+                .background(Color.black)
+                .previewLayout(.sizeThatFits)
+                .onAppear {
+                    cameraBack.currentOrientation = .back
+                }
+        }
     }
 }
