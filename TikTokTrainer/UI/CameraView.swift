@@ -33,7 +33,7 @@ struct CameraView: View {
                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                 .padding(.trailing, 10)
             }
-        }
+        }.padding()
     }
     
     var RecordButton: some View {
