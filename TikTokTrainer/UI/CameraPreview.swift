@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import AVKit
 import Vision
 
 struct CameraPreview: View {
     @Binding var currentImage: UIImage?
     @Binding var result: PoseNetResult?
+    @Binding var orientation: AVCaptureDevice.Position
 
     let previewImageCoordName = "previewImageSpace"
 
@@ -27,7 +29,8 @@ struct CameraPreview: View {
                     PoseNetOverlay(result: result,
                                    currentImage: currentImage,
                                    width: geo.frame(in: .named(previewImageCoordName)).maxX,
-                                   height: geo.frame(in: .named(previewImageCoordName)).maxY)
+                                   height: geo.frame(in: .named(previewImageCoordName)).maxY,
+                                   isFrontCamera: orientation == .front)
                         .stroke(Color.blue, lineWidth: 4)
                 }
             }
@@ -63,14 +66,22 @@ struct PoseNetOverlay: Shape {
     var currentImage: UIImage?
     var width: CGFloat
     var height: CGFloat
+    var isFrontCamera: Bool
 
     /// Shift a **CGPoint** relative to the height and width of the image preview
     /// Also inverts the x and y axis because the image is flipped when in front view
     private func normalizePoint(pnt: CGPoint) -> CGPoint {
-        let shifted: CGPoint = VNImagePointForNormalizedPoint(pnt, Int(width), Int(height))
+        if isFrontCamera {
+            let shifted: CGPoint = VNImagePointForNormalizedPoint(pnt, Int(width), Int(height))
             .applying(CGAffineTransform(scaleX: -1.0, y: -1.0))
             .applying(CGAffineTransform(translationX: width, y: height))
-        return shifted
+            return shifted
+        } else {
+            let shifted: CGPoint = VNImagePointForNormalizedPoint(pnt, Int(width), Int(height))
+            .applying(CGAffineTransform(scaleX: 1.0, y: -1.0))
+            .applying(CGAffineTransform(translationX: 0, y: height))
+            return shifted
+        }
     }
 
     func path(in rect: CGRect) -> Path {
@@ -112,6 +123,6 @@ struct CameraPreview_Previews: PreviewProvider {
             .leftHip: CGPoint(x: 0.1, y: 0.6)
         ],
         imageSize: nil)
-        CameraPreview(currentImage: .constant(UIImage(contentsOfFile: Bundle.main.path(forResource: "TestImage", ofType: "PNG")!)), result: .constant(resultTest))
+        CameraPreview(currentImage: .constant(UIImage(contentsOfFile: Bundle.main.path(forResource: "TestImage", ofType: "PNG")!)), result: .constant(resultTest), orientation: .constant(.front))
     }
 }

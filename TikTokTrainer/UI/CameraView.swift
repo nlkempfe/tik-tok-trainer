@@ -16,7 +16,8 @@ struct CameraView: View {
     var body: some View {
         ZStack {
             CameraPreview(currentImage: $camera.currentUIImage,
-                          result: $camera.currentResult)
+                          result: $camera.currentResult,
+                          orientation: $camera.currentOrientation)
                 .ignoresSafeArea(.all, edges: .all)
                 .onTapGesture(count: 2) {
                     camera.switchCameraInput()

@@ -275,18 +275,18 @@ class CameraModel: NSObject,
 
 // MARK: - Vision
 extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
-    
+
     func emptyPose() {
         DispatchQueue.main.async {
             self.currentResult = PoseNetResult(points: [:], imageSize: nil)
         }
     }
-    
+
     func bodyPoseHandler(request: VNRequest, error: Error?) {
         guard error == nil else { return emptyPose() }
         guard let observations = request.results as? [VNRecognizedPointsObservation] else { return emptyPose() }
         guard !observations.isEmpty else {return emptyPose()}
-        
+
         // Process each observation to find the recognized body pose points.
         observations.forEach { processObservation($0) }
     }
@@ -336,7 +336,10 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
                 self.startTime = timestamp
             }
 
-            let uiImage = UIImage(cgImage: cgImage!).withHorizontallyFlippedOrientation()
+            var uiImage = UIImage(cgImage: cgImage!)
+            if self.currentOrientation == .front {
+                uiImage = uiImage.withHorizontallyFlippedOrientation()
+            }
 
             // Release the image buffer.
             CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
