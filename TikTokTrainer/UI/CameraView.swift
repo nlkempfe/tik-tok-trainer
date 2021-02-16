@@ -98,8 +98,8 @@ struct CameraView: View {
 
     var cameraPreview: some View {
         ZStack {
-            if isCountingDown {
                 ZStack {
+                    if isCountingDown {
                     Rectangle()
                         .fill()
                         .foregroundColor(.black)
@@ -110,6 +110,7 @@ struct CameraView: View {
                                 self.opacity = 0.8
                             }
                         }
+                    }
                     CameraPreview(currentImage: $camera.currentUIImage,
                             result: $camera.currentResult,
                             orientation: $camera.currentOrientation)
@@ -118,15 +119,6 @@ struct CameraView: View {
                         camera.switchCameraInput()
                     }.zIndex(-1)
                 }
-            } else {
-                CameraPreview(currentImage: $camera.currentUIImage,
-                              result: $camera.currentResult,
-                              orientation: $camera.currentOrientation)
-                    .ignoresSafeArea(.all, edges: .all)
-                    .onTapGesture(count: 2) {
-                        camera.switchCameraInput()
-                    }.zIndex(-1)
-            }
         }
     }
 
