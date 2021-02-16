@@ -16,6 +16,7 @@ struct CameraView: View {
     @State var timeRemaining = 3
     @State var timer: Timer?
     @State var opacity = 0.0
+    @State var pulse: Bool = false
 
     var animatableData: Double {
         get { opacity }
@@ -83,6 +84,11 @@ struct CameraView: View {
                         Circle()
                             .fill(Color.red)
                             .frame(width: 65, height: 65)
+                            .scaleEffect(self.pulse ? 0.8 : 1.0)
+                            .animation(Animation.linear(duration: 1.2).repeatForever(autoreverses: true))
+                            .onAppear {
+                                self.pulse.toggle()
+                            }
                         Circle()
                             .stroke(Color.red, lineWidth: 2)
                             .frame(width: 75, height: 75)
