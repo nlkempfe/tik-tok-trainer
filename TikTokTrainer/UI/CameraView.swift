@@ -15,7 +15,13 @@ struct CameraView: View {
     @State var isCountingDown = false
     @State var timeRemaining = 3
     @State var timer: Timer?
+    @State var opacity = 0.0
     @State var pulse: Bool = false
+
+    var animatableData: Double {
+        get { opacity }
+        set { self.opacity = newValue }
+    }
 
     var cameraControls: some View {
         VStack {
@@ -43,6 +49,7 @@ struct CameraView: View {
     var recordButton: some View {
         HStack {
             Button(action: {
+                self.opacity = 0
                 if camera.isRecording {
                     camera.stopRecording()
                 } else if isCountingDown {
@@ -95,15 +102,35 @@ struct CameraView: View {
         }
     }
 
+    var cameraPreview: some View {
+        ZStack {
+                ZStack {
+                    if isCountingDown {
+                    Rectangle()
+                        .fill()
+                        .foregroundColor(.black)
+                        .opacity(opacity)
+                        .ignoresSafeArea(.all, edges: .all)
+                        .onAppear {
+                            withAnimation {
+                                self.opacity = 0.8
+                            }
+                        }
+                    }
+                    CameraPreview(currentImage: $camera.currentUIImage,
+                            result: $camera.currentResult,
+                            orientation: $camera.currentOrientation)
+                    .ignoresSafeArea(.all, edges: .all)
+                    .onTapGesture(count: 2) {
+                        camera.switchCameraInput()
+                    }.zIndex(-1)
+                }
+        }
+    }
+
     var body: some View {
         ZStack {
-            CameraPreview(currentImage: $camera.currentUIImage,
-                          result: $camera.currentResult,
-                          orientation: $camera.currentOrientation)
-                .ignoresSafeArea(.all, edges: .all)
-                .onTapGesture(count: 2) {
-                    camera.switchCameraInput()
-                }.zIndex(-1)
+            cameraPreview
             VStack {
                 if camera.hasPermission {
                     HStack {
@@ -153,6 +180,9 @@ struct CameraView_Previews: PreviewProvider {
                 .onAppear {
                     cameraBack.currentOrientation = .back
                 }
+            CameraView()
+                .cameraPreview
+                .background(Color.black)
         }
     }
 }
