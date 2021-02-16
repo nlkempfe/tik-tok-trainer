@@ -15,6 +15,12 @@ struct CameraView: View {
     @State var isCountingDown = false
     @State var timeRemaining = 3
     @State var timer: Timer?
+    @State var opacity = 0.0
+
+    var animatableData: Double {
+        get { opacity }
+        set { self.opacity = newValue }
+    }
 
     var cameraControls: some View {
         VStack {
@@ -42,6 +48,7 @@ struct CameraView: View {
     var recordButton: some View {
         HStack {
             Button(action: {
+                self.opacity = 0
                 if camera.isRecording {
                     camera.stopRecording()
                 } else if isCountingDown {
@@ -91,6 +98,18 @@ struct CameraView: View {
 
     var body: some View {
         ZStack {
+            if isCountingDown {
+                ZStack {
+                    Rectangle()
+                        .fill()
+                        .foregroundColor(.black)
+                        .opacity(opacity)
+                        .ignoresSafeArea(.all, edges: .all)
+                        .onAppear {
+                            withAnimation {
+                                self.opacity = 0.8
+                            }
+                        }
             CameraPreview(currentImage: $camera.currentUIImage,
                           result: $camera.currentResult,
                           orientation: $camera.currentOrientation)
@@ -98,6 +117,17 @@ struct CameraView: View {
                 .onTapGesture(count: 2) {
                     camera.switchCameraInput()
                 }.zIndex(-1)
+                }
+            } else {
+                CameraPreview(currentImage: $camera.currentUIImage,
+                              result: $camera.currentResult,
+                              orientation: $camera.currentOrientation)
+                    .ignoresSafeArea(.all, edges: .all)
+                    .onTapGesture(count: 2) {
+                        camera.switchCameraInput()
+                    }.zIndex(-1)
+            }
+
             VStack {
                 if camera.hasPermission {
                     HStack {
