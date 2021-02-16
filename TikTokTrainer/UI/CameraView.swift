@@ -14,9 +14,9 @@ struct CameraView: View {
     @StateObject var permissions = PermissionModel()
     @State var isCountingDown = false
     @State var timeRemaining = 3
-    @State var timer: Timer? = nil
+    @State var timer: Timer?
 
-    var CameraControls: some View {
+    var cameraControls: some View {
         VStack {
             Button(action: {camera.switchCameraInput()}, label: {
                 Image(systemName: "arrow.triangle.2.circlepath.camera")
@@ -38,8 +38,8 @@ struct CameraView: View {
             }
         }.padding()
     }
-    
-    var RecordButton: some View {
+
+    var recordButton: some View {
         HStack {
             Button(action: {
                 if camera.isRecording {
@@ -51,7 +51,7 @@ struct CameraView: View {
                     timeRemaining = 3
                 } else {
                     isCountingDown = true
-                    timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { tempTimer in
+                    timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                         if timeRemaining > 1 {
                             timeRemaining -= 1
                         } else {
@@ -88,7 +88,7 @@ struct CameraView: View {
             })
         }
     }
-    
+
     var body: some View {
         ZStack {
             CameraPreview(currentImage: $camera.currentUIImage,
@@ -103,11 +103,11 @@ struct CameraView: View {
                     HStack {
                         Spacer()
                         if !camera.inErrorState {
-                            CameraControls
+                            cameraControls
                         }
                     }
                     Spacer()
-                    RecordButton
+                    recordButton
                         .frame(height: 75)
                 } else {
                     HStack {
@@ -128,20 +128,20 @@ struct CameraView: View {
 
 struct CameraView_Previews: PreviewProvider {
     static var cameraBack = CameraModel()
-    
+
     static var previews: some View {
         Group {
             CameraView()
             CameraView()
-                .RecordButton
+                .recordButton
                 .background(Color.black)
                 .previewLayout(.sizeThatFits)
             CameraView()
-                .CameraControls
+                .cameraControls
                 .background(Color.black)
                 .previewLayout(.sizeThatFits)
             CameraView(camera: cameraBack)
-                .CameraControls
+                .cameraControls
                 .background(Color.black)
                 .previewLayout(.sizeThatFits)
                 .onAppear {
