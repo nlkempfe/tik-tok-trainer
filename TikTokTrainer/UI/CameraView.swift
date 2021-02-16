@@ -12,6 +12,9 @@ import Photos
 struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
+    @State var isCountingDown = false
+    @State var timeRemaining = 3
+    @State var timer: Timer? = nil
 
     var CameraControls: some View {
         VStack {
@@ -39,11 +42,37 @@ struct CameraView: View {
     var RecordButton: some View {
         HStack {
             Button(action: {
-                    camera.isRecording ?
-                        camera.stopRecording() : camera.startRecording()
+                if camera.isRecording {
+                    camera.stopRecording()
+                } else if isCountingDown {
+                    isCountingDown = false
+                    timer?.invalidate()
+                    timer = nil
+                    timeRemaining = 3
+                } else {
+                    isCountingDown = true
+                    timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { tempTimer in
+                        if timeRemaining > 1 {
+                            timeRemaining -= 1
+                        } else {
+                            isCountingDown = false
+                            timer?.invalidate()
+                            timer = nil
+                            timeRemaining = 3
+                            camera.startRecording()
+                        }
+                    }
+                }
             }, label: {
                 ZStack {
-                    if camera.isRecording {
+                    if isCountingDown {
+                        Text("\(timeRemaining)")
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                        Circle()
+                            .stroke(Color.red, lineWidth: 2)
+                            .frame(width: 75, height: 75)
+                    } else if camera.isRecording {
                         Circle()
                             .fill(Color.red)
                             .frame(width: 65, height: 65)
