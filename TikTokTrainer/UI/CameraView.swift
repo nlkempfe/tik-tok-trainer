@@ -103,7 +103,6 @@ struct CameraView: View {
     }
 
     var cameraPreview: some View {
-            HStack {
                 ZStack {
                     if isCountingDown {
                     Rectangle()
@@ -135,8 +134,8 @@ struct CameraView: View {
                         .background(Color.black)
                     
                     }
+                    .zIndex(-1)
                 }
-            }
     }
 
     var body: some View {
