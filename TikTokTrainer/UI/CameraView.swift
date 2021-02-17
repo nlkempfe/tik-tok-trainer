@@ -41,7 +41,7 @@ struct CameraView: View {
         VStack(spacing: 0) {
             if !self.isCountingDown && !camera.isRecording {
             Button(action: {camera.switchCameraInput()}, label: {
-                Image(systemName: "arrow.triangle.2.circlepath.camera")
+                Image(systemName: IconConstants.cameraOutline)
                     .foregroundColor(.white)
                     .padding()
                     .clipShape(Circle())
@@ -50,7 +50,7 @@ struct CameraView: View {
             .padding(.trailing, 5)
             if camera.currentOrientation == .back {
                 Button(action: {camera.toggleFlash()}, label: {
-                    Image(systemName: camera.flashlightOn ? "bolt.fill" : "bolt")
+                    Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
                         .foregroundColor(.white)
                         .padding()
                         .clipShape(Circle())
@@ -60,7 +60,7 @@ struct CameraView: View {
             }
             if self.isVideoUploaded {
                 Button(action: {self.reuploadFile()}, label: {
-                    Image(systemName: "plus.square")
+                    Image(systemName: IconConstants.uploadFile)
                         .foregroundColor(.white)
                         .padding()
                         .clipShape(Circle())
@@ -153,17 +153,17 @@ struct CameraView: View {
                         .fill()
                         .foregroundColor(.black)
                         .ignoresSafeArea(.all, edges: .all)
-                        .scaleEffect(x: 1.0, y: 0.45, anchor: .center/*@END_MENU_TOKEN@*/)
-                        .zIndex(-2)
+                        .scaleEffect(x: 1.0, y: NumConstants.yScaleFactor, anchor: .center)
+                        .zIndex(-1)
                             VStack {
                             Button(action: {self.uploadFile()}, label: {
-                                Image(systemName: "plus.square.fill")
+                                Image(systemName: IconConstants.uploadFileFilled)
                                     .foregroundColor(.white)
                                     .padding()
                                     .clipShape(Circle())
                             })
                             .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                Text("Upload a video")
+                                Text(StringConstants.upload_video)
                                     .foregroundColor(.white)
                                     .font(.caption)
                         }
@@ -172,7 +172,7 @@ struct CameraView: View {
                             result: $camera.currentResult,
                             orientation: $camera.currentOrientation)
                     .ignoresSafeArea(.all, edges: .all)
-                        .scaleEffect(x: 1.0, y: 0.45, anchor: .center/*@END_MENU_TOKEN@*/)
+                        .scaleEffect(x: 1.0, y: NumConstants.yScaleFactor, anchor: .center)
                     .onTapGesture(count: 2) {
                         camera.switchCameraInput()
                     }.zIndex(-1)
@@ -202,7 +202,7 @@ struct CameraView: View {
                     HStack {
                         Button(action: {permissions.openPermissionsSettings()}, label: {
                             ZStack {
-                                Text("Enable camera access to continue")
+                                Text(StringConstants.permissions_camera)
                             }
                         })
                     }
