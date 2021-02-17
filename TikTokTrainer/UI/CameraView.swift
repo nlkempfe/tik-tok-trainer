@@ -17,14 +17,28 @@ struct CameraView: View {
     @State var timer: Timer?
     @State var opacity = 0.0
     @State var pulse: Bool = false
+    @State var isVideoUploaded = false
 
     var animatableData: Double {
         get { opacity }
         set { self.opacity = newValue }
     }
 
+    // MARK: - Placeholders
+    func uploadFile() {
+        print("file upload tapped")
+        self.isVideoUploaded = true
+    }
+
+    func reuploadFile() {
+        print("reupload file tapped")
+        self.isVideoUploaded = false
+    }
+
+    // MARK: - End placeholders
+
     var cameraControls: some View {
-        VStack {
+        VStack(spacing: 0) {
             Button(action: {camera.switchCameraInput()}, label: {
                 Image(systemName: "arrow.triangle.2.circlepath.camera")
                     .foregroundColor(.white)
@@ -32,7 +46,7 @@ struct CameraView: View {
                     .clipShape(Circle())
             })
             .scaleEffect(CGSize(width: 1.5, height: 1.5))
-            .padding(.trailing, 10)
+            .padding(.trailing, 5)
             if camera.currentOrientation == .back {
                 Button(action: {camera.toggleFlash()}, label: {
                     Image(systemName: camera.flashlightOn ? "bolt.fill" : "bolt")
@@ -41,12 +55,26 @@ struct CameraView: View {
                         .clipShape(Circle())
                 })
                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                .padding(.trailing, 10)
+                .padding(.trailing, 5)
+            }
+            if self.isVideoUploaded && !camera.isRecording {
+                Button(action: {self.reuploadFile()}, label: {
+                    Image(systemName: "plus.square")
+                        .foregroundColor(.white)
+                        .padding()
+                        .clipShape(Circle())
+                })
+                .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                .padding(.trailing, 5)
             }
         }.padding()
     }
 
     var recordButton: some View {
+        /*
+         todo: add logic to prevent user from recording without first uploading a comparison video
+         leaving as-is for testing as of now
+         */
         HStack {
             Button(action: {
                 self.opacity = 0
@@ -103,8 +131,8 @@ struct CameraView: View {
     }
 
     var cameraPreview: some View {
-        ZStack {
-                ZStack {
+            ZStack {
+                if camera.currentUIImage != nil {
                     if isCountingDown {
                     Rectangle()
                         .fill()
@@ -117,13 +145,39 @@ struct CameraView: View {
                             }
                         }
                     }
+                    HStack(spacing: 0) {
+                        ZStack {
+                    Rectangle()
+                        .fill()
+                        .foregroundColor(.black)
+                        .ignoresSafeArea(.all, edges: .all)
+                        .scaleEffect(x: 1.0, y: 0.5, anchor: .center/*@END_MENU_TOKEN@*/)
+                        .zIndex(-2)
+                            VStack {
+                            Button(action: {self.uploadFile()}, label: {
+                                Image(systemName: "plus.square.fill")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .clipShape(Circle())
+                            })
+                            .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                                Text("Upload a video")
+                                    .foregroundColor(.white)
+                                    .font(.caption)
+                        }
+                        }
                     CameraPreview(currentImage: $camera.currentUIImage,
                             result: $camera.currentResult,
                             orientation: $camera.currentOrientation)
                     .ignoresSafeArea(.all, edges: .all)
+                        .scaleEffect(x: 1.0, y: 0.5, anchor: .center/*@END_MENU_TOKEN@*/)
                     .onTapGesture(count: 2) {
                         camera.switchCameraInput()
                     }.zIndex(-1)
+                        .background(Color.black)
+
+                    }
+                    .zIndex(-1)
                 }
         }
     }
@@ -183,6 +237,9 @@ struct CameraView_Previews: PreviewProvider {
             CameraView()
                 .cameraPreview
                 .background(Color.black)
+            CameraView()
+                .cameraPreview
+                .scaleEffect(0.5)
         }
     }
 }
