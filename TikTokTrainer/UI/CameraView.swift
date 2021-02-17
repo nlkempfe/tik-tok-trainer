@@ -184,9 +184,7 @@ struct CameraView: View {
 
     var body: some View {
         ZStack {
-            Spacer()
             cameraPreview
-            Spacer()
             VStack {
                 if camera.hasPermission {
                     HStack {
