@@ -39,6 +39,7 @@ struct CameraView: View {
 
     var cameraControls: some View {
         VStack(spacing: 0) {
+            if !self.isCountingDown && !camera.isRecording {
             Button(action: {camera.switchCameraInput()}, label: {
                 Image(systemName: "arrow.triangle.2.circlepath.camera")
                     .foregroundColor(.white)
@@ -57,7 +58,7 @@ struct CameraView: View {
                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                 .padding(.trailing, 5)
             }
-            if self.isVideoUploaded && !camera.isRecording {
+            if self.isVideoUploaded {
                 Button(action: {self.reuploadFile()}, label: {
                     Image(systemName: "plus.square")
                         .foregroundColor(.white)
@@ -67,6 +68,7 @@ struct CameraView: View {
                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                 .padding(.trailing, 5)
             }
+        }
         }.padding()
     }
 
