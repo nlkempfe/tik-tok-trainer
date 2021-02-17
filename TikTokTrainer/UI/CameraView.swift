@@ -57,7 +57,7 @@ struct CameraView: View {
                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                 .padding(.trailing, 5)
             }
-            if self.isVideoUploaded {
+            if self.isVideoUploaded && !camera.isRecording {
                 Button(action: {self.reuploadFile()}, label: {
                     Image(systemName: "plus.square")
                         .foregroundColor(.white)
