@@ -186,6 +186,11 @@ struct CameraView: View {
 
     var body: some View {
         ZStack {
+            // Fill the background of the entire view with black
+            Rectangle()
+                .fill()
+                .ignoresSafeArea(.all)
+                .background(Color.black)
             cameraPreview
             VStack {
                 if camera.hasPermission {
