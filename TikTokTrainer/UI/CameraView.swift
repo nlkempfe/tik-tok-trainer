@@ -40,7 +40,7 @@ struct CameraView: View {
     var cameraControls: some View {
         VStack(spacing: 0) {
             if !self.isCountingDown && !camera.isRecording {
-                Button(action: {camera.switchCameraInput()}, label: {
+                Button(action: camera.switchCameraInput, label: {
                     Image(systemName: IconConstants.cameraOutline)
                         .foregroundColor(.white)
                         .padding()
@@ -49,7 +49,7 @@ struct CameraView: View {
                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                 .padding(.trailing, 5)
                 if camera.currentOrientation == .back {
-                    Button(action: {camera.toggleFlash()}, label: {
+                    Button(action: camera.toggleFlash, label: {
                         Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
                             .foregroundColor(.white)
                             .padding()
@@ -59,7 +59,7 @@ struct CameraView: View {
                     .padding(.trailing, 5)
                 }
                 if self.isVideoUploaded {
-                    Button(action: {self.reuploadFile()}, label: {
+                    Button(action: self.reuploadFile, label: {
                         Image(systemName: IconConstants.uploadFile)
                             .foregroundColor(.white)
                             .padding()
@@ -168,16 +168,19 @@ struct CameraView: View {
                                 .font(.caption)
                         }
                     }
-                    CameraPreview(currentImage: $camera.currentUIImage,
-                                  result: $camera.currentResult,
-                                  orientation: $camera.currentOrientation)
-                        .ignoresSafeArea(.all, edges: .all)
-                        .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
-                        .onTapGesture(count: 2) {
-                            camera.switchCameraInput()
-                        }.zIndex(-1)
-                        .background(Color.black)
-
+                    CameraPreview(
+                        currentImage: $camera.currentUIImage,
+                        result: $camera.currentResult,
+                        orientation: $camera.currentOrientation
+                    )
+                    .ignoresSafeArea(.all, edges: .all)
+                    .scaleEffect(x: 1.0,
+                                 y: NumConstants.yScale,
+                                 anchor: .center
+                    )
+                    .onTapGesture(count: 2,
+                                  perform: camera.switchCameraInput)
+                    .zIndex(-1)
                 }
                 .zIndex(-1)
             }
