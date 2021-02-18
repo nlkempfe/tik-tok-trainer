@@ -27,8 +27,8 @@ struct CameraPreview: View {
                 GeometryReader { geo in
                     PoseNetOverlay(result: result,
                                    currentImage: currentImage,
-                                   width: geo.frame(in: .named(previewImageCoordName)).maxX*0.5,
-                                   height: geo.frame(in: .named(previewImageCoordName)).maxY*1.25,
+                                   width: geo.frame(in: .named(previewImageCoordName)).maxX*NumConstants.xCoordinateScale,
+                                   height: geo.frame(in: .named(previewImageCoordName)).maxY*NumConstants.yCoordinateScale,
                                    isFrontCamera: orientation == .front)
                         .stroke(Color.blue, lineWidth: 4)
                 }

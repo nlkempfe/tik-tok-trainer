@@ -153,7 +153,7 @@ struct CameraView: View {
                             .fill()
                             .foregroundColor(.black)
                             .ignoresSafeArea(.all, edges: .all)
-                            .scaleEffect(x: 1.0, y: NumConstants.yScaleFactor, anchor: .center)
+                            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
                             .zIndex(-1)
                         VStack {
                             Button(action: {self.uploadFile()}, label: {
@@ -172,7 +172,7 @@ struct CameraView: View {
                                   result: $camera.currentResult,
                                   orientation: $camera.currentOrientation)
                         .ignoresSafeArea(.all, edges: .all)
-                        .scaleEffect(x: 1.0, y: NumConstants.yScaleFactor, anchor: .center)
+                        .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
                         .onTapGesture(count: 2) {
                             camera.switchCameraInput()
                         }.zIndex(-1)

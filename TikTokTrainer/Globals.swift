@@ -8,7 +8,9 @@ import Foundation
 import SwiftUI
 
 struct NumConstants {
-    static let yScaleFactor = CGFloat(0.45)
+    static let yScale = CGFloat(0.45)
+    static let yCoordinateScale = CGFloat(1.25)
+    static let xCoordinateScale = CGFloat(0.5)
 }
 
 struct IconConstants {
