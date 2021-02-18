@@ -20,6 +20,6 @@ struct IconConstants {
 }
 
 struct StringConstants {
-    static let upload_video = "Upload a video"
-    static let permissions_camera = "Enable camera access to continue"
+    static let uploadVideo = "Upload a video"
+    static let permissionsCamera = "Enable camera access to continue"
 }

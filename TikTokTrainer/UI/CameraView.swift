@@ -163,7 +163,7 @@ struct CameraView: View {
                                     .clipShape(Circle())
                             })
                             .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                Text(StringConstants.upload_video)
+                                Text(StringConstants.uploadVideo)
                                     .foregroundColor(.white)
                                     .font(.caption)
                         }
@@ -202,7 +202,7 @@ struct CameraView: View {
                     HStack {
                         Button(action: {permissions.openPermissionsSettings()}, label: {
                             ZStack {
-                                Text(StringConstants.permissions_camera)
+                                Text(StringConstants.permissionsCamera)
                             }
                         })
                     }
