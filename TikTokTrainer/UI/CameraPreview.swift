@@ -21,15 +21,14 @@ struct CameraPreview: View {
             if currentImage != nil {
                 Image(uiImage: currentImage!)
                     .resizable()
-                    .scaledToFill()
                     .coordinateSpace(name: previewImageCoordName)
             }
             if result != nil && !(result?.points.isEmpty ?? true) {
                 GeometryReader { geo in
                     PoseNetOverlay(result: result,
                                    currentImage: currentImage,
-                                   width: geo.frame(in: .named(previewImageCoordName)).maxX,
-                                   height: geo.frame(in: .named(previewImageCoordName)).maxY,
+                                   width: geo.frame(in: .named(previewImageCoordName)).maxX*0.5,
+                                   height: geo.frame(in: .named(previewImageCoordName)).maxY*1.25,
                                    isFrontCamera: orientation == .front)
                         .stroke(Color.blue, lineWidth: 4)
                 }
@@ -74,7 +73,7 @@ struct PoseNetOverlay: Shape {
         if isFrontCamera {
             let shifted: CGPoint = VNImagePointForNormalizedPoint(pnt, Int(width), Int(height))
             .applying(CGAffineTransform(scaleX: -1.0, y: -1.0))
-            .applying(CGAffineTransform(translationX: width, y: height))
+                .applying(CGAffineTransform(translationX: width, y: height))
             return shifted
         } else {
             let shifted: CGPoint = VNImagePointForNormalizedPoint(pnt, Int(width), Int(height))
