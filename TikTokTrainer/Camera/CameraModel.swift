@@ -20,6 +20,7 @@ class CameraModel: NSObject,
     @Published var isRecording = false
     @Published var isOverlayEnabled = true
     @Published var inErrorState = false
+    @Published var isVideoRecorded = false
 
     @Published var hasPermission = true
     @Published var currentUIImage: UIImage?
@@ -177,6 +178,7 @@ class CameraModel: NSObject,
     func startRecording() {
         guard !self.isRecording else { return }
         self.isRecording = true
+        self.isVideoRecorded = false
         let device = self.currentOrientation == .front ? self.frontCameraDevice : self.backCameraDevice
         if (device?.isSmoothAutoFocusSupported)! {
             do {
@@ -228,6 +230,8 @@ class CameraModel: NSObject,
                 }
             }
         }
+
+        self.isVideoRecorded = true
 
         // turn off flashlight if it's on
         if self.flashlightOn {

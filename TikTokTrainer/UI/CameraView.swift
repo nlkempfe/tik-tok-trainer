@@ -168,6 +168,7 @@ struct CameraView: View {
                                 .font(.caption)
                         }
                     }
+                    if !camera.isVideoRecorded {
                     CameraPreview(currentImage: $camera.currentUIImage,
                                   result: $camera.currentResult,
                                   orientation: $camera.currentOrientation)
@@ -177,6 +178,13 @@ struct CameraView: View {
                             camera.switchCameraInput()
                         }.zIndex(-1)
                         .background(Color.black)
+                    } else {
+                        ZStack {
+                            PlayerViewController(videoURL: camera.outputURL)
+                                     .edgesIgnoringSafeArea(.all)
+                        }
+                        .onAppear()
+                    }
 
                 }
                 .zIndex(-1)
