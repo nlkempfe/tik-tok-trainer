@@ -8,10 +8,12 @@
 import SwiftUI
 import AVFoundation
 import Photos
+import AVKit
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
+    @State var playback: LoopingPlayer?
     @State var isVideoPlayingBack = false
     @State var isCountingDown = false
     @State var timeRemaining = 3
@@ -19,9 +21,6 @@ struct CameraView: View {
     @State var opacity = 0.0
     @State var pulse: Bool = false
     @State var isVideoUploaded = false
-    @State var activated: Bool = false
-    @State var videoURL: URL!
-    
 
     var animatableData: Double {
         get { opacity }
@@ -38,11 +37,6 @@ struct CameraView: View {
         print("reupload file tapped")
         self.isVideoUploaded = false
     }
-    
-    func setURL(videoURL: URL) {
-        self.videoURL = videoURL
-    }
-
     // MARK: - End placeholders
 
     var cameraControls: some View {
@@ -90,7 +84,6 @@ struct CameraView: View {
                 self.opacity = 0
                 if camera.isRecording {
                     camera.stopRecording()
-                    setURL(videoURL: camera.outputURL)
                 } else if isCountingDown {
                     isCountingDown = false
                     timer?.invalidate()
@@ -189,12 +182,8 @@ struct CameraView: View {
                         .background(Color.black)
                     } else {
                         ZStack {
-                            PlayerViewController(videoURL: self.videoURL)
-                                     .edgesIgnoringSafeArea(.all)
+                            LoopingPlayer(url: camera.outputURL)
                         }
-                        .onAppear(perform: {
-                            
-                        })
                     }
 
                 }

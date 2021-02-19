@@ -192,7 +192,6 @@ class CameraModel: NSObject,
 
         // generate a url for where this video will be saved
         self.outputURL = tempURL()
-
         do {
             try self.videoFileOutputWriter = AVAssetWriter(outputURL: self.outputURL, fileType: .mov)
             let videoSettings = self.videoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mov)
