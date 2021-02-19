@@ -12,12 +12,16 @@ import Photos
 struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
+    @State var isVideoPlayingBack = false
     @State var isCountingDown = false
     @State var timeRemaining = 3
     @State var timer: Timer?
     @State var opacity = 0.0
     @State var pulse: Bool = false
     @State var isVideoUploaded = false
+    @State var activated: Bool = false
+    @State var videoURL: URL!
+    
 
     var animatableData: Double {
         get { opacity }
@@ -33,6 +37,10 @@ struct CameraView: View {
     func reuploadFile() {
         print("reupload file tapped")
         self.isVideoUploaded = false
+    }
+    
+    func setURL(videoURL: URL) {
+        self.videoURL = videoURL
     }
 
     // MARK: - End placeholders
@@ -82,6 +90,7 @@ struct CameraView: View {
                 self.opacity = 0
                 if camera.isRecording {
                     camera.stopRecording()
+                    setURL(videoURL: camera.outputURL)
                 } else if isCountingDown {
                     isCountingDown = false
                     timer?.invalidate()
@@ -180,10 +189,12 @@ struct CameraView: View {
                         .background(Color.black)
                     } else {
                         ZStack {
-                            PlayerViewController(videoURL: camera.outputURL)
+                            PlayerViewController(videoURL: self.videoURL)
                                      .edgesIgnoringSafeArea(.all)
                         }
-                        .onAppear()
+                        .onAppear(perform: {
+                            
+                        })
                     }
 
                 }

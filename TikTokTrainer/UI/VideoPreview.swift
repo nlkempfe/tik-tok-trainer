@@ -21,31 +21,30 @@ final class PlayerViewController: UIViewControllerRepresentable {
 
     init(videoURL: URL) {
         self.videoURL = videoURL
-    }
-
-    func makeUIViewController(context: Context) -> AVPlayerViewController {
-        playerItem = AVPlayerItem(url: videoURL!)
+        playerItem = AVPlayerItem(url: self.videoURL!)
         player = AVQueuePlayer(items: [playerItem])
         player.actionAtItemEnd = .none
         playerLooper = AVPlayerLooper(player: player, templateItem: playerItem)
-        print(playerLooper.loopCount)
+        print("init")
 
         controller.player = player
         controller.modalPresentationStyle = .overCurrentContext
         controller.showsPlaybackControls = false
         controller.player?.play()
-        NotificationCenter.default.addObserver(self,
-                                               selector: Selector(("playerItemDidReachEnd:")),
-                                                         name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-                                                         object: player.currentItem)
+        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: .AVPlayerItemDidPlayToEndTime, object: nil)
+    }
+
+    func makeUIViewController(context: Context) -> AVPlayerViewController {
+        
+        print("here")
         return controller
     }
 
     func updateUIViewController(_ playerController: AVPlayerViewController, context: Context) {
-        // playerItemDidReachEnd(notification: <#T##Notification#>)
+        // leave empty for now
     }
 
-    @objc func playerItemDidReachEnd(notification: Notification) {
+    @objc func playerDidFinishPlaying(notification: Notification) {
         print("test")
         if let playerItem = notification.object as? AVPlayerItem {
             playerItem.seek(to: CMTime.zero, completionHandler: nil)
