@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer-frameworks.sh
+${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework
+${BUILT_PRODUCTS_DIR}/PromisesSwift/Promises.framework
