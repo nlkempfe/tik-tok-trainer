@@ -177,7 +177,6 @@ class CameraModel: NSObject,
     // MARK: - Recording
     func startRecording() {
         guard !self.isRecording else { return }
-        self.isRecording = true
         self.isVideoRecorded = false
         let device = self.currentOrientation == .front ? self.frontCameraDevice : self.backCameraDevice
         if (device?.isSmoothAutoFocusSupported)! {
@@ -211,6 +210,7 @@ class CameraModel: NSObject,
             print("Error setting up video file output. Error: \(error)")
             self.isRecording = false
         }
+        self.isRecording = true
     }
 
     func stopRecording() {

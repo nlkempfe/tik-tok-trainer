@@ -95,11 +95,11 @@ struct CameraView: View {
                         if timeRemaining > 1 {
                             timeRemaining -= 1
                         } else {
-                            isCountingDown = false
                             timer?.invalidate()
                             timer = nil
                             timeRemaining = 3
                             camera.startRecording()
+                            isCountingDown = false
                         }
                     }
                 }

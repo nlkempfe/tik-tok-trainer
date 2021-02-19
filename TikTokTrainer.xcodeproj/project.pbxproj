@@ -21,6 +21,7 @@
 		5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F12871125C49FD50027DC22 /* CameraModel.swift */; };
 		5F1BBF2725DEBC51007CBD42 /* VideoPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */; };
 		5F573A5725DF4BE2000F6719 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F573A5625DF4BE2000F6719 /* PreviewView.swift */; };
+		5F573A5C25E01155000F6719 /* moon.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5F573A5B25E01155000F6719 /* moon.mp4 */; };
 		5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */; };
 		5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAA3D2825DD5758002B4CBC /* Globals.swift */; };
 		6E643D75B85123118238BF1F /* Pods_TikTokTrainer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */; };
@@ -68,6 +69,7 @@
 		5F12871125C49FD50027DC22 /* CameraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraModel.swift; sourceTree = "<group>"; };
 		5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreview.swift; sourceTree = "<group>"; };
 		5F573A5625DF4BE2000F6719 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
+		5F573A5B25E01155000F6719 /* moon.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = moon.mp4; sourceTree = "<group>"; };
 		5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
 		5FAA3D2825DD5758002B4CBC /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -108,6 +110,7 @@
 		0E02D14725AFA56900004B2A = {
 			isa = PBXGroup;
 			children = (
+				5F573A5B25E01155000F6719 /* moon.mp4 */,
 				0E12CFF925D86181003880B7 /* TestImage.PNG */,
 				0E02D15225AFA56900004B2A /* TikTokTrainer */,
 				0E02D16425AFA56A00004B2A /* TikTokTrainerTests */,
@@ -319,6 +322,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F573A5C25E01155000F6719 /* moon.mp4 in Resources */,
 				0E12CFFA25D86181003880B7 /* TestImage.PNG in Resources */,
 				0E02D15B25AFA56A00004B2A /* Preview Assets.xcassets in Resources */,
 				0E02D15825AFA56A00004B2A /* Assets.xcassets in Resources */,
