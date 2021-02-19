@@ -171,15 +171,15 @@ struct CameraView: View {
                         }
                     }
                     if !camera.isVideoRecorded {
-                    CameraPreview(currentImage: $camera.currentUIImage,
-                                  result: $camera.currentResult,
-                                  orientation: $camera.currentOrientation)
-                        .ignoresSafeArea(.all, edges: .all)
-                        .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
-                        .onTapGesture(count: 2) {
-                            camera.switchCameraInput()
-                        }.zIndex(-1)
-                        .background(Color.black)
+                        CameraPreview(currentImage: $camera.currentUIImage,
+                                      result: $camera.currentResult,
+                                      orientation: $camera.currentOrientation)
+                            .ignoresSafeArea(.all, edges: .all)
+                            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
+                            .onTapGesture(count: 2) {
+                                camera.switchCameraInput()
+                            }.zIndex(-1)
+                            .background(Color.black)
                     } else {
                         ZStack {
                             LoopingPlayer(url: camera.outputURL)
