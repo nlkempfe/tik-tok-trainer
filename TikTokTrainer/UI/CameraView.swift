@@ -98,6 +98,7 @@ struct CameraView: View {
                 .onTapGesture(count: 2) {
                     camera.switchCameraInput()
                 }.zIndex(-1)
+            
             VStack {
                 if camera.hasPermission {
                     HStack {

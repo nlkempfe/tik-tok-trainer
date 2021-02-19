@@ -108,6 +108,24 @@ struct PoseNetOverlay: Shape {
                 path.addLine(to: shiftedEnd)
             }
         }
+        
+        if poseResult.points[.leftShoulder] != nil && poseResult.points[.leftElbow] != nil && poseResult.points[.leftWrist] != nil {
+            let leftArmAngle: CGFloat = ScoringFunction(result: result!).computeAngles(result: result!)
+//            let frame = CGRect(x: poseResult.points[.leftElbow]!.x + 20, y: poseResult.points[.leftElbow]!.y + 10, width: 50, height: 50)
+//            let text = String(round(leftArmAngle).description) + "°"
+//
+//            let textColor = UIColor.white
+//            let textFont = UIFont(name: "Helvetica Bold", size: 18)!
+//
+//            let textFontAttributes = [
+//                NSAttributedString.Key.font: textFont,
+//                NSAttributedString.Key.foregroundColor: textColor,
+//                ] as [NSAttributedString.Key : Any]
+//
+//            (text as NSString).draw(at: CGPoint(x: poseResult.points[.leftElbow]!.x + 20, y: poseResult.points[.leftElbow]!.y), withAttributes: textFontAttributes)
+//
+//            currentImage.setNeedsDisplay()
+        }
 
         return path
     }
