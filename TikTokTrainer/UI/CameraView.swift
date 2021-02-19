@@ -42,7 +42,7 @@ struct CameraView: View {
     var cameraControls: some View {
         VStack(spacing: 0) {
             if !self.isCountingDown && !camera.isRecording {
-                Button(action: {camera.switchCameraInput()}, label: {
+                Button(action: camera.switchCameraInput, label: {
                     Image(systemName: IconConstants.cameraOutline)
                         .foregroundColor(.white)
                         .padding()
@@ -51,7 +51,7 @@ struct CameraView: View {
                 .scaleEffect(CGSize(width: 1.5, height: 1.5))
                 .padding(.trailing, 5)
                 if camera.currentOrientation == .back {
-                    Button(action: {camera.toggleFlash()}, label: {
+                    Button(action: camera.toggleFlash, label: {
                         Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
                             .foregroundColor(.white)
                             .padding()
@@ -61,7 +61,7 @@ struct CameraView: View {
                     .padding(.trailing, 5)
                 }
                 if self.isVideoUploaded {
-                    Button(action: {self.reuploadFile()}, label: {
+                    Button(action: self.reuploadFile, label: {
                         Image(systemName: IconConstants.uploadFile)
                             .foregroundColor(.white)
                             .padding()
@@ -185,7 +185,6 @@ struct CameraView: View {
                             LoopingPlayer(url: camera.outputURL)
                         }
                     }
-
                 }
                 .zIndex(-1)
             }
@@ -195,6 +194,8 @@ struct CameraView: View {
     var body: some View {
         ZStack {
             cameraPreview
+                .ignoresSafeArea(.all)
+                .background(Color.black)
             VStack {
                 if camera.hasPermission {
                     HStack {
