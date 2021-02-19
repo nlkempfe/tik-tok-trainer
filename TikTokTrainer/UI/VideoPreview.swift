@@ -35,7 +35,7 @@ class PlayerUIView: UIView {
 
         let player = AVPlayer(url: videoURL)
         playerLayer.player = player
-        playerLayer.videoGravity = .resizeAspectFill
+
         layer.addSublayer(playerLayer)
 
         player.actionAtItemEnd = .none
