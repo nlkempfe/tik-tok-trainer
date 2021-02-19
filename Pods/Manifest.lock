@@ -1,16 +1,24 @@
 PODS:
+  - PromisesObjC (1.2.12)
+  - PromisesSwift (1.2.12):
+    - PromisesObjC (= 1.2.12)
   - SwiftLint (0.42.0)
 
 DEPENDENCIES:
+  - PromisesSwift
   - SwiftLint
 
 SPEC REPOS:
   trunk:
+    - PromisesObjC
+    - PromisesSwift
     - SwiftLint
 
 SPEC CHECKSUMS:
+  PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
+  PromisesSwift: 64085cf6e5fc1b5001f90cf31e87a1f1621fefee
   SwiftLint: 4fa9579c63416865179bc416f0a92d55f009600d
 
-PODFILE CHECKSUM: f557b11e8438a95731f7afe4dd1666f279a8b8e8
+PODFILE CHECKSUM: ecf054260f38f968a6ee4b42151c8886ee7a8ed2
 
 COCOAPODS: 1.10.1
