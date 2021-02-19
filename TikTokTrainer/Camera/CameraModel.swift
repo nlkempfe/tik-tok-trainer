@@ -171,13 +171,13 @@ class CameraModel: NSObject,
 
             self.cameraSession.commitConfiguration()
             self.cameraSession.startRunning()
+            self.setupWriter()
         }
     }
 
-    // MARK: - Recording
-    func startRecording() {
+    func setupWriter() {
         guard !self.isRecording else { return }
-        self.isVideoRecorded = false
+
         let device = self.currentOrientation == .front ? self.frontCameraDevice : self.backCameraDevice
         if (device?.isSmoothAutoFocusSupported)! {
             do {
@@ -190,7 +190,7 @@ class CameraModel: NSObject,
         }
 
         // generate a url for where this video will be saved
-        self.outputURL = tempURL()
+        self.outputURL = self.tempURL()
         do {
             try self.videoFileOutputWriter = AVAssetWriter(outputURL: self.outputURL, fileType: .mov)
             let videoSettings = self.videoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mov)
@@ -198,19 +198,25 @@ class CameraModel: NSObject,
             self.videoFileOutputWriterInput?.expectsMediaDataInRealTime = true
             self.videoFileOutputWriterPool = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: self.videoFileOutputWriterInput!,
                                                                                   sourcePixelBufferAttributes: nil)
+
             if self.videoFileOutputWriter?.canAdd(self.videoFileOutputWriterInput!) ?? false {
                 self.videoFileOutputWriter?.add(self.videoFileOutputWriterInput!)
+                self.videoFileOutputWriter!.startWriting()
             } else {
                 self.isRecording = false
             }
 
-            self.videoFileOutputWriter!.startWriting()
-            self.videoFileOutputWriter!.startSession(atSourceTime: .zero)
         } catch {
             print("Error setting up video file output. Error: \(error)")
             self.isRecording = false
         }
+    }
+
+    // MARK: - Recording
+    func startRecording() {
+        self.isVideoRecorded = false
         self.isRecording = true
+        self.videoFileOutputWriter?.startSession(atSourceTime: .zero)
     }
 
     func stopRecording() {
@@ -223,7 +229,7 @@ class CameraModel: NSObject,
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
             }) { saved, error in
                 if saved {
-                    // todo
+                    self.setup()
                 } else {
                     print(error as Any)
                 }
@@ -331,7 +337,7 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
             VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
 
             if self.isRecording && self.videoFileOutputWriterInput?.isReadyForMoreMediaData ?? false {
-                let time = CMTime(seconds: timestamp - self.startTime, preferredTimescale: CMTimeScale(600))
+                let time = CMTime(seconds: timestamp - self.startTime - 0.01, preferredTimescale: CMTimeScale(600))
                 self.videoFileOutputWriterPool?.append(pixelBuffer, withPresentationTime: time)
             }
 
