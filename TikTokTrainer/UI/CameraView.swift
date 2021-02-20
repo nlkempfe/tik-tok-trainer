@@ -13,16 +13,12 @@ import AVKit
 struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
-    @State var playback: LoopingPlayer?
-    @State var isVideoPlayingBack = false
     @State var isCountingDown = false
     @State var timeRemaining = 3
     @State var timer: Timer?
-    @State var progressTimer: Timer?
     @State var opacity = 0.0
     @State var pulse: Bool = false
     @State var isVideoUploaded = false
-    @State var time = 0.0
     @State var duration = 0.0
     @State var progressView = UIProgressView()
 
