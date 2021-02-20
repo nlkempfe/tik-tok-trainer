@@ -8,6 +8,7 @@
 import SwiftUI
 import AVFoundation
 import Photos
+import AVKit
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
@@ -18,6 +19,8 @@ struct CameraView: View {
     @State var opacity = 0.0
     @State var pulse: Bool = false
     @State var isVideoUploaded = false
+    @State var duration = 0.0
+    @State var progressView = UIProgressView()
 
     var animatableData: Double {
         get { opacity }
@@ -34,7 +37,6 @@ struct CameraView: View {
         print("reupload file tapped")
         self.isVideoUploaded = false
     }
-
     // MARK: - End placeholders
 
     var cameraControls: some View {
@@ -93,11 +95,11 @@ struct CameraView: View {
                         if timeRemaining > 1 {
                             timeRemaining -= 1
                         } else {
-                            isCountingDown = false
                             timer?.invalidate()
                             timer = nil
                             timeRemaining = 3
                             camera.startRecording()
+                            isCountingDown = false
                         }
                     }
                 }
@@ -168,19 +170,21 @@ struct CameraView: View {
                                 .font(.caption)
                         }
                     }
-                    CameraPreview(
-                        currentImage: $camera.currentUIImage,
-                        result: $camera.currentResult,
-                        orientation: $camera.currentOrientation
-                    )
-                    .ignoresSafeArea(.all, edges: .all)
-                    .scaleEffect(x: 1.0,
-                                 y: NumConstants.yScale,
-                                 anchor: .center
-                    )
-                    .onTapGesture(count: 2,
-                                  perform: camera.switchCameraInput)
-                    .zIndex(-1)
+                    if !camera.isVideoRecorded {
+                        CameraPreview(currentImage: $camera.currentUIImage,
+                                      result: $camera.currentResult,
+                                      orientation: $camera.currentOrientation)
+                            .ignoresSafeArea(.all, edges: .all)
+                            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
+                            .onTapGesture(count: 2) {
+                                camera.switchCameraInput()
+                            }.zIndex(-1)
+                            .background(Color.black)
+                    } else {
+                        ZStack {
+                            LoopingPlayer(url: camera.outputURL)
+                        }
+                    }
                 }
                 .zIndex(-1)
             }
@@ -194,7 +198,16 @@ struct CameraView: View {
                 .fill()
                 .ignoresSafeArea(.all)
                 .background(Color.black)
+                .foregroundColor(Color.black)
+            VStack(alignment: .leading) {
+            if camera.isVideoRecorded {
+                ZStack {
+                ProgressBar(duration: CMTimeGetSeconds(AVAsset(url: camera.outputURL).duration))
+                }.zIndex(1)
+            }
             cameraPreview
+                .background(Color.black)
+            }
             VStack {
                 if camera.hasPermission {
                     HStack {
