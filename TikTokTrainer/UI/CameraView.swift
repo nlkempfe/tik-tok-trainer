@@ -18,9 +18,13 @@ struct CameraView: View {
     @State var isCountingDown = false
     @State var timeRemaining = 3
     @State var timer: Timer?
+    @State var progressTimer: Timer?
     @State var opacity = 0.0
     @State var pulse: Bool = false
     @State var isVideoUploaded = false
+    @State var time = 0.0
+    @State var duration = 0.0
+    @State var progressView = UIProgressView()
 
     var animatableData: Double {
         get { opacity }
@@ -199,8 +203,15 @@ struct CameraView: View {
                 .ignoresSafeArea(.all)
                 .background(Color.black)
                 .foregroundColor(Color.black)
+            VStack(alignment: .leading) {
+            if camera.isVideoRecorded {
+                ZStack {
+                ProgressBar(duration: CMTimeGetSeconds(AVAsset(url: camera.outputURL).duration))
+                }.zIndex(1)
+            }
             cameraPreview
                 .background(Color.black)
+            }
             VStack {
                 if camera.hasPermission {
                     HStack {

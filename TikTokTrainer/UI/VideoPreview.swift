@@ -52,3 +52,21 @@ class QueuePlayerUIView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+struct ProgressBar: UIViewRepresentable {
+    var duration: Double = 0.0
+    var progressBar = UIProgressView()
+
+    func makeUIView(context: Context) -> some UIView {
+        print(duration)
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: self.duration) {
+                progressBar.setProgress(1.0, animated: true)
+            }
+        }
+        return progressBar
+    }
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        // leave empty
+    }
+}
