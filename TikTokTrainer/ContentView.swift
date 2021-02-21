@@ -9,16 +9,16 @@ import Foundation
 import SwiftUI
 
 struct ContentView: View {
-    
+
     @State private var selectedTab = 0
     let numTabs = 3
-    
+
     init() {
         UITabBar.appearance().isTranslucent = false
         UITabBar.appearance().barTintColor = UIColor.black
         UITabBar.appearance().backgroundColor = UIColor.black
     }
-    
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -26,7 +26,7 @@ struct ContentView: View {
                 .ignoresSafeArea(.all)
                 .background(Color.black)
                 .foregroundColor(Color.black)
-            TabView (selection: $selectedTab) {
+            TabView(selection: $selectedTab) {
                 Text("First")
                     .tabItem {
                         Image(systemName: "questionmark")
