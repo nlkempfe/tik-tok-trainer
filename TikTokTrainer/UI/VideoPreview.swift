@@ -44,7 +44,7 @@ struct Thumbnail: View {
     var body: some View {
         ZStack {
             Image(uiImage: self.thumbnailImage)
-            .resizable()
+                .resizable()
         }
     }
 }

@@ -22,7 +22,7 @@
 		5F1BBF2725DEBC51007CBD42 /* VideoPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */; };
 		5F573A5C25E01155000F6719 /* moon.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5F573A5B25E01155000F6719 /* moon.mp4 */; };
 		5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */; };
-		5F8DCF0B25E2CAEE009679DE /* UploadedVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DCF0A25E2CAEE009679DE /* UploadedVideoView.swift */; };
+		5F8DCF0B25E2CAEE009679DE /* UploadedVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DCF0A25E2CAEE009679DE /* UploadedVideoViewController.swift */; };
 		5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAA3D2825DD5758002B4CBC /* Globals.swift */; };
 		6E643D75B85123118238BF1F /* Pods_TikTokTrainer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */; };
 		8F00EDFE86F2717DCB81C0F5 /* Pods_TikTokTrainerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E232AF959113C366B24B77F /* Pods_TikTokTrainerTests.framework */; };
@@ -70,7 +70,7 @@
 		5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreview.swift; sourceTree = "<group>"; };
 		5F573A5B25E01155000F6719 /* moon.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = moon.mp4; sourceTree = "<group>"; };
 		5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
-		5F8DCF0A25E2CAEE009679DE /* UploadedVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadedVideoView.swift; sourceTree = "<group>"; };
+		5F8DCF0A25E2CAEE009679DE /* UploadedVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadedVideoViewController.swift; sourceTree = "<group>"; };
 		5FAA3D2825DD5758002B4CBC /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86B37D709A7C4AB9FAE5379C /* Pods-TikTokTrainer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.release.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.release.xcconfig"; sourceTree = "<group>"; };
@@ -180,7 +180,7 @@
 				0E02D15525AFA56900004B2A /* CameraView.swift */,
 				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
 				5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */,
-				5F8DCF0A25E2CAEE009679DE /* UploadedVideoView.swift */,
+				5F8DCF0A25E2CAEE009679DE /* UploadedVideoViewController.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -425,7 +425,7 @@
 				0E12CFE725D7AF02003880B7 /* PoseNetResult.swift in Sources */,
 				5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */,
 				5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */,
-				5F8DCF0B25E2CAEE009679DE /* UploadedVideoView.swift in Sources */,
+				5F8DCF0B25E2CAEE009679DE /* UploadedVideoViewController.swift in Sources */,
 				5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */,
 				0E1BDB8B25D5940800F6CFA8 /* PoseNetProcesser.swift in Sources */,
 				0E12CFE225D7ABF7003880B7 /* CameraPreview.swift in Sources */,
