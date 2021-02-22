@@ -112,11 +112,12 @@ struct ScoringFunction {
     /// - Parameters:
     ///     - preRecordedVid: The video uploaded by the user and processed by the PoseNetProcessor
     ///     - recordedVid: The video recorded by the user using T3 and processed by the PoseNetProcessor
-    func computeUnweightedMSE() throws -> CGFloat {
+    private func computeUnweightedMSE() throws -> CGFloat {
         guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
         
         let prVid = preRecordedVid!
         let rVid = recordedVid!
+        let maxError: CGFloat = 402.5
         // ensures that there are an equivalent number of data slices
 //        guard prVid.data.count == rVid.data.count else { throw ScoringFunctionError.videoLengthIncompatible }
         print(prVid.data.count)
@@ -138,7 +139,19 @@ struct ScoringFunction {
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
         let length = CGFloat(angleDifferences.count)
-        return error/length
+        return (maxError - error/length)/maxError
+    }
+    
+    // computes score using any scoring function (currently unweighted L2 MSE) and feeds result to callback
+    func computeScore(callback: @escaping (Result<CGFloat, Error>) -> Void) {
+        var score: CGFloat = 0
+        do {
+            score = try computeUnweightedMSE()
+        } catch {
+            print("Error computing score.\n Error: \(error)")
+            return callback(.failure(error))
+        }
+        return callback(.success(score))
     }
 }
 
