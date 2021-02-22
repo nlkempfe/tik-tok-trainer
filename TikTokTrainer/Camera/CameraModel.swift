@@ -240,7 +240,7 @@ class CameraModel: NSObject,
                             }
                         }
                 } else {
-                    print("test", error as Any)
+                    print("Could not save video", error as Any)
                 }
             }
         }
