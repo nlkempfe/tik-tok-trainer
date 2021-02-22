@@ -7,6 +7,7 @@ target 'TikTokTrainer' do
 
   # Pods for TikTokTrainer
   pod 'SwiftLint'
+  pod 'PromisesSwift'
 
   target 'TikTokTrainerTests' do
     inherit! :search_paths

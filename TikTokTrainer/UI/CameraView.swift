@@ -302,9 +302,11 @@ struct CameraView: View {
                         }
                     }
                     Spacer()
+
                     if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded {
                         recordButton
-                            .frame(height: 75)
+                        .frame(height: 75)
+                        .offset(x: 0, y: -50)
                     }
                 } else {
                     HStack {

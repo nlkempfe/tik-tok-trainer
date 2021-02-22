@@ -26,6 +26,7 @@
 		5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAA3D2825DD5758002B4CBC /* Globals.swift */; };
 		6E643D75B85123118238BF1F /* Pods_TikTokTrainer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */; };
 		8F00EDFE86F2717DCB81C0F5 /* Pods_TikTokTrainerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E232AF959113C366B24B77F /* Pods_TikTokTrainerTests.framework */; };
+		C03D3AE925E2232900836A58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03D3AE825E2232900836A58 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 		6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86B37D709A7C4AB9FAE5379C /* Pods-TikTokTrainer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.release.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.release.xcconfig"; sourceTree = "<group>"; };
 		BE1EEFC47EAF41456E157D1F /* Pods-TikTokTrainer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.debug.xcconfig"; sourceTree = "<group>"; };
+		C03D3AE825E2232900836A58 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5AD33069A2E3DAB6AFA0EDF /* Pods_TikTokTrainer_TikTokTrainerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer_TikTokTrainerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E63226C6660A03A93E3B0101 /* Pods-TikTokTrainerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainerTests.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainerTests/Pods-TikTokTrainerTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -144,6 +146,7 @@
 				0E1BDB8A25D5940800F6CFA8 /* PoseNetProcesser.swift */,
 				0E12CFE625D7AF02003880B7 /* PoseNetResult.swift */,
 				5FAA3D2825DD5758002B4CBC /* Globals.swift */,
+				C03D3AE825E2232900836A58 /* ContentView.swift */,
 			);
 			path = TikTokTrainer;
 			sourceTree = "<group>";
@@ -227,6 +230,7 @@
 				0E02D14C25AFA56900004B2A /* Sources */,
 				0E02D14D25AFA56900004B2A /* Frameworks */,
 				0E02D14E25AFA56900004B2A /* Resources */,
+				1D3FAA969DBEA1AAB4186028 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -264,6 +268,7 @@
 				0E02D16825AFA56A00004B2A /* Sources */,
 				0E02D16925AFA56A00004B2A /* Frameworks */,
 				0E02D16A25AFA56A00004B2A /* Resources */,
+				6AFC58BF9D56FDC7556B4162 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -346,6 +351,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1D3FAA969DBEA1AAB4186028 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		27DC053F6B776D71DCE457BE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -390,6 +412,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		6AFC58BF9D56FDC7556B4162 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TikTokTrainer-TikTokTrainerUITests/Pods-TikTokTrainer-TikTokTrainerUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TikTokTrainer-TikTokTrainerUITests/Pods-TikTokTrainer-TikTokTrainerUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TikTokTrainer-TikTokTrainerUITests/Pods-TikTokTrainer-TikTokTrainerUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		7866EDE7892F45217683D6DF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -426,6 +465,7 @@
 				5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */,
 				5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */,
 				5F8DCF0B25E2CAEE009679DE /* UploadedVideoViewController.swift in Sources */,
+				C03D3AE925E2232900836A58 /* ContentView.swift in Sources */,
 				5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */,
 				0E1BDB8B25D5940800F6CFA8 /* PoseNetProcesser.swift in Sources */,
 				0E12CFE225D7ABF7003880B7 /* CameraPreview.swift in Sources */,
