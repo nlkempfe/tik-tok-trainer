@@ -16,11 +16,16 @@ struct CameraView: View {
     @State var isCountingDown = false
     @State var timeRemaining = 3
     @State var timer: Timer?
+    @State var recordTimer: Timer?
     @State var opacity = 0.0
     @State var pulse: Bool = false
-    @State var isVideoUploaded = false
-    @State var duration = 0.0
+    @State var isVideoUploaded: Bool = false
+    @State var isVideoPickerOpen = false
+    @State var isUploading: Bool = false
+    @State var duration: Double = Double.infinity
     @State var progressView = UIProgressView()
+    @State var uploadedVideoURL: URL = URL(string: "placeholder")!
+    @State var thumbnailImage: UIImage = UIImage()
 
     var animatableData: Double {
         get { opacity }
@@ -39,36 +44,54 @@ struct CameraView: View {
     }
     // MARK: - End placeholders
 
+    func reset() {
+        self.isVideoUploaded = false
+        self.duration = Double.infinity
+        self.opacity = 0.0
+    }
+
+    var flipCameraControl: some View {
+        Button(action: camera.switchCameraInput, label: {
+            Image(systemName: IconConstants.cameraOutline)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .padding(.trailing, 5)
+    }
+
+    var flashControl: some View {
+        Button(action: camera.toggleFlash, label: {
+            Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .padding(.trailing, 5)
+    }
+
+    var reuploadVideoControl: some View {
+        Button(action: self.reuploadFile, label: {
+            Image(systemName: IconConstants.uploadFile)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .padding(.trailing, 5)
+    }
+
     var cameraControls: some View {
         VStack(spacing: 0) {
-            if !self.isCountingDown && !camera.isRecording {
-                Button(action: camera.switchCameraInput, label: {
-                    Image(systemName: IconConstants.cameraOutline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .clipShape(Circle())
-                })
-                .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                .padding(.trailing, 5)
+            if !self.isCountingDown && !camera.isRecording && !self.isVideoPickerOpen && !camera.isVideoRecorded {
+                    flipCameraControl
                 if camera.currentOrientation == .back {
-                    Button(action: camera.toggleFlash, label: {
-                        Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
-                            .foregroundColor(.white)
-                            .padding()
-                            .clipShape(Circle())
-                    })
-                    .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                    .padding(.trailing, 5)
+                    flashControl
                 }
                 if self.isVideoUploaded {
-                    Button(action: self.reuploadFile, label: {
-                        Image(systemName: IconConstants.uploadFile)
-                            .foregroundColor(.white)
-                            .padding()
-                            .clipShape(Circle())
-                    })
-                    .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                    .padding(.trailing, 5)
+                    reuploadVideoControl
                 }
             }
         }.padding()
@@ -83,7 +106,8 @@ struct CameraView: View {
             Button(action: {
                 self.opacity = 0
                 if camera.isRecording {
-                    camera.stopRecording()
+                    camera.stopRecording(isEarly: true)
+                    self.reset()
                 } else if isCountingDown {
                     isCountingDown = false
                     timer?.invalidate()
@@ -100,6 +124,11 @@ struct CameraView: View {
                             timeRemaining = 3
                             camera.startRecording()
                             isCountingDown = false
+                        }
+                    }
+                    recordTimer = Timer.scheduledTimer(withTimeInterval: self.duration + Double(timeRemaining), repeats: false) { _ in
+                        if camera.isRecording {
+                            camera.stopRecording(isEarly: false)
                         }
                     }
                 }
@@ -134,59 +163,103 @@ struct CameraView: View {
         }
     }
 
+    var playbackView: some View {
+        HStack(spacing: 0) {
+            LoopingPlayer(url: self.uploadedVideoURL)
+            LoopingPlayer(url: camera.outputURL)
+        }.zIndex(1.0)
+    }
+
+    var dimmer: some View {
+        Rectangle()
+            .fill()
+            .foregroundColor(.black)
+            .opacity(opacity)
+            .ignoresSafeArea(.all, edges: .all)
+            .onAppear {
+                withAnimation {
+                    self.opacity = 0.8
+                }
+            }
+    }
+
+    var imagePicker: some View {
+        ImagePicker(uploadedVideoURL: self.$uploadedVideoURL, isVideoPickerOpen: self.$isVideoPickerOpen, isVideoUploaded: self.$isVideoUploaded, thumbnailImage: self.$thumbnailImage, duration: self.$duration)
+    }
+
+    var background: some View {
+        Rectangle()
+            .fill()
+            .foregroundColor(.black)
+            .ignoresSafeArea(.all, edges: .all)
+            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
+            .zIndex(-1)
+    }
+
+    var uploadVideoButton: some View {
+        VStack {
+            Button(action: {self.isVideoPickerOpen = true}, label: {
+                Image(systemName: IconConstants.uploadFileFilled)
+                    .foregroundColor(.white)
+                    .padding()
+                    .clipShape(Circle())
+            })
+            .scaleEffect(CGSize(width: 1.5, height: 1.5))
+            Text(StringConstants.uploadVideo)
+                .foregroundColor(.white)
+                .font(.caption)
+        }
+    }
+
+    var thumbnail: some View {
+        Thumbnail(thumbnailImage: self.$thumbnailImage)
+            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
+            .zIndex(-1.0)
+            .background(Color.black)
+    }
+
+    var uploadedVideoPlayback: some View {
+        Player(url: self.uploadedVideoURL)
+            .scaleEffect(x: 1.0, y: 0.98, anchor: .center)
+    }
+
+    var liveCameraView: some View {
+        CameraPreview(currentImage: $camera.currentUIImage,
+                      result: $camera.currentResult,
+                      orientation: $camera.currentOrientation)
+            .ignoresSafeArea(.all, edges: .all)
+            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
+            .onTapGesture(count: 2) {
+                camera.switchCameraInput()
+            }.zIndex(1.0)
+            .background(Color.black)
+    }
+
     var cameraPreview: some View {
         ZStack {
-            if camera.currentUIImage != nil {
+            if camera.currentUIImage != nil && !camera.isVideoRecorded {
                 if isCountingDown {
-                    Rectangle()
-                        .fill()
-                        .foregroundColor(.black)
-                        .opacity(opacity)
-                        .ignoresSafeArea(.all, edges: .all)
-                        .onAppear {
-                            withAnimation {
-                                self.opacity = 0.8
-                            }
-                        }
+                    dimmer
+                }
+                if self.isVideoPickerOpen {
+                    imagePicker
                 }
                 HStack(spacing: 0) {
                     ZStack {
-                        Rectangle()
-                            .fill()
-                            .foregroundColor(.black)
-                            .ignoresSafeArea(.all, edges: .all)
-                            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
-                            .zIndex(-1)
-                        VStack {
-                            Button(action: {self.uploadFile()}, label: {
-                                Image(systemName: IconConstants.uploadFileFilled)
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .clipShape(Circle())
-                            })
-                            .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                            Text(StringConstants.uploadVideo)
-                                .foregroundColor(.white)
-                                .font(.caption)
+                        background
+                        if !self.isVideoUploaded {
+                            uploadVideoButton
+                        } else if !camera.isRecording && self.isVideoUploaded {
+                            thumbnail
+                        } else if camera.isRecording {
+                            uploadedVideoPlayback
                         }
                     }
-                    if !camera.isVideoRecorded {
-                        CameraPreview(currentImage: $camera.currentUIImage,
-                                      result: $camera.currentResult,
-                                      orientation: $camera.currentOrientation)
-                            .ignoresSafeArea(.all, edges: .all)
-                            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
-                            .onTapGesture(count: 2) {
-                                camera.switchCameraInput()
-                            }.zIndex(-1)
-                            .background(Color.black)
-                    } else {
-                        ZStack {
-                            LoopingPlayer(url: camera.outputURL)
-                        }
-                    }
+                    liveCameraView
                 }
                 .zIndex(-1)
+            } else if camera.currentUIImage != nil && camera.outputURL != nil {
+                playbackView
             }
         }
     }
@@ -200,9 +273,9 @@ struct CameraView: View {
                 .background(Color.black)
                 .foregroundColor(Color.black)
             VStack(alignment: .leading) {
-            if camera.isVideoRecorded {
+            if camera.isRecording {
                 ZStack {
-                ProgressBar(duration: CMTimeGetSeconds(AVAsset(url: camera.outputURL).duration))
+                    ProgressBar(duration: CMTimeGetSeconds(AVAsset(url: self.uploadedVideoURL).duration))
                 }.zIndex(1)
             }
             cameraPreview
@@ -217,8 +290,10 @@ struct CameraView: View {
                         }
                     }
                     Spacer()
+                    if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded {
                     recordButton
                         .frame(height: 75)
+                    }
                 } else {
                     HStack {
                         Button(action: {permissions.openPermissionsSettings()}, label: {
@@ -241,28 +316,28 @@ struct CameraView_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            CameraView()
-            CameraView()
-                .recordButton
-                .background(Color.black)
-                .previewLayout(.sizeThatFits)
-            CameraView()
-                .cameraControls
-                .background(Color.black)
-                .previewLayout(.sizeThatFits)
-            CameraView(camera: cameraBack)
-                .cameraControls
-                .background(Color.black)
-                .previewLayout(.sizeThatFits)
-                .onAppear {
-                    cameraBack.currentOrientation = .back
-                }
-            CameraView()
-                .cameraPreview
-                .background(Color.black)
-            CameraView()
-                .cameraPreview
-                .scaleEffect(0.5)
+//            CameraView()
+//            CameraView()
+//                .recordButton
+//                .background(Color.black)
+//                .previewLayout(.sizeThatFits)
+//            CameraView()
+//                .cameraControls
+//                .background(Color.black)
+//                .previewLayout(.sizeThatFits)
+//            CameraView(camera: cameraBack)
+//                .cameraControls
+//                .background(Color.black)
+//                .previewLayout(.sizeThatFits)
+//                .onAppear {
+//                    cameraBack.currentOrientation = .back
+//                }
+//            CameraView()
+//                .cameraPreview
+//                .background(Color.black)
+//            CameraView()
+//                .cameraPreview
+//                .scaleEffect(0.5)
         }
     }
 }
