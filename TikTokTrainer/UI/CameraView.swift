@@ -219,6 +219,7 @@ struct CameraView: View {
                     Spacer()
                     recordButton
                         .frame(height: 75)
+                        .offset(x: 0, y: -50)
                 } else {
                     HStack {
                         Button(action: {permissions.openPermissionsSettings()}, label: {
