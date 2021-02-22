@@ -27,14 +27,19 @@ struct ImagePicker: UIViewControllerRepresentable {
 
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as? URL {
-                    self.parent.uploadedVideoURL = videoURL
-                    let asset = AVAsset(url: videoURL)
-                    let imageGenerator = AVAssetImageGenerator(asset: asset)
-                    imageGenerator.appliesPreferredTrackTransform = true
-                    let time = CMTimeMake(value: 1, timescale: 1)
-                    let imageRef = try! imageGenerator.copyCGImage(at: time, actualTime: nil)
-                    self.parent.thumbnailImage = UIImage(cgImage: imageRef)
+                self.parent.uploadedVideoURL = videoURL
+                let asset = AVAsset(url: videoURL)
+                let imageGenerator = AVAssetImageGenerator(asset: asset)
+                imageGenerator.appliesPreferredTrackTransform = true
+                let time = CMTimeMake(value: 1, timescale: 1)
+                var imageRef = UIImage().cgImage
+                do {
+                    imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+                } catch {
+                    print(error)
                 }
+                self.parent.thumbnailImage = UIImage(cgImage: imageRef!)
+            }
             self.parent.duration = CMTimeGetSeconds(AVAsset(url: self.parent.uploadedVideoURL).duration)
             self.parent.isVideoPickerOpen = false
             self.parent.isVideoUploaded = true
