@@ -16,7 +16,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     @Binding var isVideoPickerOpen: Bool
     @Binding var isVideoUploaded: Bool
     @Binding var thumbnailImage: UIImage
-    @Binding var duration: Double
+    @Binding var uploadedVideoDuration: Double
 
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         var parent: ImagePicker
@@ -36,11 +36,11 @@ struct ImagePicker: UIViewControllerRepresentable {
                 do {
                     imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
                 } catch {
-                    print(error)
+                    print("imageGenerator could not copy image from AVAsset", error)
                 }
                 self.parent.thumbnailImage = UIImage(cgImage: imageRef!)
             }
-            self.parent.duration = CMTimeGetSeconds(AVAsset(url: self.parent.uploadedVideoURL).duration)
+            self.parent.uploadedVideoDuration = CMTimeGetSeconds(AVAsset(url: self.parent.uploadedVideoURL).duration)
             self.parent.isVideoPickerOpen = false
             self.parent.isVideoUploaded = true
 

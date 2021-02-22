@@ -22,7 +22,7 @@ struct CameraView: View {
     @State var isVideoUploaded: Bool = false
     @State var isVideoPickerOpen = false
     @State var isUploading: Bool = false
-    @State var duration: Double = Double.infinity
+    @State var uploadedVideoDuration: Double = Double.infinity
     @State var progressView = UIProgressView()
     @State var uploadedVideoURL: URL = URL(string: "placeholder")!
     @State var thumbnailImage: UIImage = UIImage()
@@ -59,30 +59,31 @@ struct CameraView: View {
         print("submit button pressed")
     }
 
+    func initializeTimerVars() {
+        isCountingDown = false
+        timer?.invalidate()
+        timer = nil
+        timeRemaining = 3
+    }
+
     func startCountdown() {
         self.opacity = 0
         if camera.isRecording {
             camera.stopRecording(isEarly: true)
             self.reset()
         } else if isCountingDown {
-            isCountingDown = false
-            timer?.invalidate()
-            timer = nil
-            timeRemaining = 3
+            initializeTimerVars()
         } else {
             isCountingDown = true
             timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                 if timeRemaining > 1 {
                     timeRemaining -= 1
                 } else {
-                    timer?.invalidate()
-                    timer = nil
-                    timeRemaining = 3
+                    initializeTimerVars()
                     camera.startRecording()
-                    isCountingDown = false
                 }
             }
-            recordTimer = Timer.scheduledTimer(withTimeInterval: self.duration + Double(timeRemaining), repeats: false) { _ in
+            recordTimer = Timer.scheduledTimer(withTimeInterval: self.uploadedVideoDuration + Double(timeRemaining), repeats: false) { _ in
                 if camera.isRecording {
                     camera.stopRecording(isEarly: false)
                 }
@@ -97,7 +98,7 @@ struct CameraView: View {
                 .padding()
                 .clipShape(Circle())
         })
-        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
         .padding(.trailing, 5)
     }
 
@@ -108,7 +109,7 @@ struct CameraView: View {
                 .padding()
                 .clipShape(Circle())
         })
-        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
         .padding(.trailing, 5)
     }
 
@@ -147,7 +148,7 @@ struct CameraView: View {
                 secondaryButton: .cancel()
             )
         }
-        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
         .padding(.trailing, 5)
     }
 
@@ -158,7 +159,7 @@ struct CameraView: View {
                 .padding()
                 .clipShape(Circle())
         })
-        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
         .padding(.trailing, 5)
     }
 
@@ -236,7 +237,7 @@ struct CameraView: View {
     }
 
     var imagePicker: some View {
-        ImagePicker(uploadedVideoURL: self.$uploadedVideoURL, isVideoPickerOpen: self.$isVideoPickerOpen, isVideoUploaded: self.$isVideoUploaded, thumbnailImage: self.$thumbnailImage, duration: self.$duration)
+        ImagePicker(uploadedVideoURL: self.$uploadedVideoURL, isVideoPickerOpen: self.$isVideoPickerOpen, isVideoUploaded: self.$isVideoUploaded, thumbnailImage: self.$thumbnailImage, uploadedVideoDuration: self.$uploadedVideoDuration)
     }
 
     var uploadControlBackground: some View {
@@ -264,7 +265,7 @@ struct CameraView: View {
                     .padding()
                     .clipShape(Circle())
             })
-            .scaleEffect(CGSize(width: 1.5, height: 1.5))
+            .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
             Text(StringConstants.uploadVideo)
                 .foregroundColor(.white)
                 .font(.caption)
@@ -285,7 +286,7 @@ struct CameraView: View {
     }
 
     var uploadedVideoPlayback: some View {
-        Player(url: self.uploadedVideoURL)
+        VideoPlayerView(url: self.uploadedVideoURL)
             .scaleEffect(x: 1.0, y: 0.98, anchor: .center)
     }
 

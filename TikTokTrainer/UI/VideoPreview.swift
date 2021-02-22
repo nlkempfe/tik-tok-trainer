@@ -25,7 +25,7 @@ struct LoopingPlayer: UIViewRepresentable {
     }
 }
 
-struct Player: UIViewRepresentable {
+struct VideoPlayerView: UIViewRepresentable {
     var url: URL
 
     func makeUIView(context: Context) -> some UIView {

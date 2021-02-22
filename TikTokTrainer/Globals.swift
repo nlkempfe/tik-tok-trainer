@@ -11,6 +11,8 @@ struct NumConstants {
     static let yScale = CGFloat(0.45)
     static let yCoordinateScale = CGFloat(1.25)
     static let xCoordinateScale = CGFloat(0.5)
+    static let iconXScale = CGFloat(1.5)
+    static let iconYScale = CGFloat(1.5)
 }
 
 struct IconConstants {
