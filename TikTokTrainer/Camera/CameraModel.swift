@@ -219,7 +219,7 @@ class CameraModel: NSObject,
         self.videoFileOutputWriter?.startSession(atSourceTime: .zero)
     }
 
-    func stopRecording() {
+    func stopRecording(isEarly: Bool) {
         self.isRecording = false
         guard let output = self.videoFileOutputWriter else {
             return
@@ -230,13 +230,20 @@ class CameraModel: NSObject,
             }) { saved, error in
                 if saved {
                     self.setup()
+                        if !isEarly {
+                            DispatchQueue.main.async {
+                                self.isVideoRecorded = true
+                        }
+                    } else {
+                            DispatchQueue.main.async {
+                                self.isVideoRecorded = false
+                            }
+                        }
                 } else {
-                    print(error as Any)
+                    print("Could not save video", error as Any)
                 }
             }
         }
-
-        self.isVideoRecorded = true
 
         // turn off flashlight if it's on
         if self.flashlightOn {

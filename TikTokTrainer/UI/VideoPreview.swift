@@ -10,14 +10,11 @@ import AVFoundation
 import SwiftUI
 import AVKit
 
-public var videoURL: URL!
-
 struct LoopingPlayer: UIViewRepresentable {
-    var url: URL!
+    var url: URL
 
     func makeUIView(context: Context) -> some UIView {
-        videoURL = url
-        return QueuePlayerUIView(frame: .zero)
+        return QueuePlayerUIView(frame: .zero, videoURL: url)
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
@@ -25,11 +22,34 @@ struct LoopingPlayer: UIViewRepresentable {
     }
 }
 
+struct VideoPlayerView: UIViewRepresentable {
+    var url: URL
+
+    func makeUIView(context: Context) -> some UIView {
+        return PlayerUIView(frame: .zero, videoURL: url)
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        // leave this empty
+    }
+}
+
+struct Thumbnail: View {
+    @Binding var thumbnailImage: UIImage
+
+    var body: some View {
+        ZStack {
+            Image(uiImage: self.thumbnailImage)
+                .resizable()
+        }
+    }
+}
+
 class QueuePlayerUIView: UIView {
     private var playerLayer = AVPlayerLayer()
     private var playerLooper: AVPlayerLooper?
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, videoURL: URL) {
         super.init(frame: frame)
 
         let playerItem = AVPlayerItem(url: videoURL)
@@ -39,8 +59,37 @@ class QueuePlayerUIView: UIView {
         layer.addSublayer(playerLayer)
 
         playerLooper = AVPlayerLooper(player: player, templateItem: playerItem)
-
         player.play()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        playerLayer.frame = bounds
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class PlayerUIView: UIView {
+    private var playerLayer = AVPlayerLayer()
+    private var player: AVPlayer?
+
+    init(frame: CGRect, videoURL: URL) {
+        super.init(frame: frame)
+
+        let playerItem = AVPlayerItem(url: videoURL)
+
+        player = AVPlayer(playerItem: playerItem)
+        playerLayer.player = player
+        layer.addSublayer(playerLayer)
+
+        player?.play()
+    }
+
+    func playVideo() {
+        player?.play()
     }
 
     override func layoutSubviews() {
@@ -58,7 +107,6 @@ struct ProgressBar: UIViewRepresentable {
     var progressBar = UIProgressView()
 
     func makeUIView(context: Context) -> some UIView {
-        print(duration)
         DispatchQueue.main.async {
             UIView.animate(withDuration: self.duration) {
                 progressBar.setProgress(1.0, animated: true)
