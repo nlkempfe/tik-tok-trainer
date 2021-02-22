@@ -10,14 +10,11 @@ import AVFoundation
 import SwiftUI
 import AVKit
 
-public var videoURL: URL!
-
 struct LoopingPlayer: UIViewRepresentable {
     var url: URL
 
     func makeUIView(context: Context) -> some UIView {
-        videoURL = url
-        return QueuePlayerUIView(frame: .zero)
+        return QueuePlayerUIView(frame: .zero, videoURL: url)
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
@@ -29,8 +26,7 @@ struct VideoPlayerView: UIViewRepresentable {
     var url: URL
 
     func makeUIView(context: Context) -> some UIView {
-        videoURL = url
-        return PlayerUIView(frame: .zero)
+        return PlayerUIView(frame: .zero, videoURL: url)
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
@@ -53,7 +49,7 @@ class QueuePlayerUIView: UIView {
     private var playerLayer = AVPlayerLayer()
     private var playerLooper: AVPlayerLooper?
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, videoURL: URL) {
         super.init(frame: frame)
 
         let playerItem = AVPlayerItem(url: videoURL)
@@ -80,7 +76,7 @@ class PlayerUIView: UIView {
     private var playerLayer = AVPlayerLayer()
     private var player: AVPlayer?
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, videoURL: URL) {
         super.init(frame: frame)
 
         let playerItem = AVPlayerItem(url: videoURL)
