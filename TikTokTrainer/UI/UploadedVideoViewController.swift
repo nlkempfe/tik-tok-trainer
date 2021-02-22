@@ -56,6 +56,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         let picker = UIImagePickerController()
         picker.mediaTypes = ["public.movie"]
         picker.delegate = context.coordinator
+        picker.modalPresentationStyle = .overFullScreen
         return picker
     }
 

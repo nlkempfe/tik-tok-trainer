@@ -26,6 +26,7 @@ struct CameraView: View {
     @State var progressView = UIProgressView()
     @State var uploadedVideoURL: URL = URL(string: "placeholder")!
     @State var thumbnailImage: UIImage = UIImage()
+    @State var showDiscardAlert = false
 
     var animatableData: Double {
         get { opacity }
@@ -43,11 +44,18 @@ struct CameraView: View {
         self.isVideoUploaded = false
     }
     // MARK: - End placeholders
+    
+    func discard() {
+        print("discard video")
+    }
 
     func reset() {
-        self.isVideoUploaded = false
         self.duration = Double.infinity
         self.opacity = 0.0
+    }
+    
+    func submit() {
+        print("submit button pressed")
     }
 
     func startCountdown() {
@@ -99,6 +107,45 @@ struct CameraView: View {
                 .padding()
                 .clipShape(Circle())
         })
+        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+        .padding(.trailing, 5)
+    }
+    
+    var submitButton: some View {
+        Button(action: {
+            submit()
+        }, label: {
+            Text("Submit")
+                .foregroundColor(.white)
+                .clipShape(Rectangle())
+                .padding(.leading, 20)
+                .padding(.trailing, 20)
+                .padding(.top, 10)
+                .padding(.bottom, 10)
+        })
+        .background(Color.blue)
+        .padding(.trailing, 5)
+    }
+    
+    var discardButton: some View {
+        Button(action: {
+            showDiscardAlert = true
+        }, label: {
+            Image(systemName: "xmark")
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .alert(isPresented: $showDiscardAlert) {
+            Alert(
+                title: Text("Discard Recording"),
+                message: Text("Are you sure you want to discard the recording?"),
+                primaryButton: .destructive(Text("Discard")) {
+                    discard()
+                },
+                secondaryButton: .cancel()
+            )
+        }
         .scaleEffect(CGSize(width: 1.5, height: 1.5))
         .padding(.trailing, 5)
     }
@@ -290,6 +337,9 @@ struct CameraView: View {
                 if camera.isRecording {
                     progressBar
                 }
+                if camera.isVideoRecorded {
+                    discardButton
+                }
                 cameraPreview
                     .background(Color.black)
             }
@@ -307,6 +357,10 @@ struct CameraView: View {
                         recordButton
                         .frame(height: 75)
                         .offset(x: 0, y: -50)
+                    } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded {
+                        submitButton
+                            .frame(height: 75)
+                            .offset(x: 0, y: -50)
                     }
                 } else {
                     HStack {
