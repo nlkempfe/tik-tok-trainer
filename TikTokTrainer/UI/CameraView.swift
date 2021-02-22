@@ -55,9 +55,9 @@ struct CameraView: View {
         self.opacity = 0.0
     }
 
-    func submit() {
-        print("submit button pressed")
-    }
+                                            func submit() {
+                                                                           print("submit button pressed")
+                                                                        }
 
     func initializeTimerVars() {
         isCountingDown = false
@@ -92,7 +92,7 @@ struct CameraView: View {
     }
 
     var flipCameraControl: some View {
-        Button(action: camera.switchCameraInput, label: {
+        Button(action: camera.switchCameraInput ,label: {
             Image(systemName: IconConstants.cameraOutline)
                 .foregroundColor(.white)
                 .padding()
