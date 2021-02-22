@@ -20,37 +20,37 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill()
-                .ignoresSafeArea(.all)
-                .background(Color.black)
-                .foregroundColor(Color.black)
-            TabView(selection: $selectedTab) {
-                Text("First")
-                    .tabItem {
-                        Image(systemName: "questionmark")
-                            Text("Tutorial")
-                            .foregroundColor(.white)
-                    }
-                    .tag(0)
+//        ZStack {
+//            Rectangle()
+//                .fill()
+//                .ignoresSafeArea(.all)
+//                .background(Color.black)
+//                .foregroundColor(Color.black)
+//            TabView(selection: $selectedTab) {
+//                Text("First")
+//                    .tabItem {
+//                        Image(systemName: "questionmark")
+//                            Text("Tutorial")
+//                            .foregroundColor(.white)
+//                    }
+//                    .tag(0)
                 CameraView()
-                    .tabItem {
-                        Image(systemName: "video")
-                        Text("Record")
-                            .foregroundColor(.white)
-                    }
-                    .tag(1)
-                Text("History")
-                    .tabItem {
-                        Image(systemName: "clock")
-                        Text("History")
-                            .foregroundColor(.white)
-                    }
-                    .tag(2)
-            }
-        }
-        .accentColor(Color.red)
-        .background(Color.black)
+//                    .tabItem {
+//                        Image(systemName: "video")
+//                        Text("Record")
+//                            .foregroundColor(.white)
+//                    }
+//                    .tag(1)
+//                Text("History")
+//                    .tabItem {
+//                        Image(systemName: "clock")
+//                        Text("History")
+//                            .foregroundColor(.white)
+//                    }
+//                    .tag(2)
+//            }
+//        }
+//        .accentColor(Color.red)
+//        .background(Color.black)
     }
 }
