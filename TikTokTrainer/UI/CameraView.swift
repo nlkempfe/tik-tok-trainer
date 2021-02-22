@@ -44,16 +44,17 @@ struct CameraView: View {
         self.isVideoUploaded = false
     }
     // MARK: - End placeholders
-    
+
     func discard() {
-        print("discard video")
+        camera.isVideoRecorded = false
+        self.opacity = 0.0
+        self.showDiscardAlert = false
     }
 
     func reset() {
-        self.duration = Double.infinity
         self.opacity = 0.0
     }
-    
+
     func submit() {
         print("submit button pressed")
     }
@@ -110,7 +111,7 @@ struct CameraView: View {
         .scaleEffect(CGSize(width: 1.5, height: 1.5))
         .padding(.trailing, 5)
     }
-    
+
     var submitButton: some View {
         Button(action: {
             submit()
@@ -126,7 +127,7 @@ struct CameraView: View {
         .background(Color.blue)
         .padding(.trailing, 5)
     }
-    
+
     var discardButton: some View {
         Button(action: {
             showDiscardAlert = true
