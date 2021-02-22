@@ -14,7 +14,7 @@ struct CameraView: View {
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionModel()
     @State var isCountingDown = false
-    @State var timeRemaining = 3
+    @State var timeRemaining = NumConstants.timerVal
     @State var timer: Timer?
     @State var recordTimer: Timer?
     @State var opacity = 0.0
@@ -63,7 +63,7 @@ struct CameraView: View {
         isCountingDown = false
         timer?.invalidate()
         timer = nil
-        timeRemaining = 3
+        timeRemaining = NumConstants.timerVal
     }
 
     func startCountdown() {

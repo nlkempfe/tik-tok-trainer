@@ -13,6 +13,7 @@ struct NumConstants {
     static let xCoordinateScale = CGFloat(0.5)
     static let iconXScale = CGFloat(1.5)
     static let iconYScale = CGFloat(1.5)
+    static let timerVal = 3
 }
 
 struct IconConstants {
