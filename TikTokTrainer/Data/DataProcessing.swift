@@ -46,30 +46,26 @@ struct ScoringFunction {
     ///
     /// - Parameters:
     ///     - video: The video uploaded by the user and processed by the PoseNetProcessor
-    private func computeAngles(video: ProcessedVideo) -> Array<Array<CGFloat>> {
-        var angles = [[CGFloat]]()
-        angles.append([])
-        var i = 0
-        
-        for slice in video.data {
-            for triple in jointTriples {
-                let pntOne = triple.0
-                let pntTwo = triple.1
-                let pntThree = triple.2
-                var angle: CGFloat = 0
-                
-                if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
-                    angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
-                    print(pntTwo.rawValue + ": " + angle.description)
+    private func computeAngles(video: ProcessedVideo) -> Array<[String: CGFloat]> {
+            var angles = [[String: CGFloat]]()
+            
+            for slice in video.data {
+                var sliceData = [String: CGFloat]()
+                for triple in jointTriples {
+                    let pntOne = triple.0
+                    let pntTwo = triple.1
+                    let pntThree = triple.2
+                    var angle: CGFloat = 0
+                    
+                    if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
+                        angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
+                        sliceData[pntTwo.rawValue] = angle
+                    }
                 }
-                print()
-                angles[i].append(angle)
+                angles.append(sliceData)
             }
-            angles.append([])
-            i = i + 1
+            return angles
         }
-        return angles
-    }
     
     private func angleBetweenPoints(leftPoint: VNRecognizedPoint, middlePoint: VNRecognizedPoint, rightPoint: VNRecognizedPoint) -> CGFloat {
         return angleBetweenPoints(leftPoint: CGPoint(x: leftPoint.x, y: leftPoint.y), middlePoint: CGPoint(x: middlePoint.x, y: middlePoint.y), rightPoint: CGPoint(x: rightPoint.x, y: rightPoint.y))
@@ -88,23 +84,28 @@ struct ScoringFunction {
     }
     
     private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> Array<Array<CGFloat>> {
-        let preRecordedPoses = computeAngles(video: preRecordedVid)
-        let recordedPoses = computeAngles(video: recordedVid)
-        var angleDifferences = [[CGFloat]]()
-        let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
-        
-        for (i, poseAngles) in preRecordedPoses.enumerated() {
-            if i < minSlices {
-                angleDifferences.append([])
-                for (j, angle) in poseAngles.enumerated() {
-                    // This is where to add shifts or padding to angle differences
-                    // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
-                    angleDifferences[i].append(abs(angle - recordedPoses[i][j]))
+            let preRecordedPoses = computeAngles(video: preRecordedVid)
+            let recordedPoses = computeAngles(video: recordedVid)
+            var angleDifferences = [[CGFloat]]()
+            let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
+            
+            for (i, poseAngles) in preRecordedPoses.enumerated() {
+                if i < minSlices {
+                    angleDifferences.append([])
+                    for (_, angle) in poseAngles.enumerated() {
+                        // This is where to add shifts or padding to angle differences
+                        // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
+                        angleDifferences[i].append(abs(angle.value - recordedPoses[i][angle.key]!))
+                        print(angle.key + ":")
+                        print("     result: " + angleDifferences[i].last!.description)
+                        print("         workout: " + angle.value.description)
+                        print("         jake: " + recordedPoses[i][angle.key]!.description)
+                    }
                 }
             }
+            print()
+            return angleDifferences
         }
-        return angleDifferences
-    }
     
     /// Unweighted Mean Squared Error Function - A single data point is a vector of angle differences so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error
