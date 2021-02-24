@@ -375,7 +375,7 @@ struct CameraView: View {
         .sheet(isPresented: $isVideoPickerOpen) {
             imagePicker
         }
-        .onAppear(perform: camera.checkPermissionsAndSetup)
+        .onAppear(perform: { camera.checkPermissionsAndSetup(permissions) })
     }
 }
 
