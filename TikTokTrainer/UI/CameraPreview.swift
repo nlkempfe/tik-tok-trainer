@@ -100,7 +100,6 @@ struct PoseNetOverlay: Shape {
         }
 
         for (startJoint, endJoint) in drawingPairs {
-            print(startJoint)
             if poseResult.points[startJoint] != nil && poseResult.points[endJoint] != nil {
                 let shiftedStart = normalizePoint(pnt: poseResult.points[startJoint]!)
                 let shiftedEnd = normalizePoint(pnt: poseResult.points[endJoint]!)
