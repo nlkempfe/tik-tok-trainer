@@ -27,6 +27,10 @@ struct CameraView: View {
     @State var uploadedVideoURL: URL = URL(string: "placeholder")!
     @State var thumbnailImage: UIImage = UIImage()
     @State var showDiscardAlert = false
+    @State var playbackRate: Double = 1.0
+    @State var playbackRateOptions = ["0.3", "0.5", "1.0", "2.0", "3.0"]
+    @State var selectedPlayback = "1.0"
+    @State var isPlayRateSelectorShowing = false
 
     var animatableData: Double {
         get { opacity }
@@ -54,6 +58,11 @@ struct CameraView: View {
         timeRemaining = NumConstants.timerVal
     }
 
+    func setPlaybackRate(rate: String) {
+        self.selectedPlayback = rate
+        self.playbackRate = Double(rate)!
+    }
+
     func startCountdown() {
         self.opacity = 0
         if camera.isRecording {
@@ -79,26 +88,33 @@ struct CameraView: View {
         }
     }
 
-    var flipCameraControl: some View {
-        Button(action: camera.switchCameraInput, label: {
-            Image(systemName: IconConstants.cameraOutline)
-                .foregroundColor(.white)
-                .padding()
-                .clipShape(Circle())
-        })
-        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
-        .padding(.trailing, 5)
+    var playRateSelected: some View {
+        Rectangle()
+            .fill()
+            .foregroundColor(.white)
+            .frame(width: 50, height: 25)
+            .zIndex(0.0)
     }
 
-    var flashControl: some View {
-        Button(action: camera.toggleFlash, label: {
-            Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
-                .foregroundColor(.white)
-                .padding()
-                .clipShape(Circle())
-        })
-        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
-        .padding(.trailing, 5)
+    var playRate: some View {
+        HStack {
+            ForEach(playbackRateOptions, id: \.self) { item in
+                ZStack {
+                    if self.selectedPlayback == item {
+                        playRateSelected
+                        Button(action: {setPlaybackRate(rate: item)}, label: {Text(item + "x")})
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .zIndex(1.0)
+                    } else {
+                        Button(action: {setPlaybackRate(rate: item)}, label: {Text(item + "x")})
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .zIndex(1.0)
+                    }
+                }
+            }
+        }
     }
 
     var submitButton: some View {
@@ -140,9 +156,42 @@ struct CameraView: View {
         .padding(.trailing, 5)
     }
 
+    var flipCameraControl: some View {
+        Button(action: camera.switchCameraInput, label: {
+            Image(systemName: IconConstants.cameraOutline)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+        .padding(.trailing, 5)
+    }
+
+    var flashControl: some View {
+        Button(action: camera.toggleFlash, label: {
+            Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+        .padding(.trailing, 5)
+    }
+
     var reuploadVideoControl: some View {
         Button(action: { self.isVideoUploaded = false }, label: {
             Image(systemName: IconConstants.uploadFile)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+        .padding(.trailing, 5)
+    }
+
+    var playRateControl: some View {
+        Button(action: { self.isPlayRateSelectorShowing.toggle() }, label: {
+            Image(systemName: IconConstants.speedometer)
                 .foregroundColor(.white)
                 .padding()
                 .clipShape(Circle())
@@ -160,6 +209,7 @@ struct CameraView: View {
                 }
                 if self.isVideoUploaded {
                     reuploadVideoControl
+                    playRateControl
                 }
             }
         }.padding()
@@ -341,9 +391,14 @@ struct CameraView: View {
                     Spacer()
 
                     if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded {
-                        recordButton
-                        .frame(height: 75)
-                        .offset(x: 0, y: -50)
+                        VStack {
+                            if self.isPlayRateSelectorShowing {
+                                playRate
+                                    .padding(.bottom, 100)
+                            }
+                            recordButton
+                                .frame(height: 75)
+                        }
                     } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded {
                         submitButton
                             .frame(height: 75)
