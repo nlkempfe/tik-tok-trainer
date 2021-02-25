@@ -318,6 +318,11 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if let pixelBuffer = sampleBuffer.imageBuffer {
+            if self.currentOrientation == AVCaptureDevice.Position.front {
+                connection.isVideoMirrored = true
+            } else {
+                connection.isVideoMirrored = false
+            }
             let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer).seconds
             // Attempt to lock the image buffer to gain access to its memory.
             guard CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly) == kCVReturnSuccess
@@ -340,10 +345,7 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
                 self.startTime = timestamp
             }
 
-            var uiImage = UIImage(cgImage: cgImage!)
-            if self.currentOrientation == .front {
-                uiImage = uiImage.withHorizontallyFlippedOrientation()
-            }
+            let uiImage = UIImage(cgImage: cgImage!)
 
             // Release the image buffer.
             CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
