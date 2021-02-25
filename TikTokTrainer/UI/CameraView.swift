@@ -153,7 +153,7 @@ struct CameraView: View {
     }
 
     var reuploadVideoControl: some View {
-        Button(action: self.reuploadFile, label: {
+        Button(action: { self.isVideoUploaded = false }, label: {
             Image(systemName: IconConstants.uploadFile)
                 .foregroundColor(.white)
                 .padding()
