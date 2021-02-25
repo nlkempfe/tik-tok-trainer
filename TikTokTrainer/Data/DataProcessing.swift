@@ -15,25 +15,13 @@ struct ScoringFunction {
     var preRecordedVid: ProcessedVideo?
     var recordedVid: ProcessedVideo?
 
-    let jointTriples: [(VNRecognizedPointKey, VNRecognizedPointKey, VNRecognizedPointKey)] = [
-        ((VNRecognizedPointKey(rawValue: "left_shoulder_1_joint"),
-          VNRecognizedPointKey(rawValue: "left_forearm_joint"),
-          VNRecognizedPointKey(rawValue: "left_hand_joint"))),
-        ((VNRecognizedPointKey(rawValue: "right_shoulder_1_joint"),
-          VNRecognizedPointKey(rawValue: "right_forearm_joint"),
-          VNRecognizedPointKey(rawValue: "right_hand_joint"))),
-        ((VNRecognizedPointKey(rawValue: "left_forearm_joint"),
-          VNRecognizedPointKey(rawValue: "left_shoulder_1_joint"),
-          VNRecognizedPointKey(rawValue: "neck_1_joint"))),
-        ((VNRecognizedPointKey(rawValue: "left_shoulder_1_joint"),
-          VNRecognizedPointKey(rawValue: "neck_1_joint"),
-          VNRecognizedPointKey(rawValue: "head_joint"))),
-        ((VNRecognizedPointKey(rawValue: "neck_1_joint"),
-          VNRecognizedPointKey(rawValue: "right_shoulder_1_joint"),
-          VNRecognizedPointKey(rawValue: "right_forearm_joint"))),
-        ((VNRecognizedPointKey(rawValue: "head_joint"),
-          VNRecognizedPointKey(rawValue: "neck_1_joint"),
-          VNRecognizedPointKey(rawValue: "right_shoulder_1_joint")))
+    let jointTriples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName)] = [
+        (.leftWrist, .leftElbow, .leftShoulder),
+        (.rightShoulder, .rightElbow, .rightWrist),
+        (.neck, .leftShoulder, .leftElbow),
+        (.nose, .neck, .leftShoulder),
+        (.neck, .rightShoulder, .rightElbow),
+        (.nose, .neck, .rightShoulder)
     ]
     
     /// Computes angles of PoseNet data with trig
@@ -42,37 +30,37 @@ struct ScoringFunction {
     /// - Parameters:
     ///     - video: The video uploaded by the user and processed by the PoseNetProcessor
     private func computeAngles(video: ProcessedVideo) -> [[CGFloat]] {
-        var angles = [[CGFloat]]()
-        angles.append([])
+        var angles = [[CGFloat]](
+            repeating: [CGFloat](),
+            count: video.data.count
+        )
         var anglesIndex = 0
 
+        // Loops through data slices which contain pose points and computes joint angles
         for slice in video.data {
             for triple in jointTriples {
-                let pntOne = triple.0
-                let pntTwo = triple.1
-                let pntThree = triple.2
+                let pntOne = triple.0.rawValue
+                let pntTwo = triple.1.rawValue
+                let pntThree = triple.2.rawValue
                 var angle: CGFloat = 0
 
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
                     angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
-                    print(pntTwo.rawValue + ": " + angle.description)
                 }
-                print()
                 angles[anglesIndex].append(angle)
             }
-            angles.append([])
             anglesIndex += 1
         }
         return angles
     }
 
     private func angleBetweenPoints(leftPoint: VNRecognizedPoint, middlePoint: VNRecognizedPoint, rightPoint: VNRecognizedPoint) -> CGFloat {
-        return angleBetweenPoints(leftPoint: CGPoint(x: leftPoint.x, y: leftPoint.y), middlePoint: CGPoint(x: middlePoint.x, y: middlePoint.y), rightPoint: CGPoint(x: rightPoint.x, y: rightPoint.y))
-    }
-
-    private func angleBetweenPoints(leftPoint: CGPoint, middlePoint: CGPoint, rightPoint: CGPoint) -> CGFloat {
-        let rightVector = (x: rightPoint.x - middlePoint.x, y: rightPoint.y - middlePoint.y)
-        let leftVector = (x: leftPoint.x - middlePoint.x, y: leftPoint.y - middlePoint.y)
+        let leftCGPoint = CGPoint(x: leftPoint.x, y: leftPoint.y)
+        let middleCGPoint = CGPoint(x: middlePoint.x, y: middlePoint.y)
+        let rightCGPoint = CGPoint(x: rightPoint.x, y: rightPoint.y)
+        
+        let rightVector = (x: rightCGPoint.x - middleCGPoint.x, y: rightCGPoint.y - middleCGPoint.y)
+        let leftVector = (x: leftCGPoint.x - middleCGPoint.x, y: leftCGPoint.y - middleCGPoint.y)
         let dotProduct = rightVector.x * leftVector.x + rightVector.y * leftVector.y
         let determinant = rightVector.x * leftVector.y - rightVector.y * leftVector.x
         var angle = atan2(determinant, dotProduct) * (180 / .pi)
@@ -85,11 +73,14 @@ struct ScoringFunction {
     private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[CGFloat]] {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
-        var angleDifferences = [[CGFloat]]()
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
+        
+        var angleDifferences = [[CGFloat]](
+            repeating: [CGFloat](),
+            count: minSlices
+        )
 
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
-            angleDifferences.append([])
             for (col, angle) in poseAngles.enumerated() {
                 // This is where to add shifts or padding to angle differences
                 // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
@@ -112,8 +103,6 @@ struct ScoringFunction {
         let rVid = recordedVid!
         // ensures that there are an equivalent number of data slices
 //        guard prVid.data.count == rVid.data.count else { throw ScoringFunctionError.videoLengthIncompatible }
-        print(prVid.data.count)
-        print(rVid.data.count)
 
         let angleDifferences = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: CGFloat = 0
