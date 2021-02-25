@@ -23,7 +23,7 @@ struct ScoringFunction {
         (.neck, .rightShoulder, .rightElbow),
         (.nose, .neck, .rightShoulder)
     ]
-    
+
     /// Computes angles of PoseNet data with trig
     /// Cycles through sets of joints to track which angles are available for capture, otherwise angle is marked as 0
     ///
@@ -58,7 +58,7 @@ struct ScoringFunction {
         let leftCGPoint = CGPoint(x: leftPoint.x, y: leftPoint.y)
         let middleCGPoint = CGPoint(x: middlePoint.x, y: middlePoint.y)
         let rightCGPoint = CGPoint(x: rightPoint.x, y: rightPoint.y)
-        
+
         let rightVector = (x: rightCGPoint.x - middleCGPoint.x, y: rightCGPoint.y - middleCGPoint.y)
         let leftVector = (x: leftCGPoint.x - middleCGPoint.x, y: leftCGPoint.y - middleCGPoint.y)
         let dotProduct = rightVector.x * leftVector.x + rightVector.y * leftVector.y
@@ -74,7 +74,7 @@ struct ScoringFunction {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
-        
+
         var angleDifferences = [[CGFloat]](
             repeating: [CGFloat](),
             count: minSlices
@@ -102,7 +102,7 @@ struct ScoringFunction {
         let prVid = preRecordedVid!
         let rVid = recordedVid!
         // ensures that there are an equivalent number of data slices
-//        guard prVid.data.count == rVid.data.count else { throw ScoringFunctionError.videoLengthIncompatible }
+        //        guard prVid.data.count == rVid.data.count else { throw ScoringFunctionError.videoLengthIncompatible }
 
         let angleDifferences = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: CGFloat = 0
