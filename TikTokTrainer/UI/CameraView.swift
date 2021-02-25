@@ -12,7 +12,7 @@ import AVKit
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
-    @StateObject var permissions = PermissionModel()
+    @StateObject var permissions = PermissionHandler()
     @State var isCountingDown = false
     @State var timeRemaining = NumConstants.timerVal
     @State var timer: Timer?
@@ -308,9 +308,6 @@ struct CameraView: View {
                 if isCountingDown {
                     dimmer
                 }
-                if self.isVideoPickerOpen {
-                    imagePicker
-                }
                 HStack(spacing: 0) {
                     ZStack {
                         uploadControlBackground
@@ -366,7 +363,7 @@ struct CameraView: View {
                     }
                 } else {
                     HStack {
-                        Button(action: {permissions.openPermissionsSettings()}, label: {
+                        Button(action: permissions.openPermissionsSettings, label: {
                             ZStack {
                                 Text(StringConstants.permissionsCamera)
                             }
@@ -375,9 +372,10 @@ struct CameraView: View {
                 }
             }
         }
-        .onAppear(perform: {
-            camera.checkPermissionsAndSetup()
-        })
+        .sheet(isPresented: $isVideoPickerOpen) {
+            imagePicker
+        }
+        .onAppear(perform: { camera.checkPermissionsAndSetup(permissions) })
     }
 }
 
