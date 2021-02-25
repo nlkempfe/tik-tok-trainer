@@ -12,6 +12,7 @@ import Photos
 import Vision
 import VideoToolbox
 import MetalKit
+import Promises
 
 class CameraModel: NSObject,
                    ObservableObject {
@@ -66,26 +67,13 @@ class CameraModel: NSObject,
         .rightEar
     ]
 
-    func checkPermissionsAndSetup() {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
-            self.hasPermission = true
+    func checkPermissionsAndSetup(_ permissions: PermissionHandler) {
+        permissions.checkCameraPermissions().then(on: sessionQueue) {
             self.setup()
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { (status) in
-                if status {
-                    self.hasPermission = true
-                    self.setup()
-                } else {
-                    print("User denied access to video")
-                    self.hasPermission = false
-                }
-            }
-        case .denied:
-            print("Denied permissions")
-            self.hasPermission = false
-        default:
-            print("Unknown Authorization Status!")
+        }.then(on: .main) {
+            self.hasPermission = true
+        }.catch(on: .main) { err in
+            print("Error checking camera permissions. Error: \(err)")
             self.hasPermission = false
         }
     }
