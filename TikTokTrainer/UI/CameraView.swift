@@ -33,18 +33,6 @@ struct CameraView: View {
         set { self.opacity = newValue }
     }
 
-    // MARK: - Placeholders
-    func uploadFile() {
-        print("file upload tapped")
-        self.isVideoUploaded = true
-    }
-
-    func reuploadFile() {
-        print("reupload file tapped")
-        self.isVideoUploaded = false
-    }
-    // MARK: - End placeholders
-
     func discard() {
         camera.isVideoRecorded = false
         self.opacity = 0.0
