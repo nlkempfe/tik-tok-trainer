@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Promises
 
 @main
 struct TikTokTrainerApp: App {
