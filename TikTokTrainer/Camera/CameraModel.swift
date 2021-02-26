@@ -209,6 +209,13 @@ class CameraModel: NSObject,
 
     func stopRecording(isEarly: Bool) {
         self.isRecording = false
+        if self.flashlightOn {
+            self.toggleFlash()
+        }
+        guard !isEarly else {
+            self.setup()
+            return
+        }
         guard let output = self.videoFileOutputWriter else {
             return
         }
