@@ -71,17 +71,10 @@ struct PoseNetOverlay: Shape {
     /// Shift a **CGPoint** relative to the height and width of the image preview
     /// Also inverts the x and y axis because the image is flipped when in front view
     private func normalizePoint(pnt: CGPoint) -> CGPoint {
-        if isFrontCamera {
-            let shifted: CGPoint = VNImagePointForNormalizedPoint(pnt, Int(width), Int(height))
-            .applying(CGAffineTransform(scaleX: -1.0, y: -1.0))
-                .applying(CGAffineTransform(translationX: width, y: height))
-            return shifted
-        } else {
             let shifted: CGPoint = VNImagePointForNormalizedPoint(pnt, Int(width), Int(height))
             .applying(CGAffineTransform(scaleX: 1.0, y: -1.0))
             .applying(CGAffineTransform(translationX: 0, y: height))
             return shifted
-        }
     }
 
     func path(in rect: CGRect) -> Path {

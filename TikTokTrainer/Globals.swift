@@ -22,6 +22,7 @@ struct IconConstants {
     static let flashOn = "bolt.fill"
     static let uploadFile = "plus.square"
     static let uploadFileFilled = "plus.square.fill"
+    static let speedometer = "speedometer"
 }
 
 struct StringConstants {
