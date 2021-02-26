@@ -209,25 +209,28 @@ class CameraModel: NSObject,
 
     func stopRecording(isEarly: Bool) {
         self.isRecording = false
+        if !isEarly {
+            DispatchQueue.main.async {
+                self.isVideoRecorded = true
+            }
+        } else {
+            DispatchQueue.main.async {
+                self.isVideoRecorded = false
+            }
+        }
+
         guard let output = self.videoFileOutputWriter else {
             return
         }
+
         output.finishWriting {
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
             }) { saved, error in
                 if saved {
                     self.setup()
-                        if !isEarly {
-                            DispatchQueue.main.async {
-                                self.isVideoRecorded = true
-                        }
-                    } else {
-                            DispatchQueue.main.async {
-                                self.isVideoRecorded = false
-                            }
-                        }
                 } else {
+                    self.isVideoRecorded = false
                     print("Could not save video", error as Any)
                 }
             }

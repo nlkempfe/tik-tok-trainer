@@ -72,17 +72,17 @@ struct CameraView: View {
             initializeTimerVars()
         } else {
             isCountingDown = true
+            recordTimer = Timer.scheduledTimer(withTimeInterval: Double(NumConstants.timerVal) + (self.uploadedVideoDuration / self.playbackRate), repeats: false) { _ in
+                if camera.isRecording {
+                    camera.stopRecording(isEarly: false)
+                }
+            }
             timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                 if timeRemaining > 1 {
                     timeRemaining -= 1
                 } else {
                     initializeTimerVars()
                     camera.startRecording()
-                }
-            }
-            recordTimer = Timer.scheduledTimer(withTimeInterval: self.uploadedVideoDuration + Double(timeRemaining), repeats: false) { _ in
-                if camera.isRecording {
-                    camera.stopRecording(isEarly: false)
                 }
             }
         }
@@ -256,8 +256,8 @@ struct CameraView: View {
 
     var playbackView: some View {
         HStack(spacing: 0) {
-            LoopingPlayer(url: self.uploadedVideoURL)
-            LoopingPlayer(url: camera.outputURL)
+            LoopingPlayer(url: self.uploadedVideoURL, playbackRate: self.playbackRate, isUploadedVideo: true)
+            LoopingPlayer(url: camera.outputURL, playbackRate: self.playbackRate, isUploadedVideo: false)
         }.zIndex(1.0)
     }
 
@@ -319,12 +319,12 @@ struct CameraView: View {
 
     var progressBar: some View {
         ZStack {
-            ProgressBar(duration: CMTimeGetSeconds(AVAsset(url: self.uploadedVideoURL).duration))
+            ProgressBar(duration: Double(CMTimeGetSeconds(AVAsset(url: self.uploadedVideoURL).duration)) / self.playbackRate)
         }.zIndex(1)
     }
 
     var uploadedVideoPlayback: some View {
-        VideoPlayerView(url: self.uploadedVideoURL)
+        VideoPlayerView(url: self.uploadedVideoURL, playbackRate: self.playbackRate)
             .scaleEffect(x: 1.0, y: 0.98, anchor: .center)
     }
 
@@ -362,6 +362,7 @@ struct CameraView: View {
                 .zIndex(-1)
             } else if camera.currentUIImage != nil && camera.outputURL != nil {
                 playbackView
+                    .offset(x: 0, y: -50)
             }
         }
     }
@@ -392,7 +393,7 @@ struct CameraView: View {
 
                     if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded {
                         VStack {
-                            if self.isPlayRateSelectorShowing {
+                            if self.isPlayRateSelectorShowing && !camera.isRecording && !self.isCountingDown {
                                 playRate
                                     .padding(.bottom, 100)
                             }
