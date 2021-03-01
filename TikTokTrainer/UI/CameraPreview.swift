@@ -59,6 +59,7 @@ struct PoseNetOverlay: Shape {
         (.nose, .rightEye),
         (.rightEye, .rightEar)
     ]
+
     static let nodeSizeLen = 4.0
     let nodeSize = CGSize(width: nodeSizeLen, height: nodeSizeLen)
     var result: PoseNetResult?
