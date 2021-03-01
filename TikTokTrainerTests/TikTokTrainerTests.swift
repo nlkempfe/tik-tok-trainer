@@ -10,14 +10,15 @@ import XCTest
 @testable import TikTokTrainer
 
 class TikTokTrainerTests: XCTestCase {
-    func testPoseNetProcessorPerformance() {
-        let url = Bundle.main.url(forResource: "TestDance", withExtension: "mov")!
-        let measureOptions = XCTMeasureOptions()
-        measureOptions.iterationCount = 2
-        self.measure(options: measureOptions) {
-            _ = PoseNetProcessor.run(url: url)
-
-            XCTAssert(waitForPromises(timeout: 200))
-        }
-    }
+//    This function takes a very long time to run on CI/CD so it is commented so you can run it locally
+//    func testPoseNetProcessorPerformance() {
+//        let url = Bundle.main.url(forResource: "TestDance", withExtension: "mov")!
+//        let measureOptions = XCTMeasureOptions()
+//        measureOptions.iterationCount = 2
+//        self.measure(options: measureOptions) {
+//            _ = PoseNetProcessor.run(url: url)
+//
+//            XCTAssert(waitForPromises(timeout: 200))
+//        }
+//    }
 }
