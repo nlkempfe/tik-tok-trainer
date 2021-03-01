@@ -9,6 +9,7 @@ import SwiftUI
 import AVFoundation
 import Photos
 import AVKit
+import Promises
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
@@ -45,6 +46,19 @@ struct CameraView: View {
 
     func submit() {
         print("submit button pressed")
+        
+        // Run PoseNetProcessor on two videos and feed result to scoring function
+        all(
+            PoseNetProcessor.run(url: self.uploadedVideoURL),
+            PoseNetProcessor.run(url: camera.outputURL)
+        ).then { movieOne, movieTwo in
+            ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore(callback: { result in
+                print(result)
+                // Switch to results screen here
+            })
+        }.catch { error in
+            print("Error: \(error)")
+        }
     }
 
     func initializeTimerVars() {
