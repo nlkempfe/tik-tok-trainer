@@ -23,6 +23,8 @@ struct CameraView: View {
     @State var isVideoUploaded: Bool = false
     @State var isVideoPickerOpen = false
     @State var isUploading: Bool = false
+    @State var isLoadingScreenShowing: Bool = false
+    @State var isResultsScreenOpen: Bool = false
     @State var uploadedVideoDuration: Double = Double.infinity
     @State var progressView = UIProgressView()
     @State var uploadedVideoURL: URL = URL(string: "placeholder")!
@@ -54,7 +56,8 @@ struct CameraView: View {
         ).then { movieOne, movieTwo in
             ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore(callback: { result in
                 print(result)
-                // Switch to results screen here
+                self.isLoadingScreenShowing = false
+                self.isResultsScreenOpen = true
             })
         }.catch { error in
             print("Error: \(error)")
