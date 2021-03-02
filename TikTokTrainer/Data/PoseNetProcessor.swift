@@ -26,7 +26,6 @@ protocol PoseNetProcessorProtocol {
 /// Process a Video from a URL and calls a callback with the processed results
 struct PoseNetProcessor: PoseNetProcessorProtocol {
 
-    private static let poseNetQueue = DispatchQueue(label: "t3.posenetproc")
     private static let videoWriteBlockingQueue = DispatchQueue(label: "t3.videowriteblocking")
 
     /// Run PoseNet on the video at URL. This is run in an async workqueue and returns the promise on the main thread.
@@ -52,26 +51,21 @@ struct PoseNetProcessor: PoseNetProcessorProtocol {
                     }
 
                     let slice = VideoDataSlice(start: $0.timeRange.start, points: recognizedPoints)
-                    /// Wrap the appending in a barrier queue incase there are concurrent issues with the data
-                    videoWriteBlockingQueue.async(flags: .barrier) {
+                    videoWriteBlockingQueue.async {
                         processedVideo.data.append(slice)
                     }
                 }
             })
 
-            poseNetQueue.async {
+            DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     try videoProcessor.addRequest(humanRequest, processingOptions: VNVideoProcessor.RequestProcessingOptions())
                     try videoProcessor.analyze(CMTimeRange(start: CMTime.zero, end: CMTime.indefinite))
                 } catch {
                     print("Error processing PoseNet for Video with url \(url).\n Error: \(error)")
-                    DispatchQueue.main.async {
-                        return reject(error)
-                    }
+                    return reject(error)
                 }
-                DispatchQueue.main.async {
-                    return fulfill(processedVideo)
-                }
+                return fulfill(processedVideo)
             }
         }
         return promise
