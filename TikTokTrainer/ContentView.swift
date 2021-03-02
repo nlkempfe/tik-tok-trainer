@@ -48,7 +48,7 @@ struct ContentView: View {
         }
         .accentColor(Color.red)
         .background(Color.black)
-        .onAppear() {
+        .onAppear {
             UITabBar.appearance().isTranslucent = false
             UITabBar.appearance().barTintColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
             UITabBar.appearance().backgroundColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
