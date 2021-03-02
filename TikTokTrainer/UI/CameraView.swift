@@ -47,6 +47,10 @@ struct CameraView: View {
     func submit() {
         self.isLoading = true
         // TODO: submit video for processing and set loading to false when complete
+        // Remove this when implementing actual processing
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            self.isLoading = false
+        }
     }
 
     func initializeTimerVars() {
