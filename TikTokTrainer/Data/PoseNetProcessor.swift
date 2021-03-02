@@ -19,8 +19,12 @@ struct ProcessedVideo {
     var data: [VideoDataSlice] = []
 }
 
+protocol PoseNetProcessorProtocol {
+    static func run(url: URL) -> Promise<ProcessedVideo>
+}
+
 /// Process a Video from a URL and calls a callback with the processed results
-struct PoseNetProcessor {
+struct PoseNetProcessor: PoseNetProcessorProtocol {
 
     private static let poseNetQueue = DispatchQueue(label: "t3.posenetproc")
     private static let videoWriteBlockingQueue = DispatchQueue(label: "t3.videowriteblocking")
