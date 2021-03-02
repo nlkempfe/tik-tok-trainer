@@ -120,11 +120,7 @@
 		0E02D14725AFA56900004B2A = {
 			isa = PBXGroup;
 			children = (
-				0E23B85525E6B89B00008FFD /* TestDance.mov */,
-				BCB9D38B25E4423200C7DC9B /* preRecordedVid.mp4 */,
-				BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */,
-				5F573A5B25E01155000F6719 /* moon.mp4 */,
-				0E12CFF925D86181003880B7 /* TestImage.PNG */,
+				0E3D454B25EEE84900F24723 /* TestData */,
 				0E02D15225AFA56900004B2A /* TikTokTrainer */,
 				0E02D16425AFA56A00004B2A /* TikTokTrainerTests */,
 				0E02D16F25AFA56A00004B2A /* TikTokTrainerUITests */,
@@ -147,18 +143,14 @@
 		0E02D15225AFA56900004B2A /* TikTokTrainer */ = {
 			isa = PBXGroup;
 			children = (
+				5F12871B25C4A0820027DC22 /* Camera */,
 				BCB9D38025E43EDC00C7DC9B /* Data */,
 				0E1BDC0025D5F9DE00F6CFA8 /* UI */,
 				0E02D15325AFA56900004B2A /* TikTokTrainerApp.swift */,
-				5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */,
-				5F12871B25C4A0820027DC22 /* Camera */,
+				5FAA3D2825DD5758002B4CBC /* Globals.swift */,
 				0E02D15725AFA56A00004B2A /* Assets.xcassets */,
 				0E02D15C25AFA56A00004B2A /* Info.plist */,
 				0E02D15925AFA56A00004B2A /* Preview Content */,
-				0E1BDB8A25D5940800F6CFA8 /* PoseNetProcesser.swift */,
-				0E12CFE625D7AF02003880B7 /* PoseNetResult.swift */,
-				5FAA3D2825DD5758002B4CBC /* Globals.swift */,
-				C03D3AE825E2232900836A58 /* ContentView.swift */,
 			);
 			path = TikTokTrainer;
 			sourceTree = "<group>";
@@ -192,12 +184,25 @@
 		0E1BDC0025D5F9DE00F6CFA8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				C03D3AE825E2232900836A58 /* ContentView.swift */,
 				0E02D15525AFA56900004B2A /* CameraView.swift */,
 				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
 				5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */,
 				5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		0E3D454B25EEE84900F24723 /* TestData */ = {
+			isa = PBXGroup;
+			children = (
+				0E23B85525E6B89B00008FFD /* TestDance.mov */,
+				BCB9D38B25E4423200C7DC9B /* preRecordedVid.mp4 */,
+				BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */,
+				5F573A5B25E01155000F6719 /* moon.mp4 */,
+				0E12CFF925D86181003880B7 /* TestImage.PNG */,
+			);
+			path = TestData;
 			sourceTree = "<group>";
 		};
 		319528E4635EE3E982B41B73 /* Pods */ = {
@@ -216,6 +221,7 @@
 		5F12871B25C4A0820027DC22 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */,
 				5F12871125C49FD50027DC22 /* CameraModel.swift */,
 			);
 			path = Camera;
@@ -234,6 +240,8 @@
 		BCB9D38025E43EDC00C7DC9B /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				0E1BDB8A25D5940800F6CFA8 /* PoseNetProcesser.swift */,
+				0E12CFE625D7AF02003880B7 /* PoseNetResult.swift */,
 				BCB9D38125E43EEC00C7DC9B /* DataProcessing.swift */,
 			);
 			path = Data;
