@@ -22,6 +22,7 @@ struct CameraView: View {
     @State var isVideoUploaded: Bool = false
     @State var isVideoPickerOpen = false
     @State var isUploading: Bool = false
+    @State var isLoading: Bool = false
     @State var uploadedVideoDuration: Double = Double.infinity
     @State var progressView = UIProgressView()
     @State var uploadedVideoURL: URL = URL(string: "placeholder")!
@@ -44,7 +45,12 @@ struct CameraView: View {
     }
 
     func submit() {
-        print("submit button pressed")
+        self.isLoading = true
+        // TODO: submit video for processing and set loading to false when complete
+        // Remove this when implementing actual processing
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            self.isLoading = false
+        }
     }
 
     func initializeTimerVars() {
@@ -224,6 +230,36 @@ struct CameraView: View {
             }
     }
 
+    var loadingScreen: some View {
+        ZStack {
+            Rectangle()
+                .fill()
+                .foregroundColor(.black)
+                .opacity(0.85)
+                .ignoresSafeArea(.all, edges: .all)
+                .onAppear {
+                    withAnimation {
+                        self.opacity = 0.5
+                    }
+                }
+            VStack {
+                Text(StringConstants.loadingTitle)
+                    .foregroundColor(.white)
+                    .font(.title)
+                    .padding(.top, 50)
+                Text(StringConstants.loadingSubtitle)
+                    .foregroundColor(.gray)
+                    .font(.caption)
+                Spacer()
+            }
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: Color.white))
+                .foregroundColor(.white)
+                .zIndex(2.0)
+                .scaleEffect(x: 1.5, y: 1.5)
+        }
+    }
+
     var imagePicker: some View {
         ImagePicker(uploadedVideoURL: self.$uploadedVideoURL, isVideoPickerOpen: self.$isVideoPickerOpen, isVideoUploaded: self.$isVideoUploaded, thumbnailImage: self.$thumbnailImage, uploadedVideoDuration: self.$uploadedVideoDuration)
     }
@@ -324,11 +360,16 @@ struct CameraView: View {
                 if camera.isRecording {
                     progressBar
                 }
-                if camera.isVideoRecorded {
+                if camera.isVideoRecorded && !self.isLoading {
                     discardButton
                 }
-                cameraPreview
-                    .background(Color.black)
+                ZStack {
+                    cameraPreview
+                        .background(Color.black)
+                    if self.isLoading {
+                        loadingScreen
+                    }
+                }
             }
             VStack {
                 if camera.hasPermission {
@@ -344,7 +385,7 @@ struct CameraView: View {
                         recordButton
                         .frame(height: 75)
                         .offset(x: 0, y: -50)
-                    } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded {
+                    } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded && !self.isLoading {
                         submitButton
                             .frame(height: 75)
                             .offset(x: 0, y: -50)
