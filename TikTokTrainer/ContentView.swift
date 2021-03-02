@@ -14,9 +14,13 @@ struct ContentView: View {
     let numTabs = 3
 
     init() {
+        resetTabBarColor()
+    }
+    
+    func resetTabBarColor() {
         UITabBar.appearance().isTranslucent = false
-        UITabBar.appearance().barTintColor = UIColor.black
-        UITabBar.appearance().backgroundColor = UIColor.black
+        UITabBar.appearance().barTintColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
+        UITabBar.appearance().backgroundColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
     }
 
     func tabItem(iconName: String, text: String, color: Color) -> some View {
@@ -48,5 +52,7 @@ struct ContentView: View {
         }
         .accentColor(Color.red)
         .background(Color.black)
+        .onAppear(perform: resetTabBarColor)
+        .id(selectedTab)
     }
 }
