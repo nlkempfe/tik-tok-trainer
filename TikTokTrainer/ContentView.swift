@@ -28,25 +28,25 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            TabView(selection: $selectedTab) {
-                Text("Tutorial")
-                    .tabItem {
-                        tabItem(iconName: "questionmark", text: "Tutorial", color: .white)
-                    }
-                    .tag(0)
+//            TabView(selection: $selectedTab) {
+//                Text("Tutorial")
+//                    .tabItem {
+//                        tabItem(iconName: "questionmark", text: "Tutorial", color: .white)
+//                    }
+//                    .tag(0)
                 CameraView()
-                    .tabItem {
-                        tabItem(iconName: "video", text: "Record", color: .white)
-                    }
-                    .tag(1)
-                Text("History")
-                    .tabItem {
-                        tabItem(iconName: "clock", text: "History", color: .white)
-                    }
-                    .tag(2)
-            }
+//                    .tabItem {
+//                        tabItem(iconName: "video", text: "Record", color: .white)
+//                    }
+//                    .tag(1)
+//                Text("History")
+//                    .tabItem {
+//                        tabItem(iconName: "clock", text: "History", color: .white)
+//                    }
+//                    .tag(2)
+//            }
         }
-        .accentColor(Color.red)
-        .background(Color.black)
+//        .accentColor(Color.red)
+//        .background(Color.black)
     }
 }
