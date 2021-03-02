@@ -225,7 +225,7 @@ struct CameraView: View {
                 }
             }
     }
-    
+
     var loadingScreen: some View {
         ZStack {
             Rectangle()
