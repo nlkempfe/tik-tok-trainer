@@ -22,6 +22,7 @@ struct CameraView: View {
     @State var isVideoUploaded: Bool = false
     @State var isVideoPickerOpen = false
     @State var isUploading: Bool = false
+    @State var isLoading: Bool = false
     @State var uploadedVideoDuration: Double = Double.infinity
     @State var progressView = UIProgressView()
     @State var uploadedVideoURL: URL = URL(string: "placeholder")!
@@ -48,7 +49,12 @@ struct CameraView: View {
     }
 
     func submit() {
-        print("submit button pressed")
+        self.isLoading = true
+        // TODO: submit video for processing and set loading to false when complete
+        // Remove this when implementing actual processing
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            self.isLoading = false
+        }
     }
 
     func initializeTimerVars() {
@@ -259,6 +265,7 @@ struct CameraView: View {
             LoopingPlayer(url: self.uploadedVideoURL, playbackRate: self.playbackRate, isUploadedVideo: true)
             LoopingPlayer(url: camera.outputURL, playbackRate: self.playbackRate, isUploadedVideo: false)
         }.zIndex(1.0)
+        .offset(y: 25)
     }
 
     var dimmer: some View {
@@ -272,6 +279,36 @@ struct CameraView: View {
                     self.opacity = 0.8
                 }
             }
+    }
+
+    var loadingScreen: some View {
+        ZStack {
+            Rectangle()
+                .fill()
+                .foregroundColor(.black)
+                .opacity(0.85)
+                .ignoresSafeArea(.all, edges: .all)
+                .onAppear {
+                    withAnimation {
+                        self.opacity = 0.5
+                    }
+                }
+            VStack {
+                Text(StringConstants.loadingTitle)
+                    .foregroundColor(.white)
+                    .font(.title)
+                    .padding(.top, 50)
+                Text(StringConstants.loadingSubtitle)
+                    .foregroundColor(.gray)
+                    .font(.caption)
+                Spacer()
+            }
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: Color.white))
+                .foregroundColor(.white)
+                .zIndex(2.0)
+                .scaleEffect(x: 1.5, y: 1.5)
+        }
     }
 
     var imagePicker: some View {
@@ -325,7 +362,7 @@ struct CameraView: View {
 
     var uploadedVideoPlayback: some View {
         VideoPlayerView(url: self.uploadedVideoURL, playbackRate: self.playbackRate)
-            .scaleEffect(x: 1.0, y: 0.98, anchor: .center)
+            .scaleEffect(x: 1.0, y: 0.92, anchor: .center)
     }
 
     var liveCameraView: some View {
@@ -375,11 +412,16 @@ struct CameraView: View {
                 if camera.isRecording {
                     progressBar
                 }
-                if camera.isVideoRecorded {
+                if camera.isVideoRecorded && !self.isLoading {
                     discardButton
                 }
-                cameraPreview
-                    .background(Color.black)
+                ZStack {
+                    cameraPreview
+                        .background(Color.black)
+                    if self.isLoading {
+                        loadingScreen
+                    }
+                }
             }
             VStack {
                 if camera.hasPermission {
@@ -391,7 +433,7 @@ struct CameraView: View {
                     }
                     Spacer()
 
-                    if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded {
+                    if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded && !self.isLoading {
                         VStack {
                             if self.isPlayRateSelectorShowing && !camera.isRecording && !self.isCountingDown {
                                 playRate
@@ -399,6 +441,7 @@ struct CameraView: View {
                             }
                             recordButton
                                 .frame(height: 75)
+                                .offset(y: -25)
                         }
                     } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded {
                         submitButton

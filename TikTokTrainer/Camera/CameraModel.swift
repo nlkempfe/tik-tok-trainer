@@ -209,14 +209,16 @@ class CameraModel: NSObject,
 
     func stopRecording(isEarly: Bool) {
         self.isRecording = false
-        if !isEarly {
-            DispatchQueue.main.async {
-                self.isVideoRecorded = true
-            }
-        } else {
+
+        if self.flashlightOn {
+            self.toggleFlash()
+        }
+        guard !isEarly else {
             DispatchQueue.main.async {
                 self.isVideoRecorded = false
             }
+            self.setup()
+            return
         }
 
         guard let output = self.videoFileOutputWriter else {
@@ -228,6 +230,9 @@ class CameraModel: NSObject,
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
             }) { saved, error in
                 if saved {
+                    DispatchQueue.main.async {
+                        self.isVideoRecorded = true
+                    }
                     self.setup()
                 } else {
                     self.isVideoRecorded = false

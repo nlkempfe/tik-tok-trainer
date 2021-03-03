@@ -28,4 +28,6 @@ struct IconConstants {
 struct StringConstants {
     static let uploadVideo = "Upload a video"
     static let permissionsCamera = "Enable camera access to continue"
+    static let loadingTitle = "Let's see how you did"
+    static let loadingSubtitle = "Analyzing dance..."
 }
