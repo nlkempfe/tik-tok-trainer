@@ -28,7 +28,7 @@ struct CameraView: View {
     @State var thumbnailImage: UIImage = UIImage()
     @State var showDiscardAlert = false
     @State var playbackRate: Double = 1.0
-    @State var playbackRateOptions = ["0.3", "0.5", "1.0", "2.0", "3.0"]
+    @State var playbackRateOptions = ["0.3", "0.5", "1.0", "2.0"]
     @State var selectedPlayback = "1.0"
     @State var isPlayRateSelectorShowing = false
 
