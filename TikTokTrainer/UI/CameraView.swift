@@ -28,6 +28,10 @@ struct CameraView: View {
     @State var uploadedVideoURL: URL = URL(string: "placeholder")!
     @State var thumbnailImage: UIImage = UIImage()
     @State var showDiscardAlert = false
+    @State var playbackRate: Double = 1.0
+    @State var playbackRateOptions = ["0.3", "0.5", "1.0", "2.0"]
+    @State var selectedPlayback = "1.0"
+    @State var isPlayRateSelectorShowing = false
 
     var animatableData: Double {
         get { opacity }
@@ -60,6 +64,11 @@ struct CameraView: View {
         timeRemaining = NumConstants.timerVal
     }
 
+    func setPlaybackRate(rate: String) {
+        self.selectedPlayback = rate
+        self.playbackRate = Double(rate)!
+    }
+
     func startCountdown() {
         self.opacity = 0
         if camera.isRecording {
@@ -69,6 +78,11 @@ struct CameraView: View {
             initializeTimerVars()
         } else {
             isCountingDown = true
+            recordTimer = Timer.scheduledTimer(withTimeInterval: Double(NumConstants.timerVal) + (self.uploadedVideoDuration / self.playbackRate), repeats: false) { _ in
+                if camera.isRecording {
+                    camera.stopRecording(isEarly: false)
+                }
+            }
             timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                 if timeRemaining > 1 {
                     timeRemaining -= 1
@@ -77,34 +91,36 @@ struct CameraView: View {
                     camera.startRecording()
                 }
             }
-            recordTimer = Timer.scheduledTimer(withTimeInterval: self.uploadedVideoDuration + Double(timeRemaining), repeats: false) { _ in
-                if camera.isRecording {
-                    camera.stopRecording(isEarly: false)
-                }
-            }
         }
     }
 
-    var flipCameraControl: some View {
-        Button(action: camera.switchCameraInput, label: {
-            Image(systemName: IconConstants.cameraOutline)
-                .foregroundColor(.white)
-                .padding()
-                .clipShape(Circle())
-        })
-        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
-        .padding(.trailing, 5)
+    var playRateSelected: some View {
+        Rectangle()
+            .fill()
+            .foregroundColor(.white)
+            .frame(width: 50, height: 25)
+            .zIndex(0.0)
     }
 
-    var flashControl: some View {
-        Button(action: camera.toggleFlash, label: {
-            Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
-                .foregroundColor(.white)
-                .padding()
-                .clipShape(Circle())
-        })
-        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
-        .padding(.trailing, 5)
+    var playRate: some View {
+        HStack {
+            ForEach(playbackRateOptions, id: \.self) { item in
+                ZStack {
+                    if self.selectedPlayback == item {
+                        playRateSelected
+                        Button(action: {setPlaybackRate(rate: item)}, label: {Text(item + "x")})
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .zIndex(1.0)
+                    } else {
+                        Button(action: {setPlaybackRate(rate: item)}, label: {Text(item + "x")})
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .zIndex(1.0)
+                    }
+                }
+            }
+        }
     }
 
     var submitButton: some View {
@@ -146,9 +162,42 @@ struct CameraView: View {
         .padding(.trailing, 5)
     }
 
+    var flipCameraControl: some View {
+        Button(action: camera.switchCameraInput, label: {
+            Image(systemName: IconConstants.cameraOutline)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+        .padding(.trailing, 5)
+    }
+
+    var flashControl: some View {
+        Button(action: camera.toggleFlash, label: {
+            Image(systemName: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+        .padding(.trailing, 5)
+    }
+
     var reuploadVideoControl: some View {
         Button(action: { self.isVideoUploaded = false }, label: {
             Image(systemName: IconConstants.uploadFile)
+                .foregroundColor(.white)
+                .padding()
+                .clipShape(Circle())
+        })
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+        .padding(.trailing, 5)
+    }
+
+    var playRateControl: some View {
+        Button(action: { self.isPlayRateSelectorShowing.toggle() }, label: {
+            Image(systemName: IconConstants.speedometer)
                 .foregroundColor(.white)
                 .padding()
                 .clipShape(Circle())
@@ -166,6 +215,7 @@ struct CameraView: View {
                 }
                 if self.isVideoUploaded {
                     reuploadVideoControl
+                    playRateControl
                 }
             }
         }.padding()
@@ -212,9 +262,10 @@ struct CameraView: View {
 
     var playbackView: some View {
         HStack(spacing: 0) {
-            LoopingPlayer(url: self.uploadedVideoURL)
-            LoopingPlayer(url: camera.outputURL)
+            LoopingPlayer(url: self.uploadedVideoURL, playbackRate: self.playbackRate, isUploadedVideo: true)
+            LoopingPlayer(url: camera.outputURL, playbackRate: self.playbackRate, isUploadedVideo: false)
         }.zIndex(1.0)
+        .offset(y: 25)
     }
 
     var dimmer: some View {
@@ -305,13 +356,13 @@ struct CameraView: View {
 
     var progressBar: some View {
         ZStack {
-            ProgressBar(duration: CMTimeGetSeconds(AVAsset(url: self.uploadedVideoURL).duration))
+            ProgressBar(duration: Double(CMTimeGetSeconds(AVAsset(url: self.uploadedVideoURL).duration)) / self.playbackRate)
         }.zIndex(1)
     }
 
     var uploadedVideoPlayback: some View {
-        VideoPlayerView(url: self.uploadedVideoURL)
-            .scaleEffect(x: 1.0, y: 0.98, anchor: .center)
+        VideoPlayerView(url: self.uploadedVideoURL, playbackRate: self.playbackRate)
+            .scaleEffect(x: 1.0, y: 0.92, anchor: .center)
     }
 
     var liveCameraView: some View {
@@ -348,6 +399,7 @@ struct CameraView: View {
                 .zIndex(-1)
             } else if camera.currentUIImage != nil && camera.outputURL != nil {
                 playbackView
+                    .offset(x: 0, y: -50)
             }
         }
     }
@@ -381,11 +433,17 @@ struct CameraView: View {
                     }
                     Spacer()
 
-                    if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded {
-                        recordButton
-                        .frame(height: 75)
-                        .offset(x: 0, y: -50)
-                    } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded && !self.isLoading {
+                    if !self.isVideoPickerOpen && self.isVideoUploaded && !camera.isVideoRecorded && !self.isLoading {
+                        VStack {
+                            if self.isPlayRateSelectorShowing && !camera.isRecording && !self.isCountingDown {
+                                playRate
+                                    .padding(.bottom, 100)
+                            }
+                            recordButton
+                                .frame(height: 75)
+                                .offset(y: -25)
+                        }
+                    } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded {
                         submitButton
                             .frame(height: 75)
                             .offset(x: 0, y: -50)

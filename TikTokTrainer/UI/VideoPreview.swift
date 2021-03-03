@@ -12,9 +12,11 @@ import AVKit
 
 struct LoopingPlayer: UIViewRepresentable {
     var url: URL
+    var playbackRate: Double
+    var isUploadedVideo: Bool
 
     func makeUIView(context: Context) -> some UIView {
-        return QueuePlayerUIView(frame: .zero, videoURL: url)
+        return QueuePlayerUIView(frame: .zero, videoURL: url, playbackRate: playbackRate, isUploadedVideo: isUploadedVideo)
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
@@ -24,9 +26,10 @@ struct LoopingPlayer: UIViewRepresentable {
 
 struct VideoPlayerView: UIViewRepresentable {
     var url: URL
+    var playbackRate: Double
 
     func makeUIView(context: Context) -> some UIView {
-        return PlayerUIView(frame: .zero, videoURL: url)
+        return PlayerUIView(frame: .zero, videoURL: url, playbackRate: playbackRate)
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
@@ -49,7 +52,7 @@ class QueuePlayerUIView: UIView {
     private var playerLayer = AVPlayerLayer()
     private var playerLooper: AVPlayerLooper?
 
-    init(frame: CGRect, videoURL: URL) {
+    init(frame: CGRect, videoURL: URL, playbackRate: Double, isUploadedVideo: Bool) {
         super.init(frame: frame)
 
         let playerItem = AVPlayerItem(url: videoURL)
@@ -60,6 +63,9 @@ class QueuePlayerUIView: UIView {
 
         playerLooper = AVPlayerLooper(player: player, templateItem: playerItem)
         player.play()
+        if isUploadedVideo {
+            player.rate = Float(playbackRate)
+        }
     }
 
     override func layoutSubviews() {
@@ -76,7 +82,7 @@ class PlayerUIView: UIView {
     private var playerLayer = AVPlayerLayer()
     private var player: AVPlayer?
 
-    init(frame: CGRect, videoURL: URL) {
+    init(frame: CGRect, videoURL: URL, playbackRate: Double) {
         super.init(frame: frame)
 
         let playerItem = AVPlayerItem(url: videoURL)
@@ -86,6 +92,7 @@ class PlayerUIView: UIView {
         layer.addSublayer(playerLayer)
 
         player?.play()
+        player?.rate = Float(playbackRate)
     }
 
     func playVideo() {

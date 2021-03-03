@@ -74,6 +74,7 @@ struct PoseNetOverlay: Shape {
         .applying(CGAffineTransform(scaleX: 1.0, y: -1.0))
         .applying(CGAffineTransform(translationX: 0, y: height))
         return shifted
+
     }
 
     func path(in rect: CGRect) -> Path {
