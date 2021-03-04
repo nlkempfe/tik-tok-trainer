@@ -72,6 +72,7 @@ struct ScoringFunction {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
+        var tempAngle: CGFloat = 0
         
         var angleDifferences = [[CGFloat]](
             repeating: [CGFloat](),
@@ -80,9 +81,11 @@ struct ScoringFunction {
         
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             for (_, angle) in poseAngles.enumerated() {
+                tempAngle = abs(angle.value - recordedPoses[row][angle.key]!)
+                tempAngle = tempAngle < 3 ? 0 : tempAngle - 3
                 // This is where to add shifts or padding to angle differences
                 // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
-                angleDifferences[row].append(abs(angle.value - recordedPoses[row][angle.key]!))
+                angleDifferences[row].append(tempAngle)
             }
         }
         return angleDifferences
