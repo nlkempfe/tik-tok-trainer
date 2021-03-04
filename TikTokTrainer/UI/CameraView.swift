@@ -23,7 +23,6 @@ struct CameraView: View {
     @State var isVideoUploaded: Bool = false
     @State var isVideoPickerOpen = false
     @State var isUploading: Bool = false
-    @State var isResultsScreenOpen: Bool = false
     @State var isLoading: Bool = false
     @State var uploadedVideoDuration: Double = Double.infinity
     @State var progressView = UIProgressView()
@@ -45,11 +44,11 @@ struct CameraView: View {
     func reset() {
         self.opacity = 0.0
     }
-
+    
     func submit() {
         print("submit button pressed")
         self.isLoading = true
-        
+
         // Run PoseNetProcessor on two videos and feed result to scoring function
         all(
             PoseNetProcessor.run(url: self.uploadedVideoURL),
@@ -58,7 +57,6 @@ struct CameraView: View {
             ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore(callback: { result in
                 print(result)
                 self.isLoading = false
-                self.isResultsScreenOpen = true
             })
         }.catch { error in
             print("Error: \(error)")
