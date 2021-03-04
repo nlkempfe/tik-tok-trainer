@@ -6,28 +6,19 @@
 //
 
 import XCTest
+@testable import Promises
 @testable import TikTokTrainer
 
 class TikTokTrainerTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+//    This function takes a very long time to run on CI/CD so it is commented so you can run it locally
+//    func testPoseNetProcessorPerformance() {
+//        let url = Bundle.main.url(forResource: "TestDance", withExtension: "mov")!
+//        let measureOptions = XCTMeasureOptions()
+//        measureOptions.iterationCount = 2
+//        self.measure(options: measureOptions) {
+//            _ = PoseNetProcessor.run(url: url)
+//
+//            XCTAssert(waitForPromises(timeout: 200))
+//        }
+//    }
 }
