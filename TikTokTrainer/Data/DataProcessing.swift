@@ -99,7 +99,8 @@ struct ScoringFunction {
         
         let prVid = preRecordedVid!
         let rVid = recordedVid!
-        let maxError: CGFloat = 402.5
+        // Computes the max error that can be achieved in one pose
+        let maxError: CGFloat = CGFloat(sqrt(Double(jointTriples.count) * (pow(180, 2))))
         // ensures that there are an equivalent number of data slices
         //        guard prVid.data.count == rVid.data.count else { throw ScoringFunctionError.videoLengthIncompatible }
         
