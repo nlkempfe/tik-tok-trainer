@@ -82,7 +82,7 @@ struct ScoringFunction {
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             for (_, angle) in poseAngles.enumerated() {
                 tempAngle = abs(angle.value - recordedPoses[row][angle.key]!)
-                tempAngle = tempAngle < 3 ? 0 : tempAngle - 3
+                tempAngle = tempAngle < 10 ? 0 : tempAngle - 10
                 // This is where to add shifts or padding to angle differences
                 // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
                 angleDifferences[row].append(tempAngle)

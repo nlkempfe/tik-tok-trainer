@@ -18,8 +18,8 @@ struct TikTokTrainerApp: App {
     
     init() {
         all(
-            PoseNetProcessor.run(url: Bundle.main.url(forResource: "preRecordedVid", withExtension: "mp4")!),
-            PoseNetProcessor.run(url: Bundle.main.url(forResource: "recordedVid", withExtension: "mp4")!)
+            PoseNetProcessor.run(url: Bundle.main.url(forResource: "TrueDance", withExtension: "mov")!),
+            PoseNetProcessor.run(url: Bundle.main.url(forResource: "TestDanceTrimmed", withExtension: "mov")!)
         ).then { movieOne, movieTwo in
             ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore(callback: { result in
                 print(result)
