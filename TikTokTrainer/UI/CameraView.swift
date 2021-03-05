@@ -9,6 +9,7 @@ import SwiftUI
 import AVFoundation
 import Photos
 import AVKit
+import Promises
 
 struct CameraView: View {
     @StateObject var camera = CameraModel()
@@ -47,13 +48,22 @@ struct CameraView: View {
     func reset() {
         self.opacity = 0.0
     }
-
+    
     func submit() {
+        print("submit button pressed")
         self.isLoading = true
-        // TODO: submit video for processing and set loading to false when complete
-        // Remove this when implementing actual processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+
+        // Run PoseNetProcessor on two videos and feed result to scoring function
+        all(
+            PoseNetProcessor.run(url: self.uploadedVideoURL),
+            PoseNetProcessor.run(url: self.camera.previousSavedURL)
+        ).then { movieOne, movieTwo in
+            return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
+        }.then{ score in
+            print("Video score: \(score)")
             self.isLoading = false
+        }.catch { error in
+            print("Error: \(error)")
         }
     }
 

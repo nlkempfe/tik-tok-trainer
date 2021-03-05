@@ -31,6 +31,7 @@ class CameraModel: NSObject,
     // camera feed
     let cameraSession = AVCaptureSession()
     var outputURL: URL!
+    var previousSavedURL: URL = URL(string: "placeholder")!
     var imageBounds: CGSize!
     var frontCameraDevice: AVCaptureDevice?
     var backCameraDevice: AVCaptureDevice?
@@ -233,6 +234,7 @@ class CameraModel: NSObject,
                     DispatchQueue.main.async {
                         self.isVideoRecorded = true
                     }
+                    self.previousSavedURL = self.outputURL
                     self.setup()
                 } else {
                     self.isVideoRecorded = false
