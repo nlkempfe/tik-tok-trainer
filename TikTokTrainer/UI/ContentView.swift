@@ -16,7 +16,7 @@ struct ContentView: View {
     init() {
         resetTabBarColor()
     }
-    
+
     func resetTabBarColor() {
         UITabBar.appearance().isTranslucent = false
         UITabBar.appearance().barTintColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
