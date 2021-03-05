@@ -54,10 +54,10 @@ struct CameraView: View {
             PoseNetProcessor.run(url: self.uploadedVideoURL),
             PoseNetProcessor.run(url: camera.outputURL)
         ).then { movieOne, movieTwo in
-            ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore().then{ score in
-               print(score)
-               self.isLoading = false
-           }
+            return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
+        }.then{ score in
+            print(score)
+            self.isLoading = false
         }.catch { error in
             print("Error: \(error)")
         }
