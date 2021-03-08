@@ -31,6 +31,7 @@ class CameraModel: NSObject,
     // camera feed
     let cameraSession = AVCaptureSession()
     var outputURL: URL!
+    var previousSavedURL: URL = URL(string: "placeholder")!
     var imageBounds: CGSize!
     var frontCameraDevice: AVCaptureDevice?
     var backCameraDevice: AVCaptureDevice?
@@ -224,6 +225,7 @@ class CameraModel: NSObject,
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.outputURL)
             }) { saved, error in
                 if saved {
+                    self.previousSavedURL = self.outputURL
                     self.setup()
                         if !isEarly {
                             DispatchQueue.main.async {

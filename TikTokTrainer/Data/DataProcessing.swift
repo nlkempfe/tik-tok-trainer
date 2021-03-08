@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import AVKit
 import Vision
+import Promises
 
 /// Process the PoseNet overlays on the pre-recorded and user-recorded videos and return a score
 struct ScoringFunction {
@@ -102,7 +103,9 @@ struct ScoringFunction {
         
         let prVid = preRecordedVid!
         let rVid = recordedVid!
-        let maxError: CGFloat = 402.5
+        // Computes the max error that can be achieved in one pose
+        let maxError: CGFloat = CGFloat(sqrt(Double(jointTriples.count) * (pow(180, 2))))
+
         // ensures that there are an equivalent number of data slices
         //        guard prVid.data.count == rVid.data.count else { throw ScoringFunctionError.videoLengthIncompatible }
         
@@ -126,15 +129,17 @@ struct ScoringFunction {
     }
     
     // computes score using any scoring function (currently unweighted L2 MSE) and feeds result to callback
-    func computeScore(callback: @escaping (Result<CGFloat, Error>) -> Void) {
-        var score: CGFloat = 0
-        do {
-            score = try computeUnweightedMSE()
-        } catch {
-            print("Error computing score.\n Error: \(error)")
-            return callback(.failure(error))
+    func computeScore() -> Promise<CGFloat> {
+        let promise = Promise<CGFloat> { fulfill, reject in
+            do {
+                let score = try computeUnweightedMSE()
+                return fulfill(score)
+            } catch {
+                print("Error computing score.\n Error: \(error)")
+                return reject(error)
+            }
         }
-        return callback(.success(score))
+        return promise
     }
 }
 
