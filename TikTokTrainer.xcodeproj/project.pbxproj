@@ -190,8 +190,8 @@
 			children = (
 				C03D3AE825E2232900836A58 /* ContentView.swift */,
 				0E02D15525AFA56900004B2A /* CameraView.swift */,
-				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
 				5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */,
+				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
 				5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */,
 			);
 			path = UI;

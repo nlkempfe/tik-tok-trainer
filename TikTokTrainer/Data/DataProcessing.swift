@@ -16,13 +16,18 @@ struct ScoringFunction {
     var preRecordedVid: ProcessedVideo?
     var recordedVid: ProcessedVideo?
     
+    // Angle is measured for the middle joint in each triple
     let jointTriples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName)] = [
         (.leftWrist, .leftElbow, .leftShoulder),
         (.rightShoulder, .rightElbow, .rightWrist),
         (.neck, .leftShoulder, .leftElbow),
         (.nose, .neck, .leftShoulder),
         (.neck, .rightShoulder, .rightElbow),
-        (.nose, .neck, .rightShoulder)
+        (.nose, .neck, .rightShoulder),
+        (.leftAnkle, .leftKnee, .leftHip),
+        (.leftKnee, .leftHip, .root),
+        (.rightHip, .rightKnee, .rightAnkle),
+        (.root, .rightHip, .rightKnee)
     ]
     
     /// Computes angles of PoseNet data with trig
