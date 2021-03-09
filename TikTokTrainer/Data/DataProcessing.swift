@@ -22,6 +22,7 @@ struct ScoringFunction {
     
     // Angle is measured for the middle joint in each triple
     // Bottom two measure rotation along z axis
+
     let jointTriples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName)] = [
         (.leftWrist, .leftElbow, .leftShoulder),
         (.rightShoulder, .rightElbow, .rightWrist),
@@ -41,7 +42,7 @@ struct ScoringFunction {
         (.leftShoulder, .rightShoulder, "y-axis"),
         (.neck, .root, "x-axis")
     ]
-    
+
     /// Computes angles of PoseNet data with trig
     /// Cycles through sets of joints to track which angles are available for capture, otherwise angle is marked as 0
     ///
@@ -49,7 +50,7 @@ struct ScoringFunction {
     ///     - video: The video uploaded by the user and processed by the PoseNetProcessor
     private func computeAngles(video: ProcessedVideo) -> [[String: CGFloat]] {
         var angles = [[String: CGFloat]]()
-        
+
         // Loops through data slices which contain pose points and computes joint angles
         for slice in video.data {
             var sliceData = [String: CGFloat]()
@@ -58,7 +59,7 @@ struct ScoringFunction {
                 let pntTwo = triple.1.rawValue
                 let pntThree = triple.2.rawValue
                 var angle: CGFloat = 0
-                
+
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
                     angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
                 }
@@ -132,18 +133,18 @@ struct ScoringFunction {
         return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y))
     }
     
-    
+
     private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[CGFloat]] {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
         var tempAngle: CGFloat = 0
-        
+
         var angleDifferences = [[CGFloat]](
             repeating: [CGFloat](),
             count: minSlices
         )
-        
+
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             for (_, angle) in poseAngles.enumerated() {
                 tempAngle = abs(angle.value - recordedPoses[row][angle.key]!)
@@ -186,7 +187,7 @@ struct ScoringFunction {
     /// is sqrted and then added to the total error
     private func computeUnweightedAngleMSE() throws -> CGFloat {
         guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-        
+
         let prVid = preRecordedVid!
         let rVid = recordedVid!
         // Computes the max error that can be achieved in one pose
@@ -195,7 +196,7 @@ struct ScoringFunction {
         let angleDifferences = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: CGFloat = 0
         var tempSum: CGFloat = 0
-        
+
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
         // so that really bad movements don't penalize too much
         for angleSet in angleDifferences {
@@ -256,6 +257,7 @@ struct ScoringFunction {
     }
     
     // computes score using any scoring function (currently MSE w/ rotations) and feeds result to callback
+
     func computeScore() -> Promise<CGFloat> {
         let promise = Promise<CGFloat> { fulfill, reject in
             do {
