@@ -147,11 +147,14 @@ struct CameraView: View {
                 .padding(.top, 10)
                 .padding(.bottom, 10)
         })
-        .sheet(isPresented: $isResultsScreenOpen) {
+        .fullScreenCover(isPresented: $isResultsScreenOpen) {
             ResultsView(score: self.score, duration: self.uploadedVideoDuration, url: self.camera.previousSavedURL, playbackRate: self.playbackRate)
+                .ignoresSafeArea(.all, edges: .all)
         }
         .background(Color.blue)
         .padding(.trailing, 5)
+        .ignoresSafeArea(.all)
+
     }
 
     var discardButton: some View {
@@ -382,7 +385,7 @@ struct CameraView: View {
 
     var uploadedVideoPlayback: some View {
         VideoPlayerView(url: self.uploadedVideoURL, playbackRate: self.playbackRate)
-            .scaleEffect(x: 1.0, y: 0.92, anchor: .center)
+            .scaleEffect(x: 1.0, y: 1.025)
     }
 
     var liveCameraView: some View {

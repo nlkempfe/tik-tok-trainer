@@ -14,11 +14,11 @@ struct ResultsView: View {
     var url: URL
     var playbackRate: Double
 
-    var submitButton: some View {
+    var saveButton: some View {
         Button(action: {
             print("submit button pressed")
         }, label: {
-            Text("Submit")
+            Text("Save")
                 .foregroundColor(.white)
                 .padding(.leading, 20)
                 .padding(.trailing, 20)
@@ -30,16 +30,23 @@ struct ResultsView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
-            Spacer()
+                .offset(x: 0, y: -5)
+                .scaleEffect(x: 0.75, y: 0.75)
+            VStack {
             Text("Score: \(score)%")
                 .padding(.bottom, 10)
+                .foregroundColor(Color.black)
             Text("Mistakes: MISTAKES")
                 .padding(.bottom, 10)
+                .foregroundColor(Color.black)
             Text("Duration: \(Int(round(duration))) seconds")
-            Spacer()
-            submitButton
+                .foregroundColor(Color.black)
+            saveButton
+            }
+            .padding(.bottom, 40)
+            .offset(x: 0, y: -40)
         }
         .background(Color.white)
     }
