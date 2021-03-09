@@ -349,6 +349,9 @@ struct CameraView: View {
 
     var uploadVideoButton: some View {
         VStack {
+            Button(action: {
+                    self.isVideoPickerOpen = true
+            }, label: {
                 Image(systemName: IconConstants.uploadFileFilled)
                     .foregroundColor(.white)
                     .padding()
