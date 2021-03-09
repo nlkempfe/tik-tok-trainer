@@ -50,7 +50,7 @@ struct CameraView: View {
     func reset() {
         self.opacity = 0.0
     }
-    
+
     func submit() {
         self.isLoading = true
 
@@ -60,7 +60,7 @@ struct CameraView: View {
             PoseNetProcessor.run(url: self.camera.previousSavedURL)
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
-        }.then{ score in
+        }.then { score in
             self.score = score
             self.isLoading = false
             self.isResultsScreenOpen = true

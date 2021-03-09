@@ -13,7 +13,7 @@ struct ResultsView: View {
     var duration: Double
     var url: URL
     var playbackRate: Double
-    
+
     var submitButton: some View {
         Button(action: {
             print("submit button pressed")
@@ -28,7 +28,7 @@ struct ResultsView: View {
         .background(Color.blue)
         .cornerRadius(15)
     }
-    
+
     var body: some View {
         VStack {
             LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
@@ -44,4 +44,3 @@ struct ResultsView: View {
         .background(Color.white)
     }
 }
-
