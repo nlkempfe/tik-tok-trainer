@@ -33,6 +33,8 @@ struct CameraView: View {
     @State var playbackRateOptions = ["0.3", "0.5", "1.0", "2.0"]
     @State var selectedPlayback = "1.0"
     @State var isPlayRateSelectorShowing = false
+    @State var isResultsScreenOpen = false
+    @State var score: CGFloat = CGFloat.init()
 
     var animatableData: Double {
         get { opacity }
@@ -50,7 +52,6 @@ struct CameraView: View {
     }
     
     func submit() {
-        print("submit button pressed")
         self.isLoading = true
 
         // Run PoseNetProcessor on two videos and feed result to scoring function
@@ -60,8 +61,9 @@ struct CameraView: View {
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
         }.then{ score in
-            print("Video score: \(score)")
+            self.score = score
             self.isLoading = false
+            self.isResultsScreenOpen = true
         }.catch { error in
             print("Error: \(error)")
         }
@@ -137,7 +139,7 @@ struct CameraView: View {
         Button(action: {
             submit()
         }, label: {
-            Text("Submit")
+            Text("Save Results")
                 .foregroundColor(.white)
                 .clipShape(Rectangle())
                 .padding(.leading, 20)
@@ -145,6 +147,9 @@ struct CameraView: View {
                 .padding(.top, 10)
                 .padding(.bottom, 10)
         })
+        .sheet(isPresented: $isResultsScreenOpen) {
+            ResultsView(score: self.score, duration: self.uploadedVideoDuration, url: self.camera.previousSavedURL, playbackRate: self.playbackRate)
+        }
         .background(Color.blue)
         .padding(.trailing, 5)
     }
@@ -344,12 +349,14 @@ struct CameraView: View {
 
     var uploadVideoButton: some View {
         VStack {
-            Button(action: {self.isVideoPickerOpen = true}, label: {
                 Image(systemName: IconConstants.uploadFileFilled)
                     .foregroundColor(.white)
                     .padding()
                     .clipShape(Circle())
             })
+            .sheet(isPresented: $isVideoPickerOpen) {
+                imagePicker
+            }
             .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
             Text(StringConstants.uploadVideo)
                 .foregroundColor(.white)
@@ -453,7 +460,7 @@ struct CameraView: View {
                                 .frame(height: 75)
                                 .offset(y: -25)
                         }
-                    } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded {
+                    } else if !self.isVideoPickerOpen && self.isVideoUploaded && camera.isVideoRecorded && !self.isLoading {
                         submitButton
                             .frame(height: 75)
                             .offset(x: 0, y: -50)
@@ -468,9 +475,6 @@ struct CameraView: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $isVideoPickerOpen) {
-            imagePicker
         }
         .onAppear(perform: { camera.checkPermissionsAndSetup(permissions) })
     }
