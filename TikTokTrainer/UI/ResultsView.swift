@@ -20,8 +20,8 @@ struct ResultsView: View {
         }, label: {
             Text("Save")
                 .foregroundColor(.white)
-                .padding(.leading, 20)
-                .padding(.trailing, 20)
+                .padding(.leading, 100)
+                .padding(.trailing, 100)
                 .padding(.top, 10)
                 .padding(.bottom, 10)
         })
@@ -31,9 +31,13 @@ struct ResultsView: View {
 
     var body: some View {
         VStack(spacing: 10) {
+            Text("Results")
+                .padding(.top, 50)
+                .font(.title)
+                .foregroundColor(Color.black)
             LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
                 .offset(x: 0, y: -5)
-                .scaleEffect(x: 0.75, y: 0.75)
+                .scaleEffect(x: 0.90, y: 0.90)
             VStack {
             Text("Score: \(score)%")
                 .padding(.bottom, 10)
@@ -43,10 +47,10 @@ struct ResultsView: View {
                 .foregroundColor(Color.black)
             Text("Duration: \(Int(round(duration))) seconds")
                 .foregroundColor(Color.black)
+                .padding(.bottom, 20)
             saveButton
             }
-            .padding(.bottom, 40)
-            .offset(x: 0, y: -40)
+            .padding(.bottom, 30)
         }
         .background(Color.white)
     }
