@@ -26,6 +26,18 @@
 		5F8DCF0B25E2CAEE009679DE /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */; };
 		5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAA3D2825DD5758002B4CBC /* Globals.swift */; };
 		6E643D75B85123118238BF1F /* Pods_TikTokTrainer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */; };
+		8579687B25F7E15D006A7748 /* a3.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687225F7E150006A7748 /* a3.mov */; };
+		8579687C25F7E15D006A7748 /* c2.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687325F7E151006A7748 /* c2.mov */; };
+		8579687D25F7E15D006A7748 /* a.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687425F7E153006A7748 /* a.mov */; };
+		8579687E25F7E15D006A7748 /* d.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687525F7E155006A7748 /* d.mov */; };
+		8579687F25F7E15D006A7748 /* c.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687625F7E156006A7748 /* c.mov */; };
+		8579688025F7E15D006A7748 /* c3.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687725F7E158006A7748 /* c3.mov */; };
+		8579688125F7E15D006A7748 /* f.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687825F7E159006A7748 /* f.mov */; };
+		8579688225F7E15D006A7748 /* b.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687925F7E15B006A7748 /* b.mov */; };
+		8579688325F7E15D006A7748 /* a2.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8579687A25F7E15D006A7748 /* a2.mov */; };
+		8579688B25F7E4E8006A7748 /* workout.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 8579688A25F7E4E8006A7748 /* workout.mp4 */; };
+		8579688C25F7E4E8006A7748 /* workout.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 8579688A25F7E4E8006A7748 /* workout.mp4 */; };
+		8579688D25F7E4E8006A7748 /* workout.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 8579688A25F7E4E8006A7748 /* workout.mp4 */; };
 		8F00EDFE86F2717DCB81C0F5 /* Pods_TikTokTrainerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E232AF959113C366B24B77F /* Pods_TikTokTrainerTests.framework */; };
 		BCB9D38225E43EEC00C7DC9B /* DataProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB9D38125E43EEC00C7DC9B /* DataProcessing.swift */; };
 		BCB9D38725E441E200C7DC9B /* recordedVid.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */; };
@@ -79,6 +91,16 @@
 		5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		5FAA3D2825DD5758002B4CBC /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		6E26053E9286E9B2E2C8521F /* Pods_TikTokTrainer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8579687225F7E150006A7748 /* a3.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = a3.mov; sourceTree = "<group>"; };
+		8579687325F7E151006A7748 /* c2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = c2.mov; sourceTree = "<group>"; };
+		8579687425F7E153006A7748 /* a.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = a.mov; sourceTree = "<group>"; };
+		8579687525F7E155006A7748 /* d.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = d.mov; sourceTree = "<group>"; };
+		8579687625F7E156006A7748 /* c.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = c.mov; sourceTree = "<group>"; };
+		8579687725F7E158006A7748 /* c3.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = c3.mov; sourceTree = "<group>"; };
+		8579687825F7E159006A7748 /* f.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = f.mov; sourceTree = "<group>"; };
+		8579687925F7E15B006A7748 /* b.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = b.mov; sourceTree = "<group>"; };
+		8579687A25F7E15D006A7748 /* a2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = a2.mov; sourceTree = "<group>"; };
+		8579688A25F7E4E8006A7748 /* workout.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = workout.mp4; sourceTree = "<group>"; };
 		86B37D709A7C4AB9FAE5379C /* Pods-TikTokTrainer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.release.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.release.xcconfig"; sourceTree = "<group>"; };
 		BCB9D38125E43EEC00C7DC9B /* DataProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProcessing.swift; sourceTree = "<group>"; };
 		BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = recordedVid.mp4; sourceTree = "<group>"; };
@@ -197,6 +219,16 @@
 			isa = PBXGroup;
 			children = (
 				0E23B85525E6B89B00008FFD /* TestDance.mov */,
+				8579688A25F7E4E8006A7748 /* workout.mp4 */,
+				8579687425F7E153006A7748 /* a.mov */,
+				8579687A25F7E15D006A7748 /* a2.mov */,
+				8579687925F7E15B006A7748 /* b.mov */,
+				8579687225F7E150006A7748 /* a3.mov */,
+				8579687625F7E156006A7748 /* c.mov */,
+				8579687325F7E151006A7748 /* c2.mov */,
+				8579687725F7E158006A7748 /* c3.mov */,
+				8579687525F7E155006A7748 /* d.mov */,
+				8579687825F7E159006A7748 /* f.mov */,
 				BCB9D38B25E4423200C7DC9B /* preRecordedVid.mp4 */,
 				BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */,
 				5F573A5B25E01155000F6719 /* moon.mp4 */,
@@ -355,12 +387,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8579688025F7E15D006A7748 /* c3.mov in Resources */,
+				8579687F25F7E15D006A7748 /* c.mov in Resources */,
+				8579687E25F7E15D006A7748 /* d.mov in Resources */,
 				5F573A5C25E01155000F6719 /* moon.mp4 in Resources */,
 				BCB9D38C25E4423200C7DC9B /* preRecordedVid.mp4 in Resources */,
+				8579687B25F7E15D006A7748 /* a3.mov in Resources */,
+				8579688225F7E15D006A7748 /* b.mov in Resources */,
+				8579687C25F7E15D006A7748 /* c2.mov in Resources */,
 				BCB9D38725E441E200C7DC9B /* recordedVid.mp4 in Resources */,
+				8579688325F7E15D006A7748 /* a2.mov in Resources */,
 				0E12CFFA25D86181003880B7 /* TestImage.PNG in Resources */,
+				8579688125F7E15D006A7748 /* f.mov in Resources */,
 				0E23B85625E6B89B00008FFD /* TestDance.mov in Resources */,
 				0E02D15B25AFA56A00004B2A /* Preview Assets.xcassets in Resources */,
+				8579687D25F7E15D006A7748 /* a.mov in Resources */,
+				8579688B25F7E4E8006A7748 /* workout.mp4 in Resources */,
 				0E02D15825AFA56A00004B2A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -369,6 +411,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8579688C25F7E4E8006A7748 /* workout.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,6 +419,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8579688D25F7E4E8006A7748 /* workout.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
