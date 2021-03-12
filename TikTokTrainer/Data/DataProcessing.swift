@@ -98,9 +98,9 @@ struct ScoringFunction {
     }
     
     private func angleBetweenPoints(leftPoint: VNRecognizedPoint, middlePoint: VNRecognizedPoint, rightPoint: VNRecognizedPoint) -> CGFloat {
-        let leftCGPoint = CGPoint(x: leftPoint.x, y: leftPoint.y)
-        let middleCGPoint = CGPoint(x: middlePoint.x, y: middlePoint.y)
-        let rightCGPoint = CGPoint(x: rightPoint.x, y: rightPoint.y)
+        let leftCGPoint = leftPoint.location
+        let middleCGPoint = middlePoint.location
+        let rightCGPoint = rightPoint.location
         
         let rightVector = (x: rightCGPoint.x - middleCGPoint.x, y: rightCGPoint.y - middleCGPoint.y)
         let leftVector = (x: leftCGPoint.x - middleCGPoint.x, y: leftCGPoint.y - middleCGPoint.y)
@@ -114,10 +114,10 @@ struct ScoringFunction {
     }
     
     private func computePercentChange(cPointOne: VNRecognizedPoint, cPointTwo: VNRecognizedPoint, pPointOne: VNRecognizedPoint, pPointTwo: VNRecognizedPoint) -> CGFloat {
-        let currPointOne = CGPoint(x: cPointOne.x, y: cPointOne.y)
-        let currPointTwo = CGPoint(x: cPointTwo.x, y: cPointTwo.y)
-        let prevPointOne = CGPoint(x: pPointOne.x, y: pPointOne.y)
-        let prevPointTwo = CGPoint(x: pPointTwo.x, y: pPointTwo.y)
+        let currPointOne = cPointOne.location
+        let currPointTwo = cPointTwo.location
+        let prevPointOne = pPointOne.location
+        let prevPointTwo = pPointTwo.location
         
         let currDistance = CGPointDistance(from: currPointOne, to: currPointTwo)
         let prevDistance = CGPointDistance(from: prevPointOne, to: prevPointTwo)
