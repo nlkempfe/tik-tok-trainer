@@ -30,6 +30,8 @@
 		BCB9D38225E43EEC00C7DC9B /* DataProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB9D38125E43EEC00C7DC9B /* DataProcessing.swift */; };
 		BCB9D38725E441E200C7DC9B /* recordedVid.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */; };
 		BCB9D38C25E4423200C7DC9B /* preRecordedVid.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BCB9D38B25E4423200C7DC9B /* preRecordedVid.mp4 */; };
+		BCF1052925F2BF2A000D868F /* TrueDance.mov in Resources */ = {isa = PBXBuildFile; fileRef = BCF1052825F2BF2A000D868F /* TrueDance.mov */; };
+		BCF1053125F2C154000D868F /* TestDanceTrimmed.mov in Resources */ = {isa = PBXBuildFile; fileRef = BCF1053025F2C154000D868F /* TestDanceTrimmed.mov */; };
 		C03D3AE925E2232900836A58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03D3AE825E2232900836A58 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +85,8 @@
 		BCB9D38125E43EEC00C7DC9B /* DataProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProcessing.swift; sourceTree = "<group>"; };
 		BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = recordedVid.mp4; sourceTree = "<group>"; };
 		BCB9D38B25E4423200C7DC9B /* preRecordedVid.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = preRecordedVid.mp4; sourceTree = "<group>"; };
+		BCF1052825F2BF2A000D868F /* TrueDance.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = TrueDance.mov; sourceTree = "<group>"; };
+		BCF1053025F2C154000D868F /* TestDanceTrimmed.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = TestDanceTrimmed.mov; sourceTree = "<group>"; };
 		BE1EEFC47EAF41456E157D1F /* Pods-TikTokTrainer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.debug.xcconfig"; sourceTree = "<group>"; };
 		C03D3AE825E2232900836A58 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5AD33069A2E3DAB6AFA0EDF /* Pods_TikTokTrainer_TikTokTrainerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer_TikTokTrainerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -186,8 +190,8 @@
 			children = (
 				C03D3AE825E2232900836A58 /* ContentView.swift */,
 				0E02D15525AFA56900004B2A /* CameraView.swift */,
-				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
 				5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */,
+				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
 				5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */,
 			);
 			path = UI;
@@ -196,6 +200,8 @@
 		0E3D454B25EEE84900F24723 /* TestData */ = {
 			isa = PBXGroup;
 			children = (
+				BCF1053025F2C154000D868F /* TestDanceTrimmed.mov */,
+				BCF1052825F2BF2A000D868F /* TrueDance.mov */,
 				0E23B85525E6B89B00008FFD /* TestDance.mov */,
 				BCB9D38B25E4423200C7DC9B /* preRecordedVid.mp4 */,
 				BCB9D38625E441E200C7DC9B /* recordedVid.mp4 */,
@@ -357,7 +363,9 @@
 			files = (
 				5F573A5C25E01155000F6719 /* moon.mp4 in Resources */,
 				BCB9D38C25E4423200C7DC9B /* preRecordedVid.mp4 in Resources */,
+				BCF1053125F2C154000D868F /* TestDanceTrimmed.mov in Resources */,
 				BCB9D38725E441E200C7DC9B /* recordedVid.mp4 in Resources */,
+				BCF1052925F2BF2A000D868F /* TrueDance.mov in Resources */,
 				0E12CFFA25D86181003880B7 /* TestImage.PNG in Resources */,
 				0E23B85625E6B89B00008FFD /* TestDance.mov in Resources */,
 				0E02D15B25AFA56A00004B2A /* Preview Assets.xcassets in Resources */,
