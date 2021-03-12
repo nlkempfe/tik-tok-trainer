@@ -22,11 +22,7 @@ struct ScoringFunction {
         (.neck, .leftShoulder, .leftElbow),
         (.nose, .neck, .leftShoulder),
         (.neck, .rightShoulder, .rightElbow),
-        (.nose, .neck, .rightShoulder),
-        (.leftAnkle, .leftKnee, .leftHip),
-        (.leftKnee, .leftHip, .rightHip),
-        (.leftHip, .rightHip, .rightKnee),
-        (.rightHip, .rightKnee, .rightAnkle)
+        (.nose, .neck, .rightShoulder)
     ]
     
     /// Computes angles of PoseNet data with trig
@@ -73,31 +69,23 @@ struct ScoringFunction {
     }
     
     
-    private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[String: CGFloat]] {
+    private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[CGFloat]] {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
         
-        var angleDifferences = [[String: CGFloat]]()
+        var angleDifferences = [[CGFloat]](
+            repeating: [CGFloat](),
+            count: minSlices
+        )
         
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
-            let slicesToCheck = 3
-            // this also works well, need bigger sample size
-            // let slicesToCheck = 10
-            var sliceData = [String: CGFloat]()
             for (_, angle) in poseAngles.enumerated() {
-                var lowestSliceScore = abs(angle.value - recordedPoses[row][angle.key]!)
-                for possibleSlice in (row < slicesToCheck ? 0 : row - slicesToCheck)...(row + slicesToCheck > minSlices - 1 ? minSlices - 1 : row + slicesToCheck) {
-                    var sliceScore = abs(preRecordedPoses[possibleSlice][angle.key]! - recordedPoses[possibleSlice][angle.key]!)
-                    if sliceScore < lowestSliceScore {
-                        lowestSliceScore = sliceScore
-                    }
-                }
-                sliceData[angle.key] = lowestSliceScore
+                // This is where to add shifts or padding to angle differences
+                // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
+                angleDifferences[row].append(abs(angle.value - recordedPoses[row][angle.key]!))
             }
-            angleDifferences.append(sliceData)
         }
-        
         return angleDifferences
     }
     
@@ -123,24 +111,15 @@ struct ScoringFunction {
         
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
         // so that really bad movements don't penalize too much
-        var lowError: CGFloat = 9999999999
         for angleSet in angleDifferences {
             for angle in angleSet {
-                tempSum += pow(angle.value, 2)
-                print("     angle: " + angle.key + " " + angle.value.description)
+                tempSum += pow(angle, 2)
             }
             error += sqrt(tempSum)
-            print("tempSum: " + sqrt(tempSum).description)
-            print("error: " + error.description)
-            if (tempSum < lowError) {
-                lowError = tempSum
-            }
             tempSum = 0
         }
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
-        print("length: " + angleDifferences.count.description)
-        print("low sum: " + lowError.description)
         let length = CGFloat(angleDifferences.count)
         return (maxError - error/length)/maxError
     }
