@@ -51,7 +51,7 @@ struct ContentView: View {
             }
         }
         .accentColor(Color.red)
-        .background(Color.black)
+        .background(selectedTab == 1 ? Color.black : Color.white)
         .onAppear(perform: resetTabBarColor)
         .id(selectedTab)
     }
