@@ -240,11 +240,8 @@ struct ScoringFunction {
         for angleSet in angleDifferences {
             for angle in angleSet {
                 tempSum += pow(angle.value, 2)
-                print("     angle: " + angle.key + " " + angle.value.description)
             }
             error += sqrt(tempSum)
-            print("tempSum: " + sqrt(tempSum).description)
-            print("error: " + error.description)
             if (tempSum < lowError) {
                 lowError = tempSum
             }
@@ -263,8 +260,6 @@ struct ScoringFunction {
         }
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
-        print("length: " + angleDifferences.count.description)
-        print("low sum: " + lowError.description)
         let length = CGFloat(angleDifferences.count)
         return (maxError - error/length)/maxError
     }
