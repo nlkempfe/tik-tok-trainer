@@ -15,11 +15,11 @@ import Promises
 struct ScoringFunction {
     var preRecordedVid: ProcessedVideo?
     var recordedVid: ProcessedVideo?
-    
+
     // constants for scoring
     let rotationMultiplier: CGFloat = 180
     let rotationWeight: CGFloat = 2
-    
+
     // Angle is measured for the middle joint in each triple
     // Bottom two measure rotation along z axis
 
@@ -37,7 +37,7 @@ struct ScoringFunction {
         (.leftShoulder, .leftHip, .leftKnee),
         (.rightKnee, .rightHip, .rightShoulder)
     ]
-    
+
     let rotationTuples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, String)] = [
         (.leftShoulder, .rightShoulder, "y-axis"),
         (.neck, .root, "x-axis")
@@ -69,25 +69,25 @@ struct ScoringFunction {
         }
         return angles
     }
-    
+
     /// Computes rotations in PoseNet data
     ///
     /// - Parameters:
     ///     - video: The video uploaded by the user and processed by the PoseNetProcessor
     private func computeRotations(video: ProcessedVideo) -> [[String: CGFloat]] {
         var rotations = [[String: CGFloat]]()
-        
+
         // Loop through data slices which have a previous frame and compute the change in distance
         for (index, slice) in video.data.enumerated() where index > 0 {
             var sliceData = [String: CGFloat]()
             let prevSlice = video.data[index - 1]
-            
+
             for tuple in rotationTuples {
                 let pntOne = tuple.0.rawValue
                 let pntTwo = tuple.1.rawValue
                 let axis = tuple.2
                 var percentChange: CGFloat = 0
-                
+
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && prevSlice.points[pntOne] != nil && prevSlice.points[pntTwo] != nil {
                     percentChange = computePercentChange(cPointOne: slice.points[pntOne]!, cPointTwo: slice.points[pntTwo]!, pPointOne: prevSlice.points[pntOne]!, pPointTwo: prevSlice.points[pntTwo]!)
                 }
@@ -97,12 +97,12 @@ struct ScoringFunction {
         }
         return rotations
     }
-    
+
     private func angleBetweenPoints(leftPoint: VNRecognizedPoint, middlePoint: VNRecognizedPoint, rightPoint: VNRecognizedPoint) -> CGFloat {
         let leftCGPoint = leftPoint.location
         let middleCGPoint = middlePoint.location
         let rightCGPoint = rightPoint.location
-        
+
         let rightVector = (x: rightCGPoint.x - middleCGPoint.x, y: rightCGPoint.y - middleCGPoint.y)
         let leftVector = (x: leftCGPoint.x - middleCGPoint.x, y: leftCGPoint.y - middleCGPoint.y)
         let dotProduct = rightVector.x * leftVector.x + rightVector.y * leftVector.y
@@ -113,26 +113,25 @@ struct ScoringFunction {
         }
         return angle
     }
-    
+
     private func computePercentChange(cPointOne: VNRecognizedPoint, cPointTwo: VNRecognizedPoint, pPointOne: VNRecognizedPoint, pPointTwo: VNRecognizedPoint) -> CGFloat {
         let currPointOne = cPointOne.location
         let currPointTwo = cPointTwo.location
         let prevPointOne = pPointOne.location
         let prevPointTwo = pPointTwo.location
-        
+
         let currDistance = CGPointDistance(from: currPointOne, to: currPointTwo)
         let prevDistance = CGPointDistance(from: prevPointOne, to: prevPointTwo)
-        
+
         var percentChange: CGFloat = ((currDistance - prevDistance) / prevDistance)
         percentChange = percentChange > 2 ? 2 : percentChange
-        
+
         return prevDistance == 0 ? 1 : percentChange
     }
-    
+
     private func CGPointDistance(from: CGPoint, to: CGPoint) -> CGFloat {
         return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y))
     }
-    
 
     private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[CGFloat]] {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
@@ -156,7 +155,7 @@ struct ScoringFunction {
         }
         return angleDifferences
     }
-    
+
     // Calls computeRotations which returns percent changes in torso width and height to measure rotations
     // and then uses data to compute the differences in such movement between the two videos
     private func computeRotationDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[CGFloat]] {
@@ -164,12 +163,12 @@ struct ScoringFunction {
         let recordedRotations = computeRotations(video: recordedVid)
         let minSlices = min(preRecordedRotations.count, recordedRotations.count)
         var tempPercentDiff: CGFloat = 0
-        
+
         var rotationDifferences = [[CGFloat]](
             repeating: [CGFloat](),
             count: minSlices
         )
-        
+
         for (row, rotations) in preRecordedRotations.enumerated() where row < minSlices {
             for (_, rotation) in rotations.enumerated() {
                 tempPercentDiff = abs(rotation.value - recordedRotations[row][rotation.key]!)
@@ -182,7 +181,7 @@ struct ScoringFunction {
         }
         return rotationDifferences
     }
-    
+
     /// Unweighted Mean Squared Error Function - A single data point is a vector of angle differences so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error
     private func computeUnweightedAngleMSE() throws -> CGFloat {
@@ -192,7 +191,7 @@ struct ScoringFunction {
         let rVid = recordedVid!
         // Computes the max error that can be achieved in one pose
         let maxError: CGFloat = sqrt(CGFloat(jointTriples.count) * (pow(180, 2)))
-        
+
         let angleDifferences = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: CGFloat = 0
         var tempSum: CGFloat = 0
@@ -211,17 +210,17 @@ struct ScoringFunction {
         let length = CGFloat(angleDifferences.count)
         return (maxError - error/length)/maxError
     }
-    
+
     /// Mean Squared Error Function w/ rotation - A single data point is a vector of angle differences and another of rotation values, so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error, and the same process is repeated for rotations
     private func computeMSE() throws -> CGFloat {
         guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-        
+
         let prVid = preRecordedVid!
         let rVid = recordedVid!
         // Computes the max error that can be achieved in one pose
         let maxError: CGFloat = sqrt(CGFloat(jointTriples.count) * (pow(180, 2))) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
-        
+
         // currently the diff arrays are computed separately so the error is || angleDiffs || + || rotationDiffs ||
         // but we could possibly append the arrays for computation and get || angleDiffs + rotDiffs || resulting
         // in a different score
@@ -229,7 +228,7 @@ struct ScoringFunction {
         let rotationDifferences = computeRotationDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: CGFloat = 0
         var tempSum: CGFloat = 0
-        
+
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
         // so that really bad movements don't penalize too much
         for angleSet in angleDifferences {
@@ -239,7 +238,7 @@ struct ScoringFunction {
             error += sqrt(tempSum)
             tempSum = 0
         }
-        
+
         // Rotational differences come as values in [0, 1], and since angle values are in [0, 180] we scale the
         // value of the rotational difference by some weight (currently 180 so that the diff matches angles)
         // We can also scale the result of || rotDiffs || by some weight
@@ -255,7 +254,7 @@ struct ScoringFunction {
         let length = CGFloat(angleDifferences.count)
         return (maxError - error/length)/maxError
     }
-    
+
     // computes score using any scoring function (currently MSE w/ rotations) and feeds result to callback
 
     func computeScore() -> Promise<CGFloat> {
