@@ -39,7 +39,7 @@ struct ResultsView: View {
                 .offset(x: 0, y: -5)
                 .scaleEffect(x: 0.90, y: 0.90)
             VStack {
-            Text("Score: \(score)%")
+            Text("Score: \(score * 100)%")
                 .padding(.bottom, 10)
                 .foregroundColor(Color.black)
             Text("Mistakes: MISTAKES")
