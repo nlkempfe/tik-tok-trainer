@@ -10,6 +10,7 @@ import Promises
 
 @main
 struct TikTokTrainerApp: App {
+
     var body: some Scene {
         WindowGroup {
             ContentView()

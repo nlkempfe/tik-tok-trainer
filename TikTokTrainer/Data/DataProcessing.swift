@@ -128,32 +128,36 @@ struct ScoringFunction {
         
         return prevDistance == 0 ? 1 : percentChange
     }
-    
+      
     private func CGPointDistance(from: CGPoint, to: CGPoint) -> CGFloat {
         return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y))
     }
-    
-
-    private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[CGFloat]] {
+  
+    private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[String: CGFloat]] {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
-        var tempAngle: CGFloat = 0
-
-        var angleDifferences = [[CGFloat]](
-            repeating: [CGFloat](),
-            count: minSlices
-        )
-
+        
+        var angleDifferences = [[String: CGFloat]]()
+    
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
+            let slicesToCheck = 3
+            // this also works well, need bigger sample size
+            // let slicesToCheck = 10
+            var sliceData = [String: CGFloat]()
             for (_, angle) in poseAngles.enumerated() {
-                tempAngle = abs(angle.value - recordedPoses[row][angle.key]!)
-                tempAngle = tempAngle < 10 ? 0 : tempAngle - 10
-                // This is where to add shifts or padding to angle differences
-                // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
-                angleDifferences[row].append(tempAngle)
+                var lowestSliceScore = abs(angle.value - recordedPoses[row][angle.key]!)
+                for possibleSlice in (row < slicesToCheck ? 0 : row - slicesToCheck)...(row + slicesToCheck > minSlices - 1 ? minSlices - 1 : row + slicesToCheck) {
+                    var sliceScore = abs(preRecordedPoses[possibleSlice][angle.key]! - recordedPoses[possibleSlice][angle.key]!)
+                    if sliceScore < lowestSliceScore {
+                        lowestSliceScore = sliceScore
+                    }
+                }
+                sliceData[angle.key] = lowestSliceScore
             }
+            angleDifferences.append(sliceData)
         }
+        
         return angleDifferences
     }
     
@@ -232,11 +236,15 @@ struct ScoringFunction {
         
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
         // so that really bad movements don't penalize too much
+        var lowError: CGFloat = 9999999999
         for angleSet in angleDifferences {
             for angle in angleSet {
-                tempSum += pow(angle, 2)
+                tempSum += pow(angle.value, 2)
             }
             error += sqrt(tempSum)
+            if (tempSum < lowError) {
+                lowError = tempSum
+            }
             tempSum = 0
         }
         
