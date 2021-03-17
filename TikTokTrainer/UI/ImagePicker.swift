@@ -20,6 +20,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     @Binding var isVideoUploaded: Bool
     @Binding var thumbnailImage: UIImage
     @Binding var uploadedVideoDuration: Double
+    @Binding var isLandscape: Bool
 
     class Coordinator: NSObject, PHPickerViewControllerDelegate {
         var parent: ImagePicker
@@ -59,6 +60,11 @@ struct ImagePicker: UIViewControllerRepresentable {
 
                 DispatchQueue.main.async {
                     self.parent.thumbnailImage = UIImage(cgImage: imageRef!)
+                    if self.parent.thumbnailImage.size.width > self.parent.thumbnailImage.size.height {
+                        self.parent.isLandscape = true
+                    } else {
+                        self.parent.isLandscape = false
+                    }
                     self.parent.uploadedVideoURL = videoURL
                     self.parent.uploadedVideoDuration = CMTimeGetSeconds(AVAsset(url: self.parent.uploadedVideoURL).duration)
                     self.parent.isVideoPickerOpen = false
