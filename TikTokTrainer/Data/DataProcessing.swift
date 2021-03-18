@@ -205,7 +205,7 @@ struct ScoringFunction {
         // so that really bad movements don't penalize too much
         for angleSet in angleDifferences {
             for angle in angleSet {
-                tempSum += pow(angle, 2)
+                tempSum += pow(angle.value, 2)
             }
             error += sqrt(tempSum)
             tempSum = 0
