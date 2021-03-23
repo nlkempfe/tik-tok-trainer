@@ -36,6 +36,7 @@ struct CameraView: View {
     @State var isPlayRateSelectorShowing = false
     @State var isResultsScreenOpen = false
     @State var score: CGFloat = CGFloat.init()
+    @State var isLandscape: Bool = false
 
     var animatableData: Double {
         get { opacity }
@@ -335,7 +336,7 @@ struct CameraView: View {
     }
 
     var imagePicker: some View {
-        ImagePicker(uploadedVideoURL: self.$uploadedVideoURL, isVideoPickerOpen: self.$isVideoPickerOpen, isVideoUploaded: self.$isVideoUploaded, thumbnailImage: self.$thumbnailImage, uploadedVideoDuration: self.$uploadedVideoDuration)
+        ImagePicker(uploadedVideoURL: self.$uploadedVideoURL, isVideoPickerOpen: self.$isVideoPickerOpen, isVideoUploaded: self.$isVideoUploaded, thumbnailImage: self.$thumbnailImage, uploadedVideoDuration: self.$uploadedVideoDuration, isLandscape: self.$isLandscape)
     }
 
     var uploadControlBackground: some View {
@@ -377,7 +378,7 @@ struct CameraView: View {
 
     var thumbnail: some View {
         Thumbnail(thumbnailImage: self.$thumbnailImage)
-            .scaleEffect(x: 1.0, y: NumConstants.yScale, anchor: .center)
+            .scaleEffect(x: 1.0, y: self.isLandscape ? NumConstants.yScaleLandscape : NumConstants.yScale, anchor: .center)
             .zIndex(-1.0)
             .background(Color.black)
     }
