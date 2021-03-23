@@ -145,7 +145,7 @@ struct CameraView: View {
         Button(action: {
             submit()
         }, label: {
-            Text("Save Results")
+            Text("Submit Video")
                 .foregroundColor(.white)
                 .clipShape(Rectangle())
                 .padding(.leading, 20)
@@ -153,6 +153,7 @@ struct CameraView: View {
                 .padding(.top, 10)
                 .padding(.bottom, 10)
         })
+        
         .fullScreenCover(isPresented: $isResultsScreenOpen) {
             ResultsView(score: self.score, duration: self.uploadedVideoDuration, url: self.camera.previousSavedURL, playbackRate: self.playbackRate)
                 .ignoresSafeArea(.all, edges: .all)
