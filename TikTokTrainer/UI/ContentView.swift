@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ContentView: View {
 
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1
     let numTabs = 3
 
     init() {
@@ -43,7 +43,7 @@ struct ContentView: View {
                         tabItem(iconName: "video", text: "Record", color: .white)
                     }
                     .tag(1)
-                Text("History")
+                HistoryView()
                     .tabItem {
                         tabItem(iconName: "clock", text: "History", color: .white)
                     }
