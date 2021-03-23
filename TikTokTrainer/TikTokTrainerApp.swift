@@ -11,9 +11,15 @@ import Promises
 @main
 struct TikTokTrainerApp: App {
 
+    let dataController = DataController.shared
+    @Environment(\.scenePhase) var scenePhase
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.managedObjectContext, dataController.container.viewContext)
+        }.onChange(of: scenePhase) { _ in
+            dataController.save()
         }
     }
 }
