@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HistoryView: View {
-    
+
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(
         entity: StoredVideo.entity(),
