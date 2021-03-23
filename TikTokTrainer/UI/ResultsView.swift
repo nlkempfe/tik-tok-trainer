@@ -9,14 +9,23 @@ import Foundation
 import SwiftUI
 
 struct ResultsView: View {
+    @State var showDiscardAlert = false
+    @Environment(\.presentationMode) var presentationMode
+
     var score: CGFloat
     var duration: Double
     var url: URL
     var playbackRate: Double
+    
+    func discard() {
+        self.showDiscardAlert = false
+        presentationMode.wrappedValue.dismiss()
+    }
 
     var saveButton: some View {
         Button(action: {
             print("submit button pressed")
+            presentationMode.wrappedValue.dismiss()
         }, label: {
             Text("Save")
                 .foregroundColor(.white)
@@ -28,11 +37,38 @@ struct ResultsView: View {
         .background(Color.blue)
         .cornerRadius(15)
     }
+    
+    var discardButton: some View {
+        Button(action: {
+            showDiscardAlert = true
+        }, label: {
+            Image(systemName: "xmark")
+                .foregroundColor(.black)
+                .padding()
+                .clipShape(Circle())
+        })
+        .alert(isPresented: $showDiscardAlert) {
+            Alert(
+                title: Text("Discard Results"),
+                message: Text("Are you sure you want to discard the results?"),
+                primaryButton: .destructive(Text("Discard")) {
+                    discard()
+                },
+                secondaryButton: .cancel()
+            )
+        }
+        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+        .padding(.trailing, 5)
+    }
 
     var body: some View {
+        HStack {
+            discardButton
+            Spacer()
+        }
+        .padding(.top, 50)
         VStack(spacing: 10) {
             Text("Results")
-                .padding(.top, 50)
                 .font(.title)
                 .foregroundColor(Color.black)
             LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
