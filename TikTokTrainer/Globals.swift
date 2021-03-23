@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NumConstants {
     static let yScale = CGFloat(0.5)
+    static let yScaleLandscape = CGFloat(0.16)
     static let yCoordinateScale = CGFloat(1.25)
     static let xCoordinateScale = CGFloat(0.5)
     static let iconXScale = CGFloat(1.5)
