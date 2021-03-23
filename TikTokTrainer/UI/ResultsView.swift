@@ -62,15 +62,16 @@ struct ResultsView: View {
     }
 
     var body: some View {
-        HStack {
-            discardButton
-            Spacer()
-        }
-        .padding(.top, 50)
         VStack(spacing: 10) {
-            Text("Results")
-                .font(.title)
-                .foregroundColor(Color.black)
+            ZStack {
+                HStack {
+                    discardButton
+                    Spacer()
+                }
+                Text("Results")
+                    .font(.title)
+                    .foregroundColor(Color.black)
+            }
             LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
                 .offset(x: 0, y: -5)
                 .scaleEffect(x: 0.90, y: 0.90)
@@ -89,5 +90,7 @@ struct ResultsView: View {
             .padding(.bottom, 30)
         }
         .background(Color.white)
+        .padding(.top, 50)
     }
+    
 }
