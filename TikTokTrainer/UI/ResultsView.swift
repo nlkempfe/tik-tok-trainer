@@ -92,5 +92,5 @@ struct ResultsView: View {
         .background(Color.white)
         .padding(.top, 50)
     }
-    
+
 }
