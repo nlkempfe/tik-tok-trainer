@@ -248,16 +248,22 @@ class CameraModel: NSObject,
             self.toggleFlash()
         }
     }
+    
+    /// Gets the document directory.
+    /// From: https://www.hackingwithswift.com/books/ios-swiftui/writing-data-to-the-documents-directory
+    func getDocumentsDirectory() -> URL {
+        // find all possible documents directories for this user
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+
+        // just send back the first one, which ought to be the only one
+        return paths[0]
+    }
 
     func tempURL() -> URL? {
-        let directory = NSTemporaryDirectory() as NSString
+        let directory = getDocumentsDirectory()
 
-        if directory != "" {
-            let path = directory.appendingPathComponent(NSUUID().uuidString + ".mov")
-            return URL(fileURLWithPath: path)
-        }
-
-        return nil
+        let path = directory.appendingPathComponent(NSUUID().uuidString + ".mov")
+        return path
     }
 
     func switchCameraInput() {

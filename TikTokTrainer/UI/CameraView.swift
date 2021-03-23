@@ -12,6 +12,7 @@ import AVKit
 import Promises
 
 struct CameraView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
     @StateObject var camera = CameraModel()
     @StateObject var permissions = PermissionHandler()
     @State var isCountingDown = false
@@ -55,6 +56,10 @@ struct CameraView: View {
     func submit() {
         self.isLoading = true
 
+        let dbVideo = StoredVideo(context: managedObjectContext)
+        dbVideo.location = self.camera.previousSavedURL
+        dbVideo.storedDateTime = Date.init()
+        DataController.shared.save()
         // Run PoseNetProcessor on two videos and feed result to scoring function
         all(
             PoseNetProcessor.run(url: self.uploadedVideoURL),
