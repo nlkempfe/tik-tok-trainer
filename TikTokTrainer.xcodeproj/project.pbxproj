@@ -48,6 +48,7 @@
 		BCF1052925F2BF2A000D868F /* TrueDance.mov in Resources */ = {isa = PBXBuildFile; fileRef = BCF1052825F2BF2A000D868F /* TrueDance.mov */; };
 		BCF1053125F2C154000D868F /* TestDanceTrimmed.mov in Resources */ = {isa = PBXBuildFile; fileRef = BCF1053025F2C154000D868F /* TestDanceTrimmed.mov */; };
 		C03D3AE925E2232900836A58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03D3AE825E2232900836A58 /* ContentView.swift */; };
+		C0AB9A5C2609A2A20054F5D6 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0AB9A5B2609A2A20054F5D6 /* TutorialView.swift */; };
 		C0E571AA25F72F5E00DE888A /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E571A925F72F5E00DE888A /* ResultsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -118,6 +119,7 @@
 		BCF1053025F2C154000D868F /* TestDanceTrimmed.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = TestDanceTrimmed.mov; sourceTree = "<group>"; };
 		BE1EEFC47EAF41456E157D1F /* Pods-TikTokTrainer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.debug.xcconfig"; sourceTree = "<group>"; };
 		C03D3AE825E2232900836A58 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C0AB9A5B2609A2A20054F5D6 /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 		C0E571A925F72F5E00DE888A /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
 		D5AD33069A2E3DAB6AFA0EDF /* Pods_TikTokTrainer_TikTokTrainerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainer_TikTokTrainerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E63226C6660A03A93E3B0101 /* Pods-TikTokTrainerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainerTests.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainerTests/Pods-TikTokTrainerTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */,
 				C0E571A925F72F5E00DE888A /* ResultsView.swift */,
 				0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */,
+				C0AB9A5B2609A2A20054F5D6 /* TutorialView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -562,6 +565,7 @@
 				5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */,
 				5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */,
 				0EB0DA4925EF0B9C00A1F2A3 /* HistoryView.swift in Sources */,
+				C0AB9A5C2609A2A20054F5D6 /* TutorialView.swift in Sources */,
 				0EB0DA4425EF0A1300A1F2A3 /* DataController.swift in Sources */,
 				5F8DCF0B25E2CAEE009679DE /* ImagePicker.swift in Sources */,
 				C03D3AE925E2232900836A58 /* ContentView.swift in Sources */,
