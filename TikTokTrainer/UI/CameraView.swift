@@ -145,7 +145,7 @@ struct CameraView: View {
         Button(action: {
             submit()
         }, label: {
-            Text("Save Results")
+            Text("Submit Video")
                 .foregroundColor(.white)
                 .clipShape(Rectangle())
                 .padding(.leading, 20)
