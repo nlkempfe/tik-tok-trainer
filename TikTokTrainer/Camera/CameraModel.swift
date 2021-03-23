@@ -248,7 +248,7 @@ class CameraModel: NSObject,
             self.toggleFlash()
         }
     }
-    
+
     /// Gets the document directory.
     /// From: https://www.hackingwithswift.com/books/ios-swiftui/writing-data-to-the-documents-directory
     func getDocumentsDirectory() -> URL {

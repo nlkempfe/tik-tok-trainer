@@ -16,7 +16,7 @@ struct ResultsView: View {
     var duration: Double
     var url: URL
     var playbackRate: Double
-    
+
     func discard() {
         self.showDiscardAlert = false
         presentationMode.wrappedValue.dismiss()
@@ -37,7 +37,7 @@ struct ResultsView: View {
         .background(Color.blue)
         .cornerRadius(15)
     }
-    
+
     var discardButton: some View {
         Button(action: {
             showDiscardAlert = true
