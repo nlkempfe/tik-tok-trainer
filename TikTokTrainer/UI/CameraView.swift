@@ -43,10 +43,16 @@ struct CameraView: View {
         set { self.opacity = newValue }
     }
 
+    func showDiscardButtonAction() {
+        self.showDiscardAlert = true
+        camera.cameraSession.stopRunning()
+    }
+
     func discard() {
         camera.isVideoRecorded = false
         self.opacity = 0.0
         self.showDiscardAlert = false
+        camera.checkPermissionsAndSetup(permissions)
     }
 
     func reset() {
@@ -166,7 +172,7 @@ struct CameraView: View {
 
     var discardButton: some View {
         Button(action: {
-            showDiscardAlert = true
+            showDiscardButtonAction()
         }, label: {
             Image(systemName: "xmark")
                 .foregroundColor(.white)
@@ -467,7 +473,7 @@ struct CameraView: View {
                         VStack {
                             if self.isPlayRateSelectorShowing && !camera.isRecording && !self.isCountingDown {
                                 playRate
-                                    .padding(.bottom, 100)
+                                    .padding(.bottom, 75)
                             }
                             recordButton
                                 .frame(height: 75)

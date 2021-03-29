@@ -61,36 +61,45 @@ struct ResultsView: View {
         .padding(.trailing, 5)
     }
 
+    var background: some View {
+        Rectangle()
+            .fill()
+            .ignoresSafeArea(.all)
+            .background(Color.white)
+            .foregroundColor(Color.white)
+    }
+
     var body: some View {
-        VStack(spacing: 10) {
             ZStack {
-                HStack {
-                    discardButton
-                    Spacer()
+                background
+                VStack(alignment: .leading) {
+                discardButton
+                    .padding(.top, 50)
+                    .zIndex(2.0)
+                VStack(spacing: 10) {
+                    Text("Results")
+                        .font(.title)
+                        .foregroundColor(Color.black)
+                    LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
+                        .offset(x: 0, y: -5)
+                        .scaleEffect(x: 0.90, y: 0.90)
+                    VStack {
+                    Text("Score: \(score * 100)%")
+                        .padding(.bottom, 10)
+                        .foregroundColor(Color.black)
+                    Text("Mistakes: MISTAKES")
+                        .padding(.bottom, 10)
+                        .foregroundColor(Color.black)
+                    Text("Duration: \(Int(round(duration))) seconds")
+                        .foregroundColor(Color.black)
+                        .padding(.bottom, 20)
+                    saveButton
+                    }
+                    .padding(.bottom, 30)
                 }
-                Text("Results")
-                    .font(.title)
-                    .foregroundColor(Color.black)
+                .background(Color.white)
             }
-            LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
-                .offset(x: 0, y: -5)
-                .scaleEffect(x: 0.90, y: 0.90)
-            VStack {
-            Text("Score: \(score * 100)%")
-                .padding(.bottom, 10)
-                .foregroundColor(Color.black)
-            Text("Mistakes: MISTAKES")
-                .padding(.bottom, 10)
-                .foregroundColor(Color.black)
-            Text("Duration: \(Int(round(duration))) seconds")
-                .foregroundColor(Color.black)
-                .padding(.bottom, 20)
-            saveButton
-            }
-            .padding(.bottom, 30)
         }
-        .background(Color.white)
-        .padding(.top, 50)
     }
 
 }
