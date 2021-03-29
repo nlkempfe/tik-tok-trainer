@@ -84,8 +84,7 @@ struct HistoryView: View {
                     .font(.largeTitle)
                 List(selection: $selection) {
                     ForEach(results, id: \.self) { (result: StoredResult) in
-                        Text("Resulted: ") + Text(result.timestamp ?? Date.init(), style: .date) + Text(" ") + Text(result.timestamp ?? Date.init(), style: .time)
-                            .foregroundColor(Color.black)
+                        ResultRow(result: result)
                     }
                 }
                 .environment(\.editMode, self.$editMode)
