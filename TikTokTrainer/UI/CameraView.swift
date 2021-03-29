@@ -35,7 +35,7 @@ struct CameraView: View {
     @State var selectedPlayback = "1.0"
     @State var isPlayRateSelectorShowing = false
     @State var isResultsScreenOpen = false
-    @State var score: CGFloat = CGFloat.init()
+    @State var score: Double = 0.0
     @State var isLandscape: Bool = false
 
     var animatableData: Double {
@@ -67,7 +67,7 @@ struct CameraView: View {
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
         }.then { score in
-            self.score = score
+            self.score = score.isNaN ? 0 : Double(score)
             self.isLoading = false
             self.isResultsScreenOpen = true
         }.catch { error in

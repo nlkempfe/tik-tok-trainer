@@ -11,15 +11,18 @@ struct HistoryView: View {
 
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(
-        entity: StoredVideo.entity(),
+        entity: StoredResult.entity(),
         sortDescriptors: [
-            NSSortDescriptor(keyPath: \StoredVideo.storedDateTime, ascending: true)
+            NSSortDescriptor(keyPath: \StoredResult.timestamp, ascending: true)
         ]
-    ) var videos: FetchedResults<StoredVideo>
+    ) var results: FetchedResults<StoredResult>
 
     var body: some View {
-        List(videos, id: \.self) { (video: StoredVideo) in
-            Text(video.location?.absoluteString ?? "not found")
+//        List(videos, id: \.self) { (video: StoredVideo) in
+//            Text(video.location?.absoluteString ?? "not found")
+//        }
+        List(results, id: \.self) { (result: StoredResult) in
+            Text("Video")
         }
     }
 }
