@@ -26,7 +26,7 @@ struct HistoryView: View {
             .background(Color.white)
             .foregroundColor(Color.white)
     }
-    
+
     var deleteButton: some View {
         if editMode == .inactive {
             return Button(action: {}) {
@@ -38,7 +38,7 @@ struct HistoryView: View {
             }
         }
     }
-    
+
     var selectButton: some View {
         if editMode == .inactive {
             return Button(action: {
@@ -48,8 +48,7 @@ struct HistoryView: View {
                 Text("Select")
                     .foregroundColor(Color.black)
             }
-        }
-        else {
+        } else {
             return Button(action: {
                 self.editMode = .inactive
                 self.selection = Set<StoredResult>()
@@ -59,7 +58,7 @@ struct HistoryView: View {
             }
         }
     }
-    
+
     private func deleteResults() {
         self.editMode = .inactive
         for result in selection {

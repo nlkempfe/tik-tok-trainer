@@ -22,7 +22,7 @@ struct ResultsView: View {
         self.showDiscardAlert = false
         presentationMode.wrappedValue.dismiss()
     }
-    
+
     func submit() {
         let dbResult = StoredResult(context: managedObjectContext)
         dbResult.timestamp = Date.init()

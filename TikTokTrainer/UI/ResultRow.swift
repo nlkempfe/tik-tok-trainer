@@ -10,9 +10,9 @@ import SwiftUI
 
 struct ResultRow: View {
     var result: StoredResult
-    
+
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             Text("Resulted: ") + Text(result.timestamp ?? Date.init(), style: .date) + Text(" ") + Text(result.timestamp ?? Date.init(), style: .time)
                 .foregroundColor(Color.black)
             Text("Score: \(result.score * 100)%")
