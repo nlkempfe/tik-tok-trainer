@@ -79,7 +79,7 @@ struct HistoryView: View {
                     selectButton
                         .padding(.trailing, 10)
                 }
-                Text("Results")
+                Text("History")
                     .font(.largeTitle)
                 List(selection: $selection) {
                     ForEach(results, id: \.self) { (result: StoredResult) in
