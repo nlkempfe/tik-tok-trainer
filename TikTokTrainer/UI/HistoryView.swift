@@ -19,6 +19,15 @@ struct HistoryView: View {
     @State var editMode = EditMode.inactive
     @State var selection = Set<StoredResult>()
 
+    func setBackground() {
+        UITableView.appearance().backgroundColor = UIColor.white
+        UITableViewCell.appearance().selectedBackgroundView = {
+                    let view = UIView()
+                    view.backgroundColor = .white
+                    return view
+                }()
+    }
+
     var background: some View {
         Rectangle()
             .fill()
@@ -81,11 +90,13 @@ struct HistoryView: View {
                 }
                 Text("History")
                     .font(.largeTitle)
+                    .foregroundColor(Color.black)
                 List(selection: $selection) {
                     ForEach(results, id: \.self) { (result: StoredResult) in
                         ResultRow(result: result)
-                    }
+                    }.listRowBackground(Color.white)
                 }
+                .onAppear(perform: setBackground)
                 .environment(\.editMode, self.$editMode)
             }
             .background(Color.white)
