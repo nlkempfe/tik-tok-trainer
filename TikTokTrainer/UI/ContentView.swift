@@ -7,10 +7,11 @@
 
 import Foundation
 import SwiftUI
+import StatefulTabView
 
 struct ContentView: View {
 
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1
     let minDragThreshold: CGFloat = 50.0
     let numTabs = 3
 
@@ -32,40 +33,32 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack {
-            TabView(selection: $selectedTab) {
-                Text("Tutorial")
-                    .tabItem {
-                        tabItem(iconName: "questionmark", text: "Tutorial", color: .white)
-                    }
-                    .tag(0)
-                    .highPriorityGesture(DragGesture().onEnded(viewDragged))
-                CameraView()
-                    .tabItem {
-                        tabItem(iconName: "video", text: "Record", color: .white)
-                    }
-                    .tag(1)
-                    .highPriorityGesture(DragGesture().onEnded(viewDragged))
-                Text("History")
-                    .tabItem {
-                        tabItem(iconName: "clock", text: "History", color: .white)
-                    }
-                    .tag(2)
-                    .highPriorityGesture(DragGesture().onEnded(viewDragged))
+        StatefulTabView(selectedIndex: $selectedTab) {
+            Tab(title: "History", systemImageName: "questionmark") {
+                    Text("History")
+                        .highPriorityGesture(DragGesture().onEnded(viewDragged))
+            }
+            Tab(title: "Record", systemImageName: "video") {
+                    CameraView()
+                        .highPriorityGesture(DragGesture().onEnded(viewDragged))
+            }
+            Tab(title: "Tutorial", systemImageName: "clock") {
+                    Text("Tutorial")
+                        .highPriorityGesture(DragGesture().onEnded(viewDragged))
             }
         }
-        .accentColor(Color.red)
-        .background(Color.black)
-        .onAppear(perform: resetTabBarColor)
-        .id(selectedTab)
+        .barTintColor(.red)
+        .unselectedItemTintColor(.gray)
+        .barBackgroundColor(.clear)
+        .barAppearanceConfiguration(.transparent)
     }
 
     private func viewDragged(_ val: DragGesture.Value) {
         guard abs(val.translation.width) > minDragThreshold else { print("Width: \(val.translation.width)"); return }
-        
-        if val.translation.width < 0 && self.selectedTab != 0 {
+
+        if val.translation.width > 0 && self.selectedTab != 0 {
             self.selectedTab -= 1
-        } else if val.translation.width > 0 && self.selectedTab < (numTabs-1) {
+        } else if val.translation.width < 0 && self.selectedTab < (numTabs-1) {
             self.selectedTab += 1
         } else {
             print("Width: \(val.translation.width)")

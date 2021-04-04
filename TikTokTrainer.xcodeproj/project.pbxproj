@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,6 +21,7 @@
 		0E23B85625E6B89B00008FFD /* TestDance.mov in Resources */ = {isa = PBXBuildFile; fileRef = 0E23B85525E6B89B00008FFD /* TestDance.mov */; };
 		5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F12871125C49FD50027DC22 /* CameraModel.swift */; };
 		5F1BBF2725DEBC51007CBD42 /* VideoPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */; };
+		5F365DDA261A4A3100EFB646 /* StatefulTabView in Frameworks */ = {isa = PBXBuildFile; productRef = 5F365DD9261A4A3100EFB646 /* StatefulTabView */; };
 		5F573A5C25E01155000F6719 /* moon.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5F573A5B25E01155000F6719 /* moon.mp4 */; };
 		5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */; };
 		5F8DCF0B25E2CAEE009679DE /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */; };
@@ -95,6 +96,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E643D75B85123118238BF1F /* Pods_TikTokTrainer.framework in Frameworks */,
+				5F365DDA261A4A3100EFB646 /* StatefulTabView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +267,9 @@
 			dependencies = (
 			);
 			name = TikTokTrainer;
+			packageProductDependencies = (
+				5F365DD9261A4A3100EFB646 /* StatefulTabView */,
+			);
 			productName = TikTokTrainer;
 			productReference = 0E02D15025AFA56900004B2A /* TikTokTrainer.app */;
 			productType = "com.apple.product-type.application";
@@ -339,6 +344,9 @@
 				Base,
 			);
 			mainGroup = 0E02D14725AFA56900004B2A;
+			packageReferences = (
+				5F365DD8261A4A3100EFB646 /* XCRemoteSwiftPackageReference "StatefulTabView" */,
+			);
 			productRefGroup = 0E02D15125AFA56900004B2A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -832,6 +840,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5F365DD8261A4A3100EFB646 /* XCRemoteSwiftPackageReference "StatefulTabView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/NicholasBellucci/StatefulTabView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.8;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5F365DD9261A4A3100EFB646 /* StatefulTabView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5F365DD8261A4A3100EFB646 /* XCRemoteSwiftPackageReference "StatefulTabView" */;
+			productName = StatefulTabView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0E02D14825AFA56900004B2A /* Project object */;
 }
