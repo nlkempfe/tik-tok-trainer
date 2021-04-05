@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ResultRow: View {
     var result: StoredResult
-    
+
     var playbackView: some View {
         HStack(spacing: 0) {
             LoopingPlayer(url: result.tutorial!, playbackRate: 1.0, isUploadedVideo: true)
