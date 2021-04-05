@@ -154,7 +154,7 @@ struct CameraView: View {
                 .padding(.bottom, 10)
         })
         .fullScreenCover(isPresented: $isResultsScreenOpen) {
-            ResultsView(score: self.score, duration: self.uploadedVideoDuration, url: self.camera.previousSavedURL, playbackRate: self.playbackRate)
+            ResultsView(score: self.score, duration: self.uploadedVideoDuration, recording: self.camera.previousSavedURL, tutorial: self.uploadedVideoURL, playbackRate: self.playbackRate)
                 .ignoresSafeArea(.all, edges: .all)
         }
         .background(Color.blue)

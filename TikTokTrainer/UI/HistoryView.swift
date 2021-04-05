@@ -13,7 +13,7 @@ struct HistoryView: View {
     @FetchRequest(
         entity: StoredResult.entity(),
         sortDescriptors: [
-            NSSortDescriptor(keyPath: \StoredResult.timestamp, ascending: true)
+            NSSortDescriptor(keyPath: \StoredResult.timestamp, ascending: false)
         ]
     ) var results: FetchedResults<StoredResult>
     @State var editMode = EditMode.inactive

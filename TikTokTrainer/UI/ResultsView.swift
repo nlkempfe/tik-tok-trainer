@@ -15,7 +15,8 @@ struct ResultsView: View {
 
     var score: Double
     var duration: Double
-    var url: URL
+    var recording: URL
+    var tutorial: URL
     var playbackRate: Double
 
     func discard() {
@@ -27,6 +28,8 @@ struct ResultsView: View {
         let dbResult = StoredResult(context: managedObjectContext)
         dbResult.timestamp = Date.init()
         dbResult.score = score.isNaN ? 0 : Double(score)
+        dbResult.recording = recording.absoluteURL
+        dbResult.tutorial = tutorial.absoluteURL
         DataController.shared.save()
     }
 
@@ -88,7 +91,7 @@ struct ResultsView: View {
                     Text("Results")
                         .font(.title)
                         .foregroundColor(Color.black)
-                    LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
+                    LoopingPlayer(url: self.recording, playbackRate: self.playbackRate, isUploadedVideo: false)
                         .offset(x: 0, y: -5)
                         .scaleEffect(x: 0.90, y: 0.90)
                     VStack {
