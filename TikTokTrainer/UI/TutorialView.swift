@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct TutorialView: View {
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         ZStack {
@@ -38,10 +39,12 @@ struct TutorialView: View {
                       .padding(.trailing, 20)
                 }
           }
-            Rectangle()
-                .ignoresSafeArea(.all)
-                .background(Color.white)
-                .zIndex(-1.0)
+            if colorScheme == .dark {
+                Rectangle()
+                    .ignoresSafeArea(.all)
+                    .background(Color.white)
+                    .zIndex(-1.0)
+            }
         }
     }
 }
