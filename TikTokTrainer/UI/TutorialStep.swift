@@ -9,11 +9,11 @@ import Foundation
 import SwiftUI
 
 struct TutorialStep: View {
-    
+
     var step: String
     var header: String
     var details: String
-    
+
     var body: some View {
         HStack {
             Text(step)
