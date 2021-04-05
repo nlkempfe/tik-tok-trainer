@@ -14,7 +14,12 @@ struct TutorialView: View {
         ZStack {
             ScrollView {
                 VStack {
-                    Text("T3 Tutorial")
+                    Text("WE'RE HERE TO HELP")
+                        .foregroundColor(Color.gray)
+                        .padding(.bottom, -12)
+                        .font(Font.caption)
+                    Text("How this app works")
+                        .bold()
                         .font(Font.title)
                         .padding(.bottom, 10)
                         .padding(.top, 10)
