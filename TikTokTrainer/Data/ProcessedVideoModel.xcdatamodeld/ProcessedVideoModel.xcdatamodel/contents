@@ -12,6 +12,7 @@
         <relationship name="pose_for" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PoseNetData" inverseName="poses" inverseEntity="PoseNetData"/>
     </entity>
     <entity name="StoredResult" representedClassName=".StoredResult" syncable="YES" codeGenerationType="class">
+        <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="recording" attributeType="URI"/>
         <attribute name="score" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
@@ -25,7 +26,7 @@
     <elements>
         <element name="PoseNetData" positionX="-4.55859375" positionY="125.453125" width="128" height="88"/>
         <element name="PosePoint" positionX="227.2265625" positionY="130.16796875" width="128" height="103"/>
-        <element name="StoredResult" positionX="45" positionY="153" width="128" height="89"/>
+        <element name="StoredResult" positionX="45" positionY="153" width="128" height="104"/>
         <element name="StoredVideo" positionX="-161.421875" positionY="83.171875" width="128" height="88"/>
     </elements>
 </model>

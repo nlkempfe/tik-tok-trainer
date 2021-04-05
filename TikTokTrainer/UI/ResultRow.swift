@@ -20,16 +20,16 @@ struct ResultRow: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             playbackView
             VStack(alignment: .leading) {
-                Text("Resulted: ").foregroundColor(Color.black) + Text(result.timestamp ?? Date.init(), style: .date).foregroundColor(Color.black) + Text(" ").foregroundColor(Color.black) + Text(result.timestamp ?? Date.init(), style: .time)
+                Text(result.timestamp ?? Date.init(), style: .date).foregroundColor(Color.black).bold() + Text(" ").foregroundColor(Color.black) + Text(result.timestamp ?? Date.init(), style: .time).bold()
                     .foregroundColor(Color.black)
                 Text("Score: \(result.score * 100)%")
                     .foregroundColor(Color.black)
-                Text("Recording: \(result.recording!.absoluteString)")
+                Text("Duration: \(result.duration) seconds")
                     .foregroundColor(Color.black)
-                Text("Tutorial: \(result.tutorial!.absoluteString)")
+                Text("Mistakes: MISTAKES")
                     .foregroundColor(Color.black)
             }
         }

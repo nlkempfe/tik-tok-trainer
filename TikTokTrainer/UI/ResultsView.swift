@@ -30,6 +30,7 @@ struct ResultsView: View {
         dbResult.score = score.isNaN ? 0 : Double(score)
         dbResult.recording = recording.absoluteURL
         dbResult.tutorial = tutorial.absoluteURL
+        dbResult.duration = Int64(round(duration))
         DataController.shared.save()
     }
 
