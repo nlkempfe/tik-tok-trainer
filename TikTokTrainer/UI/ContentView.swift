@@ -43,7 +43,7 @@ struct ContentView: View {
                         tabItem(iconName: "questionmark", text: "Tutorial", color: .white)
                     }
                     .tag(MainTabs.tutorialTab)
-                CameraView()
+                CameraTabView()
                     .tabItem {
                         tabItem(iconName: "video", text: "Record", color: .white)
                     }
