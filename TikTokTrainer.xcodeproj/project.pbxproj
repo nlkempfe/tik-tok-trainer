@@ -25,7 +25,6 @@
 		0EB0DA4425EF0A1300A1F2A3 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA4325EF0A1300A1F2A3 /* DataController.swift */; };
 		0EB0DA4925EF0B9C00A1F2A3 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */; };
 		0EFE89BA261AC027004A1209 /* CameraPlaybackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89B9261AC027004A1209 /* CameraPlaybackView.swift */; };
-		0EFE89BF261AC046004A1209 /* VideoProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89BE261AC046004A1209 /* VideoProcessingView.swift */; };
 		0EFE89C4261AC0AE004A1209 /* CameraRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89C3261AC0AE004A1209 /* CameraRecordView.swift */; };
 		0EFE89CC261AC1F7004A1209 /* NoCameraPermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89CB261AC1F7004A1209 /* NoCameraPermissionsView.swift */; };
 		5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F12871125C49FD50027DC22 /* CameraModel.swift */; };
@@ -100,7 +99,6 @@
 		0EB0DA4325EF0A1300A1F2A3 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		0EFE89B9261AC027004A1209 /* CameraPlaybackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPlaybackView.swift; sourceTree = "<group>"; };
-		0EFE89BE261AC046004A1209 /* VideoProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProcessingView.swift; sourceTree = "<group>"; };
 		0EFE89C3261AC0AE004A1209 /* CameraRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecordView.swift; sourceTree = "<group>"; };
 		0EFE89CB261AC1F7004A1209 /* NoCameraPermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoCameraPermissionsView.swift; sourceTree = "<group>"; };
 		3E232AF959113C366B24B77F /* Pods_TikTokTrainerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -258,7 +256,6 @@
 				0EFE89CB261AC1F7004A1209 /* NoCameraPermissionsView.swift */,
 				0EFE89C3261AC0AE004A1209 /* CameraRecordView.swift */,
 				0EFE89B9261AC027004A1209 /* CameraPlaybackView.swift */,
-				0EFE89BE261AC046004A1209 /* VideoProcessingView.swift */,
 				C0E571A925F72F5E00DE888A /* ResultsView.swift */,
 			);
 			path = CameraTab;
@@ -604,7 +601,6 @@
 				0E3650D026192CB000C50F93 /* CameraTabView.swift in Sources */,
 				0E0CF783261BA70300B23149 /* SelectedVideo.swift in Sources */,
 				0E0CF788261BD0AD00B23149 /* ProcessedVideo.swift in Sources */,
-				0EFE89BF261AC046004A1209 /* VideoProcessingView.swift in Sources */,
 				C0AB9A5C2609A2A20054F5D6 /* TutorialView.swift in Sources */,
 				0EB0DA4425EF0A1300A1F2A3 /* DataController.swift in Sources */,
 				5F8DCF0B25E2CAEE009679DE /* ImagePicker.swift in Sources */,

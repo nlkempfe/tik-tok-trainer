@@ -9,6 +9,8 @@ import SwiftUI
 import AVKit
 import Vision
 
+/// View the live feed from a camera with an overlayed PoseNet skeleton on top.
+/// Uses a GeometryReady to determine where to draw the skeleton at.
 struct CameraPreview: View {
     @Binding var currentImage: UIImage?
     @Binding var result: PoseNetResult?
@@ -37,7 +39,7 @@ struct CameraPreview: View {
                 Image(uiImage: currentImage!)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .coordinateSpace(name: "previewImageSpace")
+                    .coordinateSpace(name: previewImageCoordName)
                     .overlay(imgOverlay)
             }
         }.drawingGroup()

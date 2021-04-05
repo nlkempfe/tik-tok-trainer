@@ -115,7 +115,7 @@ struct CameraRecordView: View {
                     // Toggle flash
                     makeControl(action: camera.toggleFlash, icon: camera.flashlightOn ? IconConstants.flashOn : IconConstants.flash)
                 }
-                if self.selectedVideo != nil {
+                if self.selectedVideo != nil && !self.camera.isRecording {
                     // Change selected video
                     makeControl(action: { self.selectedVideo = nil }, icon: IconConstants.uploadFile)
                     // Playback control

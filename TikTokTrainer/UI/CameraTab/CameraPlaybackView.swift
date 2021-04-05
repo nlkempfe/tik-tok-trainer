@@ -138,7 +138,7 @@ struct CameraPlaybackView: View {
                 }
                 .background(Color.blue)
                 .padding(.trailing, 5)
-                .padding(.bottom, 5)
+                .padding(.bottom, 15)
                 .ignoresSafeArea(.all)
                 .onChange(of: resultOutcome, perform: { _ in
                     self.selectedVideo = nil
