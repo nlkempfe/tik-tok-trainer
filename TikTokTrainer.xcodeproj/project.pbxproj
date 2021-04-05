@@ -229,15 +229,22 @@
 			path = TikTokTrainerUITests;
 			sourceTree = "<group>";
 		};
+		0E0CF78F261BD7CE00B23149 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */,
+				5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */,
+				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		0E1BDC0025D5F9DE00F6CFA8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				0E0CF78F261BD7CE00B23149 /* Components */,
 				0E3650CE26192C9E00C50F93 /* CameraTab */,
 				C03D3AE825E2232900836A58 /* ContentView.swift */,
-				5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */,
-				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
-				5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */,
-				C0E571A925F72F5E00DE888A /* ResultsView.swift */,
 				0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */,
 				C0AB9A5B2609A2A20054F5D6 /* TutorialView.swift */,
 			);
@@ -252,6 +259,7 @@
 				0EFE89C3261AC0AE004A1209 /* CameraRecordView.swift */,
 				0EFE89B9261AC027004A1209 /* CameraPlaybackView.swift */,
 				0EFE89BE261AC046004A1209 /* VideoProcessingView.swift */,
+				C0E571A925F72F5E00DE888A /* ResultsView.swift */,
 			);
 			path = CameraTab;
 			sourceTree = "<group>";
