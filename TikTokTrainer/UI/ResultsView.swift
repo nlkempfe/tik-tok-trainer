@@ -92,9 +92,11 @@ struct ResultsView: View {
                     Text("Results")
                         .font(.title)
                         .foregroundColor(Color.black)
-                    LoopingPlayer(url: self.recording, playbackRate: self.playbackRate, isUploadedVideo: false)
-                        .offset(x: 0, y: -5)
-                        .scaleEffect(x: 0.90, y: 0.90)
+                    HStack(spacing: 0){
+                        LoopingPlayer(url: self.tutorial, playbackRate: self.playbackRate, isUploadedVideo: true)
+                        LoopingPlayer(url: self.recording, playbackRate: self.playbackRate, isUploadedVideo: false)
+                    }
+                    .scaleEffect(x: 0.90, y: 0.90)
                     VStack {
                     Text("Score: \(score * 100)%")
                         .padding(.bottom, 10)
