@@ -9,19 +9,25 @@
 /* Begin PBXBuildFile section */
 		089FB2C54B237B82F2121A0D /* Pods_TikTokTrainer_TikTokTrainerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5AD33069A2E3DAB6AFA0EDF /* Pods_TikTokTrainer_TikTokTrainerUITests.framework */; };
 		0E02D15425AFA56900004B2A /* TikTokTrainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02D15325AFA56900004B2A /* TikTokTrainerApp.swift */; };
-		0E02D15625AFA56900004B2A /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02D15525AFA56900004B2A /* CameraView.swift */; };
 		0E02D15825AFA56A00004B2A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E02D15725AFA56A00004B2A /* Assets.xcassets */; };
 		0E02D15B25AFA56A00004B2A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E02D15A25AFA56A00004B2A /* Preview Assets.xcassets */; };
 		0E02D16625AFA56A00004B2A /* TikTokTrainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02D16525AFA56A00004B2A /* TikTokTrainerTests.swift */; };
 		0E02D17125AFA56A00004B2A /* TikTokTrainerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E02D17025AFA56A00004B2A /* TikTokTrainerUITests.swift */; };
+		0E0CF783261BA70300B23149 /* SelectedVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0CF782261BA70300B23149 /* SelectedVideo.swift */; };
+		0E0CF788261BD0AD00B23149 /* ProcessedVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0CF787261BD0AD00B23149 /* ProcessedVideo.swift */; };
 		0E12CFE225D7ABF7003880B7 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */; };
 		0E12CFE725D7AF02003880B7 /* PoseNetResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E12CFE625D7AF02003880B7 /* PoseNetResult.swift */; };
 		0E12CFFA25D86181003880B7 /* TestImage.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 0E12CFF925D86181003880B7 /* TestImage.PNG */; };
 		0E1BDB8B25D5940800F6CFA8 /* PoseNetProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1BDB8A25D5940800F6CFA8 /* PoseNetProcessor.swift */; };
 		0E23B85625E6B89B00008FFD /* TestDance.mov in Resources */ = {isa = PBXBuildFile; fileRef = 0E23B85525E6B89B00008FFD /* TestDance.mov */; };
+		0E3650D026192CB000C50F93 /* CameraTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3650CF26192CB000C50F93 /* CameraTabView.swift */; };
 		0EB0DA3F25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA3D25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodeld */; };
 		0EB0DA4425EF0A1300A1F2A3 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA4325EF0A1300A1F2A3 /* DataController.swift */; };
 		0EB0DA4925EF0B9C00A1F2A3 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */; };
+		0EFE89BA261AC027004A1209 /* CameraPlaybackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89B9261AC027004A1209 /* CameraPlaybackView.swift */; };
+		0EFE89BF261AC046004A1209 /* VideoProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89BE261AC046004A1209 /* VideoProcessingView.swift */; };
+		0EFE89C4261AC0AE004A1209 /* CameraRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89C3261AC0AE004A1209 /* CameraRecordView.swift */; };
+		0EFE89CC261AC1F7004A1209 /* NoCameraPermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFE89CB261AC1F7004A1209 /* NoCameraPermissionsView.swift */; };
 		5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F12871125C49FD50027DC22 /* CameraModel.swift */; };
 		5F1BBF2725DEBC51007CBD42 /* VideoPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */; };
 		5F573A5C25E01155000F6719 /* moon.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5F573A5B25E01155000F6719 /* moon.mp4 */; };
@@ -73,7 +79,6 @@
 		0B3D9C90BC6B8791664CDE5F /* Pods-TikTokTrainerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainerTests.release.xcconfig"; path = "Target Support Files/Pods-TikTokTrainerTests/Pods-TikTokTrainerTests.release.xcconfig"; sourceTree = "<group>"; };
 		0E02D15025AFA56900004B2A /* TikTokTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TikTokTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E02D15325AFA56900004B2A /* TikTokTrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TikTokTrainerApp.swift; sourceTree = "<group>"; };
-		0E02D15525AFA56900004B2A /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		0E02D15725AFA56A00004B2A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0E02D15A25AFA56A00004B2A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0E02D15C25AFA56A00004B2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -83,14 +88,21 @@
 		0E02D16C25AFA56A00004B2A /* TikTokTrainerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TikTokTrainerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E02D17025AFA56A00004B2A /* TikTokTrainerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TikTokTrainerUITests.swift; sourceTree = "<group>"; };
 		0E02D17225AFA56A00004B2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0E0CF782261BA70300B23149 /* SelectedVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedVideo.swift; sourceTree = "<group>"; };
+		0E0CF787261BD0AD00B23149 /* ProcessedVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessedVideo.swift; sourceTree = "<group>"; };
 		0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0E12CFE625D7AF02003880B7 /* PoseNetResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNetResult.swift; sourceTree = "<group>"; };
 		0E12CFF925D86181003880B7 /* TestImage.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TestImage.PNG; sourceTree = "<group>"; };
 		0E1BDB8A25D5940800F6CFA8 /* PoseNetProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNetProcessor.swift; sourceTree = "<group>"; };
 		0E23B85525E6B89B00008FFD /* TestDance.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = TestDance.mov; sourceTree = "<group>"; };
+		0E3650CF26192CB000C50F93 /* CameraTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTabView.swift; sourceTree = "<group>"; };
 		0EB0DA3E25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProcessedVideoModel.xcdatamodel; sourceTree = "<group>"; };
 		0EB0DA4325EF0A1300A1F2A3 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		0EFE89B9261AC027004A1209 /* CameraPlaybackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPlaybackView.swift; sourceTree = "<group>"; };
+		0EFE89BE261AC046004A1209 /* VideoProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProcessingView.swift; sourceTree = "<group>"; };
+		0EFE89C3261AC0AE004A1209 /* CameraRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecordView.swift; sourceTree = "<group>"; };
+		0EFE89CB261AC1F7004A1209 /* NoCameraPermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoCameraPermissionsView.swift; sourceTree = "<group>"; };
 		3E232AF959113C366B24B77F /* Pods_TikTokTrainerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TikTokTrainerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		543B1B8C80547A2E4E47DF78 /* Pods-TikTokTrainer-TikTokTrainerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer-TikTokTrainerUITests.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer-TikTokTrainerUITests/Pods-TikTokTrainer-TikTokTrainerUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		5E17AF5505DAB7F3B67FF5E3 /* Pods-TikTokTrainer-TikTokTrainerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer-TikTokTrainerUITests.release.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer-TikTokTrainerUITests/Pods-TikTokTrainer-TikTokTrainerUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -220,8 +232,8 @@
 		0E1BDC0025D5F9DE00F6CFA8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				0E3650CE26192C9E00C50F93 /* CameraTab */,
 				C03D3AE825E2232900836A58 /* ContentView.swift */,
-				0E02D15525AFA56900004B2A /* CameraView.swift */,
 				5F1BBF2625DEBC51007CBD42 /* VideoPreview.swift */,
 				0E12CFE125D7ABF7003880B7 /* CameraPreview.swift */,
 				5F8DCF0A25E2CAEE009679DE /* ImagePicker.swift */,
@@ -230,6 +242,18 @@
 				C0AB9A5B2609A2A20054F5D6 /* TutorialView.swift */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		0E3650CE26192C9E00C50F93 /* CameraTab */ = {
+			isa = PBXGroup;
+			children = (
+				0E3650CF26192CB000C50F93 /* CameraTabView.swift */,
+				0EFE89CB261AC1F7004A1209 /* NoCameraPermissionsView.swift */,
+				0EFE89C3261AC0AE004A1209 /* CameraRecordView.swift */,
+				0EFE89B9261AC027004A1209 /* CameraPlaybackView.swift */,
+				0EFE89BE261AC046004A1209 /* VideoProcessingView.swift */,
+			);
+			path = CameraTab;
 			sourceTree = "<group>";
 		};
 		0E3D454B25EEE84900F24723 /* TestData */ = {
@@ -274,6 +298,7 @@
 			children = (
 				5F592D2B25C5BC840045F4ED /* PermissionHandler.swift */,
 				5F12871125C49FD50027DC22 /* CameraModel.swift */,
+				0E0CF782261BA70300B23149 /* SelectedVideo.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -292,6 +317,7 @@
 			isa = PBXGroup;
 			children = (
 				0E1BDB8A25D5940800F6CFA8 /* PoseNetProcessor.swift */,
+				0E0CF787261BD0AD00B23149 /* ProcessedVideo.swift */,
 				0E12CFE625D7AF02003880B7 /* PoseNetResult.swift */,
 				BCB9D38125E43EEC00C7DC9B /* DataProcessing.swift */,
 				0EB0DA3D25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodeld */,
@@ -557,14 +583,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F1BBF2725DEBC51007CBD42 /* VideoPreview.swift in Sources */,
-				0E02D15625AFA56900004B2A /* CameraView.swift in Sources */,
 				C0E571AA25F72F5E00DE888A /* ResultsView.swift in Sources */,
 				0E02D15425AFA56900004B2A /* TikTokTrainerApp.swift in Sources */,
 				0E12CFE725D7AF02003880B7 /* PoseNetResult.swift in Sources */,
 				0EB0DA3F25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodeld in Sources */,
 				5F12871225C49FD50027DC22 /* CameraModel.swift in Sources */,
+				0EFE89CC261AC1F7004A1209 /* NoCameraPermissionsView.swift in Sources */,
 				5FAA3D2925DD5758002B4CBC /* Globals.swift in Sources */,
 				0EB0DA4925EF0B9C00A1F2A3 /* HistoryView.swift in Sources */,
+				0EFE89BA261AC027004A1209 /* CameraPlaybackView.swift in Sources */,
+				0EFE89C4261AC0AE004A1209 /* CameraRecordView.swift in Sources */,
+				0E3650D026192CB000C50F93 /* CameraTabView.swift in Sources */,
+				0E0CF783261BA70300B23149 /* SelectedVideo.swift in Sources */,
+				0E0CF788261BD0AD00B23149 /* ProcessedVideo.swift in Sources */,
+				0EFE89BF261AC046004A1209 /* VideoProcessingView.swift in Sources */,
 				C0AB9A5C2609A2A20054F5D6 /* TutorialView.swift in Sources */,
 				0EB0DA4425EF0A1300A1F2A3 /* DataController.swift in Sources */,
 				5F8DCF0B25E2CAEE009679DE /* ImagePicker.swift in Sources */,

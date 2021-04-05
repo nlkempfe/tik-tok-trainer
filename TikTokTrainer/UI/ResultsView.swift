@@ -8,23 +8,33 @@
 import Foundation
 import SwiftUI
 
+enum ResultsOutcome {
+    case discardResult
+    case submitResult
+    case errorResult
+}
+
 struct ResultsView: View {
     @State var showDiscardAlert = false
     @Environment(\.presentationMode) var presentationMode
+    
+    @Binding var resultOutcome: ResultsOutcome?
 
-    var score: CGFloat
+    var score: Double
     var duration: Double
     var url: URL
     var playbackRate: Double
 
     func discard() {
         self.showDiscardAlert = false
+        resultOutcome = .discardResult
         presentationMode.wrappedValue.dismiss()
     }
 
     var saveButton: some View {
         Button(action: {
             print("submit button pressed")
+            resultOutcome = .submitResult
             presentationMode.wrappedValue.dismiss()
         }, label: {
             Text("Save")

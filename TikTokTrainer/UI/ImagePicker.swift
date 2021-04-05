@@ -15,11 +15,8 @@ import PhotosUI
 struct ImagePicker: UIViewControllerRepresentable {
     @Environment(\.presentationMode) var presentationMode
 
-    @Binding var uploadedVideoURL: URL
+    @Binding var uploadedVideo: SelectedVideo?
     @Binding var isVideoPickerOpen: Bool
-    @Binding var isVideoUploaded: Bool
-    @Binding var thumbnailImage: UIImage
-    @Binding var uploadedVideoDuration: Double
     @Binding var isLandscape: Bool
 
     class Coordinator: NSObject, PHPickerViewControllerDelegate {
@@ -59,16 +56,15 @@ struct ImagePicker: UIViewControllerRepresentable {
                 }
 
                 DispatchQueue.main.async {
-                    self.parent.thumbnailImage = UIImage(cgImage: imageRef!)
-                    if self.parent.thumbnailImage.size.width > self.parent.thumbnailImage.size.height {
+                    let thumbnailImage = UIImage(cgImage: imageRef!)
+                    if thumbnailImage.size.width > thumbnailImage.size.height {
                         self.parent.isLandscape = true
                     } else {
                         self.parent.isLandscape = false
                     }
-                    self.parent.uploadedVideoURL = videoURL
-                    self.parent.uploadedVideoDuration = CMTimeGetSeconds(AVAsset(url: self.parent.uploadedVideoURL).duration)
+                    let uploadedVideoDuration = CMTimeGetSeconds(AVAsset(url: videoURL).duration)
+                    self.parent.uploadedVideo = SelectedVideo(videoURL: videoURL, thumbnail: thumbnailImage, videoDuration: uploadedVideoDuration)
                     self.parent.isVideoPickerOpen = false
-                    self.parent.isVideoUploaded = true
                 }
             }
         }
