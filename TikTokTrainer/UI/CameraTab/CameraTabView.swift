@@ -13,7 +13,7 @@ struct CameraTabView: View {
     @StateObject var permissions = PermissionHandler()
     @State var selectedVideo: SelectedVideo?
     @State var processedVideoResult: ProcessedVideoResult?
-    
+
     var fillBackground: some View {
         Rectangle()
             .fill()

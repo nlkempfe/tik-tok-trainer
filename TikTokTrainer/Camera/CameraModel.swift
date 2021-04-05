@@ -163,7 +163,7 @@ class CameraModel: NSObject,
             self.setupWriter()
         }
     }
-    
+
     func reset() {
         DispatchQueue.main.async {
             self.isRecording = false

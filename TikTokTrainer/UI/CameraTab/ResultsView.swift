@@ -17,7 +17,7 @@ enum ResultsOutcome {
 struct ResultsView: View {
     @State var showDiscardAlert = false
     @Environment(\.presentationMode) var presentationMode
-    
+
     @Binding var resultOutcome: ResultsOutcome?
 
     var score: Double

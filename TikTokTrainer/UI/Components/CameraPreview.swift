@@ -17,9 +17,9 @@ struct CameraPreview: View {
     @Binding var orientation: AVCaptureDevice.Position
 
     let previewImageCoordName = "previewImageSpace"
-    
+
     var imgOverlay: some View {
-        return ZStack{
+        return ZStack {
             if result != nil && !(result?.points.isEmpty ?? true) {
                  GeometryReader { geo in
                     PoseNetOverlay(result: result,

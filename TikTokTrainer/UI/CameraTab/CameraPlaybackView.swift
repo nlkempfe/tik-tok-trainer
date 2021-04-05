@@ -19,26 +19,26 @@ struct CameraPlaybackView: View {
     @State var showLoadingScreen: Bool = false
     @State var score: Double = Double.nan
     @State var resultOutcome: ResultsOutcome?
-    
+
     var animatableData: Double {
         get { dimmerOpacity }
         set { self.dimmerOpacity = newValue }
     }
-    
+
     func showDiscardButtonAction() {
         self.showDiscardAlert = true
         camera.cameraSession.stopRunning()
     }
-    
+
     func discard() {
         camera.isVideoRecorded = false
         self.showDiscardAlert = false
         camera.checkPermissionsAndSetup(permissions)
     }
-    
+
     func submit() {
         self.showLoadingScreen = true
-        
+
         let dbVideo = StoredVideo(context: managedObjectContext)
         dbVideo.location = self.camera.previousSavedURL
         dbVideo.storedDateTime = Date.init()
@@ -57,7 +57,7 @@ struct CameraPlaybackView: View {
             print("Error scoring videos: \(error)")
         }
     }
-    
+
     var loadingScreen: some View {
         ZStack {
             Rectangle()
@@ -87,7 +87,7 @@ struct CameraPlaybackView: View {
                 .scaleEffect(x: 1.5, y: 1.5)
         }
     }
-    
+
     var body: some View {
         ZStack {
             VStack {
@@ -133,7 +133,11 @@ struct CameraPlaybackView: View {
                         .padding(.bottom, 10)
                 })
                 .fullScreenCover(isPresented: $showResultsScreen) {
-                    ResultsView(resultOutcome: $resultOutcome, score: self.score, duration: self.selectedVideo!.videoDuration, url: self.camera.previousSavedURL, playbackRate: self.selectedVideo!.playbackRate)
+                    ResultsView(resultOutcome: $resultOutcome,
+                                score: self.score,
+                                duration: self.selectedVideo!.videoDuration,
+                                url: self.camera.previousSavedURL,
+                                playbackRate: self.selectedVideo!.playbackRate)
                         .ignoresSafeArea(.all, edges: .all)
                 }
                 .background(Color.blue)

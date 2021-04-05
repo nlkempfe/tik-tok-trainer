@@ -9,7 +9,7 @@ import SwiftUI
 import AVFoundation
 
 struct CameraRecordView: View {
-    
+
     @ObservedObject var camera: CameraModel
 
     @Binding var selectedVideo: SelectedVideo?
@@ -29,19 +29,18 @@ struct CameraRecordView: View {
         get { dimmerOpacity }
         set { self.dimmerOpacity = newValue }
     }
-    
+
     func initializeTimerVars() {
         isCountingDown = false
         countdownTimer?.invalidate()
         countdownTimer = nil
         timeRemaining = NumConstants.timerVal
     }
-    
+
     func startCountdown() {
         self.dimmerOpacity = 0
         if camera.isRecording {
             camera.stopRecording(isEarly: true)
-            self.dimmerOpacity = 0.0
         } else if isCountingDown {
             initializeTimerVars()
         } else {
@@ -62,11 +61,7 @@ struct CameraRecordView: View {
             }
         }
     }
-    
-    func showCameraControls() -> Bool {
-        return !self.camera.isVideoRecorded
-    }
-    
+
     func makeControl(action: @escaping () -> Void, icon: String) -> some View {
         return Button(action: action, label: {
             Image(systemName: icon)
@@ -77,11 +72,11 @@ struct CameraRecordView: View {
         .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
         .padding(.trailing, 5)
     }
-    
+
     func roundDecimal(_ num: Double) -> String {
         return String(format: "%.1f", num)
     }
-    
+
     func playRateOption(rate: Double) -> some View {
         return ZStack {
             if self.selectedPlaybackRate == rate {
@@ -108,7 +103,7 @@ struct CameraRecordView: View {
 
     var cameraControls: some View {
         VStack(spacing: 0) {
-            if showCameraControls() {
+            if !self.camera.isVideoRecorded {
                 // Flip camera
                 makeControl(action: camera.switchCameraInput, icon: IconConstants.cameraOutline)
                 if camera.currentOrientation == .back {
@@ -124,7 +119,7 @@ struct CameraRecordView: View {
             }
         }.padding()
     }
-    
+
     var countdownButton: some View {
         ZStack {
             if isCountingDown {
@@ -153,7 +148,7 @@ struct CameraRecordView: View {
             }
         }
     }
-    
+
     var dimmer: some View {
         Rectangle()
             .fill()
@@ -166,7 +161,7 @@ struct CameraRecordView: View {
                 }
             }
     }
-    
+
     var liveCameraView: some View {
         CameraPreview(currentImage: $camera.currentUIImage,
                       result: $camera.currentResult,
@@ -178,7 +173,7 @@ struct CameraRecordView: View {
             }.zIndex(1.0)
             .background(Color.black)
     }
-    
+
     var uploadVideoButton: some View {
         VStack {
             Button(action: {
@@ -205,7 +200,7 @@ struct CameraRecordView: View {
                 self.dimmer
             }
             HStack(spacing: 0) {
-                VStack{
+                VStack {
                     if self.selectedVideo == nil {
                         uploadVideoButton
                     } else if !camera.isRecording {
@@ -246,8 +241,8 @@ struct CameraRecordView: View {
                 cameraControls
             }
             Spacer()
-            
-            if showCameraControls() {
+
+            if !self.camera.isVideoRecorded {
                 VStack {
                     if self.showPlaybackRate {
                         playRate
@@ -267,9 +262,9 @@ struct CameraRecordView: View {
         })
     }
 }
-//
-//struct CameraRecordView_Previews: PreviewProvider {
+
+// struct CameraRecordView_Previews: PreviewProvider {
 //    static var previews: some View {
-////        CameraRecordView(camera: CameraModel(), selectedVideoURL: .constant(nil))
+//       CameraRecordView(camera: CameraModel(), selectedVideoURL: .constant(nil))
 //    }
-//}
+// }
