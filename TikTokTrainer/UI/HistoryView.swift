@@ -17,7 +17,9 @@ struct HistoryView: View {
         ]
     ) var results: FetchedResults<StoredResult>
     @State var editMode = EditMode.inactive
-    @State var selection = Set<StoredResult>()
+    @State var selectionSet = Set<StoredResult>()
+    @State var isHistoryDetailViewOpen = false
+    @State var selection = 0
 
     func setBackground() {
         UITableView.appearance().backgroundColor = UIColor.white
@@ -52,7 +54,7 @@ struct HistoryView: View {
         if editMode == .inactive {
             return Button(action: {
                 self.editMode = .active
-                self.selection = Set<StoredResult>()
+                self.selectionSet = Set<StoredResult>()
             }) {
                 Text("Select")
                     .foregroundColor(Color.black)
@@ -60,7 +62,7 @@ struct HistoryView: View {
         } else {
             return Button(action: {
                 self.editMode = .inactive
-                self.selection = Set<StoredResult>()
+                self.selectionSet = Set<StoredResult>()
             }) {
                 Text("Cancel")
                     .foregroundColor(Color.black)
@@ -70,11 +72,11 @@ struct HistoryView: View {
 
     private func deleteResults() {
         self.editMode = .inactive
-        for result in selection {
+        for result in selectionSet {
             managedObjectContext.delete(result)
         }
         DataController.shared.save()
-        selection = Set<StoredResult>()
+        selectionSet = Set<StoredResult>()
     }
 
     var body: some View {
@@ -96,10 +98,21 @@ struct HistoryView: View {
                     .font(.largeTitle)
                     .foregroundColor(Color.black)
                 if results.count > 0 {
-                    List(selection: $selection) {
+                    List(selection: $selectionSet) {
                         ForEach(results, id: \.self) { (result: StoredResult) in
                             ResultRow(result: result)
-                        }.listRowBackground(Color.white)
+                                .onTapGesture {
+                                    if editMode == .inactive {
+                                        selection = results.firstIndex(of: result)!
+                                        isHistoryDetailViewOpen = true
+                                    }
+                                }
+                        }
+                        .listRowBackground(Color.white)
+                    }
+                    .fullScreenCover(isPresented: $isHistoryDetailViewOpen) {
+                        HistoryDetailView(result: results[selection])
+                            .ignoresSafeArea(.all, edges: .all)
                     }
                     .onAppear(perform: setBackground)
                     .environment(\.editMode, self.$editMode)
