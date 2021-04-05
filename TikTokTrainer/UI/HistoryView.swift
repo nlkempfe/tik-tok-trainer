@@ -82,22 +82,33 @@ struct HistoryView: View {
             background
             VStack {
                 HStack {
-                    deleteButton
-                        .padding(.leading, 20)
+                    if results.count > 0 {
+                        deleteButton
+                            .padding(.leading, 20)
+                    }
                     Spacer()
-                    selectButton
-                        .padding(.trailing, 10)
+                    if results.count > 0 {
+                        selectButton
+                            .padding(.trailing, 10)
+                    }
                 }
                 Text("History")
                     .font(.largeTitle)
                     .foregroundColor(Color.black)
-                List(selection: $selection) {
-                    ForEach(results, id: \.self) { (result: StoredResult) in
-                        ResultRow(result: result)
-                    }.listRowBackground(Color.white)
+                if results.count > 0 {
+                    List(selection: $selection) {
+                        ForEach(results, id: \.self) { (result: StoredResult) in
+                            ResultRow(result: result)
+                        }.listRowBackground(Color.white)
+                    }
+                    .onAppear(perform: setBackground)
+                    .environment(\.editMode, self.$editMode)
+                } else {
+                    Spacer()
+                    Text("No results found.")
+                        .bold()
+                    Spacer()
                 }
-                .onAppear(perform: setBackground)
-                .environment(\.editMode, self.$editMode)
             }
             .background(Color.white)
         }
