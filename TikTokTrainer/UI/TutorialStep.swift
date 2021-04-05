@@ -30,6 +30,7 @@ struct TutorialStep: View {
             Text(details)
                 .foregroundColor(Color.gray)
                 .padding(.leading, 32)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
