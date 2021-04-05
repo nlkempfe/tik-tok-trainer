@@ -92,7 +92,7 @@ struct ResultsView: View {
                     Text("Results")
                         .font(.title)
                         .foregroundColor(Color.black)
-                    HStack(spacing: 0){
+                    HStack(spacing: 0) {
                         LoopingPlayer(url: self.tutorial, playbackRate: self.playbackRate, isUploadedVideo: true)
                         LoopingPlayer(url: self.recording, playbackRate: self.playbackRate, isUploadedVideo: false)
                     }
