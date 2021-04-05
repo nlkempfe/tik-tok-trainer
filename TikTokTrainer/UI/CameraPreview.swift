@@ -15,23 +15,30 @@ struct CameraPreview: View {
     @Binding var orientation: AVCaptureDevice.Position
 
     let previewImageCoordName = "previewImageSpace"
+    
+    var imgOverlay: some View {
+        return ZStack{
+            if result != nil && !(result?.points.isEmpty ?? true) {
+                 GeometryReader { geo in
+                    PoseNetOverlay(result: result,
+                                   currentImage: currentImage,
+                                   width: geo.frame(in: .named(previewImageCoordName)).width,
+                                   height: geo.frame(in: .named(previewImageCoordName)).height,
+                                   isFrontCamera: orientation == .front)
+                        .stroke(Color.blue, lineWidth: 4)
+                }
+            }
+        }
+    }
 
     var body: some View {
         ZStack {
             if currentImage != nil {
                 Image(uiImage: currentImage!)
                     .resizable()
-                    .coordinateSpace(name: previewImageCoordName)
-            }
-            if result != nil && !(result?.points.isEmpty ?? true) {
-                GeometryReader { geo in
-                    PoseNetOverlay(result: result,
-                                   currentImage: currentImage,
-                                   width: geo.frame(in: .named(previewImageCoordName)).maxX*NumConstants.xCoordinateScale,
-                                   height: geo.frame(in: .named(previewImageCoordName)).maxY*NumConstants.yCoordinateScale,
-                                   isFrontCamera: orientation == .front)
-                        .stroke(Color.blue, lineWidth: 4)
-                }
+                    .aspectRatio(contentMode: .fit)
+                    .coordinateSpace(name: "previewImageSpace")
+                    .overlay(imgOverlay)
             }
         }.drawingGroup()
     }
@@ -74,7 +81,6 @@ struct PoseNetOverlay: Shape {
         .applying(CGAffineTransform(scaleX: 1.0, y: -1.0))
         .applying(CGAffineTransform(translationX: 0, y: height))
         return shifted
-
     }
 
     func path(in rect: CGRect) -> Path {

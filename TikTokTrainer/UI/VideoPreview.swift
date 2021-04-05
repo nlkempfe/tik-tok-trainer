@@ -37,17 +37,6 @@ struct VideoPlayerView: UIViewRepresentable {
     }
 }
 
-struct Thumbnail: View {
-    @Binding var thumbnailImage: UIImage
-
-    var body: some View {
-        ZStack {
-            Image(uiImage: self.thumbnailImage)
-                .resizable()
-        }
-    }
-}
-
 class QueuePlayerUIView: UIView {
     private var playerLayer = AVPlayerLayer()
     private var playerLooper: AVPlayerLooper?
