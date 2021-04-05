@@ -19,7 +19,7 @@ struct HistoryDetailView: View {
         }
         .zIndex(1.0)
     }
-    
+
     var discardButton: some View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
