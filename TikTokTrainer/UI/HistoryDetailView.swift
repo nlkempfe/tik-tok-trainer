@@ -56,7 +56,7 @@ struct HistoryDetailView: View {
                     playbackView
                     .scaleEffect(x: 0.90, y: 0.90)
                     VStack {
-                        Text("Score: \(result.score * 100)%")
+                        Text("Score: \(String(format: "%.2f", result.score))%")
                         .padding(.bottom, 10)
                         .foregroundColor(Color.black)
                     Text("Mistakes: MISTAKES")

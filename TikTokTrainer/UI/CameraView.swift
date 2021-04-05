@@ -67,7 +67,8 @@ struct CameraView: View {
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
         }.then { score in
-            self.score = score.isNaN ? 0 : Double(score)
+            self.score = score.isNaN ? Double(0) : Double(score)
+            self.score = (self.score * 10000).rounded() / 100
             self.isLoading = false
             self.isResultsScreenOpen = true
         }.catch { error in

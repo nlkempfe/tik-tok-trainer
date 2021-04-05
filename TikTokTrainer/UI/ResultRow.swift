@@ -25,7 +25,7 @@ struct ResultRow: View {
             VStack(alignment: .leading) {
                 Text(result.timestamp ?? Date.init(), style: .date).foregroundColor(Color.black).bold() + Text(" ").foregroundColor(Color.black) + Text(result.timestamp ?? Date.init(), style: .time).bold()
                     .foregroundColor(Color.black)
-                Text("Score: \(result.score * 100)%")
+                Text("Score: \(String(format: "%.2f", result.score))%")
                     .foregroundColor(Color.black)
                 Text("Duration: \(result.duration) seconds")
                     .foregroundColor(Color.black)

@@ -98,16 +98,16 @@ struct ResultsView: View {
                     }
                     .scaleEffect(x: 0.90, y: 0.90)
                     VStack {
-                    Text("Score: \(score * 100)%")
-                        .padding(.bottom, 10)
-                        .foregroundColor(Color.black)
-                    Text("Mistakes: MISTAKES")
-                        .padding(.bottom, 10)
-                        .foregroundColor(Color.black)
-                    Text("Duration: \(Int(round(duration))) seconds")
-                        .foregroundColor(Color.black)
-                        .padding(.bottom, 20)
-                    saveButton
+                        Text("Score: \(String(format: "%.2f", score))%")
+                            .padding(.bottom, 10)
+                            .foregroundColor(Color.black)
+                        Text("Mistakes: MISTAKES")
+                            .padding(.bottom, 10)
+                            .foregroundColor(Color.black)
+                        Text("Duration: \(Int(round(duration))) seconds")
+                            .foregroundColor(Color.black)
+                            .padding(.bottom, 20)
+                        saveButton
                     }
                     .padding(.bottom, 30)
                 }
