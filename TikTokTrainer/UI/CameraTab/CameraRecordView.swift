@@ -16,7 +16,6 @@ struct CameraRecordView: View {
     @State var timeRemaining = NumConstants.timerVal
     @State var countdownTimer: Timer?
     @State var recordTimer: Timer?
-    @State var isRecording: Bool = false
     @State var isCountingDown: Bool = false
     @State var showPlaybackRate: Bool = false
     @State var pulseRecordButton: Bool = false
@@ -233,7 +232,18 @@ struct CameraRecordView: View {
                     ProgressBar(duration: Double(CMTimeGetSeconds(AVAsset(url: self.selectedVideo!.videoURL).duration)) / self.selectedPlaybackRate)
                 }.zIndex(1)
             }
-            cameraPreview
+            VStack {
+                cameraPreview
+                if self.showPlaybackRate && !camera.isRecording && !self.camera.isVideoRecorded && !self.isCountingDown {
+                    playRate
+                } else {
+                    Rectangle()
+                        .fill()
+                        .foregroundColor(.black)
+                        .frame(width: 50, height: 25)
+                        .zIndex(0.0)
+                }
+            }
         }
         VStack {
             HStack {
@@ -244,10 +254,6 @@ struct CameraRecordView: View {
 
             if !self.camera.isVideoRecorded {
                 VStack {
-                    if self.showPlaybackRate {
-                        playRate
-                            .padding(.bottom, 75)
-                    }
                     if self.selectedVideo != nil {
                         // Record Button
                         Button(action: {
