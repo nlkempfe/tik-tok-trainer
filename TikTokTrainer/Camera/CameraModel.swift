@@ -250,7 +250,7 @@ class CameraModel: NSObject,
                     DispatchQueue.main.async {
                         self.isVideoRecorded = false
                     }
-                    print("Could not save video", error as Any)
+                    print("Could not save video at url \(String(describing: self.outputURL))", error as Any)
                 }
             }
         }

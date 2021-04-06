@@ -33,6 +33,7 @@ struct CameraPlaybackView: View {
     func discard() {
         camera.isVideoRecorded = false
         self.showDiscardAlert = false
+        camera.reset()
         camera.checkPermissionsAndSetup(permissions)
     }
 
