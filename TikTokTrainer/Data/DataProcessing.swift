@@ -12,7 +12,7 @@ import Vision
 import Promises
 
 /// Process the PoseNet overlays on the pre-recorded and user-recorded videos and return a score
-struct ScoringFunction {
+class ScoringFunction {
     var preRecordedVid: ProcessedVideo?
     var recordedVid: ProcessedVideo?
 
@@ -42,18 +42,20 @@ struct ScoringFunction {
         (.leftShoulder, .rightShoulder, "y-axis"),
         (.neck, .root, "x-axis")
     ]
+    
+    var mistakesArray: [CMTime] = []
 
     /// Computes angles of PoseNet data with trig
     /// Cycles through sets of joints to track which angles are available for capture, otherwise angle is marked as 0
     ///
     /// - Parameters:
     ///     - video: The video uploaded by the user and processed by the PoseNetProcessor
-    private func computeAngles(video: ProcessedVideo) -> [[String: CGFloat]] {
-        var angles = [[String: CGFloat]]()
+    private func computeAngles(video: ProcessedVideo) -> [[String: (CGFloat, CMTime)]] {
+        var angles = [[String: (CGFloat, CMTime)]]()
 
         // Loops through data slices which contain pose points and computes joint angles
         for slice in video.data {
-            var sliceData = [String: CGFloat]()
+            var sliceData = [String: (CGFloat, CMTime)]()
             for triple in jointTriples {
                 let pntOne = triple.0.rawValue
                 let pntTwo = triple.1.rawValue
@@ -63,7 +65,7 @@ struct ScoringFunction {
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
                     angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
                 }
-                sliceData[pntTwo.rawValue] = angle
+                sliceData[pntTwo.rawValue] = (angle, slice.start)
             }
             angles.append(sliceData)
         }
@@ -146,15 +148,18 @@ struct ScoringFunction {
             // this also works well, need bigger sample size
             // let slicesToCheck = 10
             var sliceData = [String: CGFloat]()
-            for (_, angle) in poseAngles.enumerated() {
-                var lowestSliceScore = abs(angle.value - recordedPoses[row][angle.key]!)
+            for angleTimeTuple in poseAngles {
+                var lowestSliceScore = abs(angleTimeTuple.value.0 - recordedPoses[row][angleTimeTuple.key]!.0)
                 for possibleSlice in (row < slicesToCheck ? 0 : row - slicesToCheck)...(row + slicesToCheck > minSlices - 1 ? minSlices - 1 : row + slicesToCheck) {
-                    var sliceScore = abs(preRecordedPoses[possibleSlice][angle.key]! - recordedPoses[possibleSlice][angle.key]!)
+                    let sliceScore = abs(preRecordedPoses[possibleSlice][angleTimeTuple.key]!.0 - recordedPoses[possibleSlice][angleTimeTuple.key]!.0)
                     if sliceScore < lowestSliceScore {
                         lowestSliceScore = sliceScore
                     }
                 }
-                sliceData[angle.key] = lowestSliceScore
+                sliceData[angleTimeTuple.key] = lowestSliceScore
+                if(lowestSliceScore > 50) {
+                    self.mistakesArray.append(angleTimeTuple.value.1)
+                }
             }
             angleDifferences.append(sliceData)
         }
@@ -270,7 +275,7 @@ struct ScoringFunction {
     func computeScore() -> Promise<CGFloat> {
         let promise = Promise<CGFloat> { fulfill, reject in
             do {
-                let score = try computeMSE()
+                let score = try self.computeMSE()
                 return fulfill(score)
             } catch {
                 print("Error computing score.\n Error: \(error)")
