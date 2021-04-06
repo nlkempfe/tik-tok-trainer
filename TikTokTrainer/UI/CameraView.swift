@@ -72,7 +72,7 @@ struct CameraView: View {
             PoseNetProcessor.run(url: self.camera.previousSavedURL)
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
-        }.then { (score, mistakes) in
+        }.then { (score, _) in
             self.score = score.isNaN ? Double(0) : Double(score)
             self.score = (self.score * 10000).rounded() / 100
             self.isLoading = false

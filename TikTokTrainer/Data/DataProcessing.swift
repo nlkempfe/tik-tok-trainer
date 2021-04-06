@@ -42,10 +42,10 @@ class ScoringFunction {
         (.leftShoulder, .rightShoulder, "y-axis"),
         (.neck, .root, "x-axis")
     ]
-    
+
     // Class variable - both computeAngles and computeRotations can contribute to mistakes
     var mistakesArray: [(String, CMTime)] = []
-    
+
     /// Initializes ScoringFunction with the two videos
     ///
     /// - Parameters:
@@ -168,7 +168,7 @@ class ScoringFunction {
                     }
                 }
                 sliceData[angleTimeTuple.key] = lowestSliceScore
-                if(lowestSliceScore > 100) {
+                if lowestSliceScore > 100 {
                     self.mistakesArray.append((angleTimeTuple.key, angleTimeTuple.value.1))
                 }
             }
