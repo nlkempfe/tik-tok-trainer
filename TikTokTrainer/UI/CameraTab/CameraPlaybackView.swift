@@ -91,7 +91,7 @@ struct CameraPlaybackView: View {
 
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 30) {
                 HStack {
                     Spacer()
                     Button(action: {
