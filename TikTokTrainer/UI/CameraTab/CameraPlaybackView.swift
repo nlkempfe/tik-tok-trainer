@@ -125,7 +125,9 @@ struct CameraPlaybackView: View {
                 }.zIndex(1.0)
                 .offset(y: 25)
                 Button(action: {
-                    submit()
+                    if !self.showLoadingScreen {
+                        submit()
+                    }
                 }, label: {
                     Text("Submit Video")
                         .foregroundColor(.white)
