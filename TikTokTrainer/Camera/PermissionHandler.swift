@@ -106,7 +106,7 @@ class PermissionHandler: ObservableObject {
     }
 
     /// Opens the permissions settings for the app
-    func openPermissionsSettings() {
+    static func openPermissionsSettings() {
         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }
 }
