@@ -8,10 +8,15 @@
 import Foundation
 import SwiftUI
 
+enum MainTabs {
+    case tutorialTab,
+         cameraTab,
+         historyTab
+}
+
 struct ContentView: View {
 
-    @State private var selectedTab = 1
-    let numTabs = 3
+    @State private var selectedTab: MainTabs = .cameraTab
 
     init() {
         resetTabBarColor()
@@ -19,8 +24,8 @@ struct ContentView: View {
 
     func resetTabBarColor() {
         UITabBar.appearance().isTranslucent = false
-        UITabBar.appearance().barTintColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
-        UITabBar.appearance().backgroundColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
+        UITabBar.appearance().barTintColor = (selectedTab == .cameraTab ? UIColor.black : UIColor.white)
+        UITabBar.appearance().backgroundColor = (selectedTab == .cameraTab ? UIColor.black : UIColor.white)
     }
 
     func tabItem(iconName: String, text: String, color: Color) -> some View {
@@ -37,17 +42,17 @@ struct ContentView: View {
                     .tabItem {
                         tabItem(iconName: "questionmark", text: "Tutorial", color: .white)
                     }
-                    .tag(0)
-                CameraView()
+                    .tag(MainTabs.tutorialTab)
+                CameraTabView()
                     .tabItem {
                         tabItem(iconName: "video", text: "Record", color: .white)
                     }
-                    .tag(1)
+                    .tag(MainTabs.cameraTab)
                 HistoryView()
                     .tabItem {
                         tabItem(iconName: "clock", text: "History", color: .white)
                     }
-                    .tag(2)
+                    .tag(MainTabs.historyTab)
             }
         }
         .accentColor(Color.red)
