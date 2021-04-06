@@ -15,6 +15,7 @@ struct ResultsView: View {
 
     var score: Double
     var duration: Double
+    var numMistakes: Int64
     var recording: URL
     var tutorial: URL
     var playbackRate: Double
@@ -28,6 +29,7 @@ struct ResultsView: View {
         let dbResult = StoredResult(context: managedObjectContext)
         dbResult.timestamp = Date.init()
         dbResult.score = score.isNaN ? 0 : Double(score)
+        dbResult.numMistakes = numMistakes
         dbResult.recording = recording.absoluteURL
         dbResult.tutorial = tutorial.absoluteURL
         dbResult.duration = Int64(round(duration))
@@ -101,7 +103,7 @@ struct ResultsView: View {
                         Text("Score: \(String(format: "%.2f", score))%")
                             .padding(.bottom, 10)
                             .foregroundColor(Color.black)
-                        Text("Mistakes: MISTAKES")
+                        Text("Mistakes: \(String(numMistakes))")
                             .padding(.bottom, 10)
                             .foregroundColor(Color.black)
                         Text("Duration: \(Int(round(duration))) seconds")

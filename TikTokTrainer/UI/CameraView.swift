@@ -36,6 +36,7 @@ struct CameraView: View {
     @State var isPlayRateSelectorShowing = false
     @State var isResultsScreenOpen = false
     @State var score: Double = 0.0
+    @State var numMistakes: Int64 = 0
     @State var isLandscape: Bool = false
 
     var animatableData: Double {
@@ -77,6 +78,9 @@ struct CameraView: View {
             self.score = (self.score * 10000).rounded() / 100
             self.isLoading = false
             self.isResultsScreenOpen = true
+            self.numMistakes = Int64(mistakes.count)
+            print(numMistakes)
+            print(mistakes)
         }.catch { error in
             print("Error: \(error)")
         }
@@ -162,7 +166,7 @@ struct CameraView: View {
         })
 
         .fullScreenCover(isPresented: $isResultsScreenOpen) {
-            ResultsView(score: self.score, duration: self.uploadedVideoDuration, recording: self.camera.previousSavedURL, tutorial: self.uploadedVideoURL, playbackRate: self.playbackRate)
+            ResultsView(score: self.score, duration: self.uploadedVideoDuration, numMistakes: self.numMistakes, recording: self.camera.previousSavedURL, tutorial: self.uploadedVideoURL, playbackRate: self.playbackRate)
                 .ignoresSafeArea(.all, edges: .all)
         }
         .background(Color.blue)

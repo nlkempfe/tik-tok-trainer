@@ -44,7 +44,7 @@ class ScoringFunction {
     ]
     
     // Class variable - both computeAngles and computeRotations can contribute to mistakes
-    var mistakesArray: [(String, CMTime)] = []
+    var mistakesArray: [CGFloat] = []
     
     /// Initializes ScoringFunction with the two videos
     ///
@@ -153,6 +153,7 @@ class ScoringFunction {
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
 
         var angleDifferences = [[String: CGFloat]]()
+        var currCMTime: CMTime = CMTime.init()
 
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             let slicesToCheck = 3
@@ -168,11 +169,18 @@ class ScoringFunction {
                     }
                 }
                 sliceData[angleTimeTuple.key] = lowestSliceScore
-                if(lowestSliceScore > 100) {
-                    self.mistakesArray.append((angleTimeTuple.key, angleTimeTuple.value.1))
-                }
+                currCMTime = angleTimeTuple.value.1
             }
             angleDifferences.append(sliceData)
+            for angleDiff in sliceData.values {
+                if angleDiff > 100 {
+                    let currTime = CGFloat(CMTimeGetSeconds(currCMTime))
+                    if self.mistakesArray.count == 0 || self.mistakesArray.last! - currTime >= 0 {
+                        self.mistakesArray.append(currTime)
+                        break
+                    }
+                }
+            }
         }
 
         return angleDifferences
@@ -285,8 +293,8 @@ class ScoringFunction {
 
     // computes score using any scoring function (currently MSE w/ rotations) and feeds result to callback
 
-    func computeScore() -> Promise<(CGFloat, [(String, CMTime)])> {
-        let promise = Promise<(CGFloat, [(String, CMTime)])> { fulfill, reject in
+    func computeScore() -> Promise<(CGFloat, [CGFloat])> {
+        let promise = Promise<(CGFloat, [CGFloat])> { fulfill, reject in
             do {
                 let score = try self.computeMSE()
                 return fulfill((score, self.mistakesArray))
