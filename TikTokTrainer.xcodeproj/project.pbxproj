@@ -47,6 +47,7 @@
 		BCB9D38C25E4423200C7DC9B /* preRecordedVid.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BCB9D38B25E4423200C7DC9B /* preRecordedVid.mp4 */; };
 		BCF1052925F2BF2A000D868F /* TrueDance.mov in Resources */ = {isa = PBXBuildFile; fileRef = BCF1052825F2BF2A000D868F /* TrueDance.mov */; };
 		BCF1053125F2C154000D868F /* TestDanceTrimmed.mov in Resources */ = {isa = PBXBuildFile; fileRef = BCF1053025F2C154000D868F /* TestDanceTrimmed.mov */; };
+		C02B0A09261B9C5000D20D1A /* TutorialStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = C02B0A08261B9C5000D20D1A /* TutorialStep.swift */; };
 		C03D3AE925E2232900836A58 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03D3AE825E2232900836A58 /* ContentView.swift */; };
 		C05327A626125F5B00AE8B7E /* ResultRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05327A526125F5B00AE8B7E /* ResultRow.swift */; };
 		C08E7E5C261BC12200D047B8 /* HistoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08E7E5B261BC12200D047B8 /* HistoryDetailView.swift */; };
@@ -120,6 +121,7 @@
 		BCF1052825F2BF2A000D868F /* TrueDance.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = TrueDance.mov; sourceTree = "<group>"; };
 		BCF1053025F2C154000D868F /* TestDanceTrimmed.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = TestDanceTrimmed.mov; sourceTree = "<group>"; };
 		BE1EEFC47EAF41456E157D1F /* Pods-TikTokTrainer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TikTokTrainer.debug.xcconfig"; path = "Target Support Files/Pods-TikTokTrainer/Pods-TikTokTrainer.debug.xcconfig"; sourceTree = "<group>"; };
+		C02B0A08261B9C5000D20D1A /* TutorialStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialStep.swift; sourceTree = "<group>"; };
 		C03D3AE825E2232900836A58 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C05327A526125F5B00AE8B7E /* ResultRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultRow.swift; sourceTree = "<group>"; };
 		C08E7E5B261BC12200D047B8 /* HistoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryDetailView.swift; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 				C0AB9A5B2609A2A20054F5D6 /* TutorialView.swift */,
 				C05327A526125F5B00AE8B7E /* ResultRow.swift */,
 				C08E7E5B261BC12200D047B8 /* HistoryDetailView.swift */,
+				C02B0A08261B9C5000D20D1A /* TutorialStep.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -577,6 +580,7 @@
 				C05327A626125F5B00AE8B7E /* ResultRow.swift in Sources */,
 				5F8DCF0B25E2CAEE009679DE /* ImagePicker.swift in Sources */,
 				C03D3AE925E2232900836A58 /* ContentView.swift in Sources */,
+				C02B0A09261B9C5000D20D1A /* TutorialStep.swift in Sources */,
 				5F592D2C25C5BC840045F4ED /* PermissionHandler.swift in Sources */,
 				BCB9D38225E43EEC00C7DC9B /* DataProcessing.swift in Sources */,
 				0E1BDB8B25D5940800F6CFA8 /* PoseNetProcessor.swift in Sources */,

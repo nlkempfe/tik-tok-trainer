@@ -9,25 +9,42 @@ import Foundation
 import SwiftUI
 
 struct TutorialView: View {
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        VStack {
-            Text("T3 Tutorial")
-                .font(Font.title)
-                .padding(.bottom, 50)
-            VStack(alignment: .leading, spacing: 10) {
-                Text("1.").bold() + Text(" Upload a video of a dance you'd like to learn using the \'Upload a Video\' button. Using the icons in the upper-right corner, you can flip the camera, choose a different video to upload, or change the playback speed of the uploaded video.")
-                Text("2.").bold() + Text(" Hit the record button and a countdown will begin.")
-                Text("3.").bold() + Text(" Setup your device approximately 3-6 feet away, and get ready to dance.")
-                Text("4.").bold() + Text(" The video will automatically stop recording when the length is the same as the uploaded video.")
-                Text("5.").bold() + Text(" If you don't like the way your video looks, you can discard your video using the \'X\' button in the upper-left corner. If you like the way your video looks, hit the \'Submit Video\' button. Your video will then be analyzed against the tutorial video.")
-                Text("6.").bold() + Text(" After the analysis is complete, you can view your score, how many mistakes you made, and the duration of your video.")
-                Text("7.").bold() + Text(" If you'd like to save these results, press the \'Save\' button. Otherwise, you can discard them using the \'X\' button in the upper-left corner.")
-                Text("8.").bold() + Text(" To view your saved results, go to the history tab.")
+        ZStack {
+            ScrollView {
+                VStack {
+                    Text("WE'RE HERE TO HELP")
+                        .foregroundColor(Color.gray)
+                        .padding(.bottom, -12)
+                        .font(Font.caption)
+                    Text("How this app works")
+                        .bold()
+                        .font(Font.title)
+                        .padding(.bottom, 10)
+                        .padding(.top, 10)
+                        .foregroundColor(Color.black)
+                      VStack(alignment: .leading, spacing: 10) {
+                          TutorialStep(step: "1", header: "Upload a video.", details: "Upload a video of a dance you'd like to learn using the \'Upload a Video\' button. Using the icons in the upper-right corner, you can flip the camera, choose a different video to upload, or change the playback speed of the uploaded video.")
+                          TutorialStep(step: "2", header: "Hit the record button and a countdown will begin.", details: "")
+                          TutorialStep(step: "3", header: "Get positioned.", details: "Setup your device approximately 3-6 feet away, and get ready to dance.")
+                          TutorialStep(step: "4", header: "Dance.", details: "The video will automatically stop recording when the length is the same as the uploaded video.")
+                          TutorialStep(step: "5", header: "Review your video.", details: "If you like the way your video looks, hit the \'Submit Video\' button. Your video will then be analyzed against the tutorial video.")
+                          TutorialStep(step: "6", header: "Review results.", details: "After the analysis is complete, you can view your score, how many mistakes you made, and the duration of your video. If you'd like to save these results, press the \'Save\' button.")
+                          TutorialStep(step: "7", header: "View history.", details: "To view your saved results, go to the history tab.")
+                      }
+                      .padding(.bottom, 10)
+                      .padding(.leading, 20)
+                      .padding(.trailing, 20)
+                }
+          }
+            if colorScheme == .dark {
+                Rectangle()
+                    .ignoresSafeArea(.all)
+                    .background(Color.white)
+                    .zIndex(-1.0)
             }
-            .padding(.bottom, 10)
-            .padding(.leading, 20)
-            .padding(.trailing, 20)
         }
     }
 }
