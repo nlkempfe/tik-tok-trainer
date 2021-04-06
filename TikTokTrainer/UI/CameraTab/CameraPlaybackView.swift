@@ -93,7 +93,6 @@ struct CameraPlaybackView: View {
         ZStack {
             VStack(spacing: 30) {
                 HStack {
-                    Spacer()
                     if !self.showLoadingScreen {
                         Button(action: {
                             showDiscardButtonAction()
@@ -115,6 +114,7 @@ struct CameraPlaybackView: View {
                         }
                         .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
                         .padding(.trailing, 5)
+                        Spacer()
                     }
                 }
                 HStack(spacing: 0) {
