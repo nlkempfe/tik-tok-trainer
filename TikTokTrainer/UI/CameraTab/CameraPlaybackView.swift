@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Promises
+import AVFoundation
 
 struct CameraPlaybackView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -18,6 +19,7 @@ struct CameraPlaybackView: View {
     @State var dimmerOpacity = 0.8
     @State var showLoadingScreen: Bool = false
     @State var score: Double = Double.nan
+    @State var mistakes: [(String, CMTime)] = []
     @State var resultOutcome: ResultsOutcome?
 
     var animatableData: Double {
@@ -50,10 +52,11 @@ struct CameraPlaybackView: View {
             PoseNetProcessor.run(url: self.camera.previousSavedURL)
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
-        }.then { score in
+        }.then { score, mistakes in
             self.showLoadingScreen = false
             self.score = score.isNaN ? 0 : Double(score)
             self.score = (self.score * 10000).rounded() / 100
+            self.mistakes = mistakes
             self.showResultsScreen = true
         }.catch { error in
             print("Error scoring videos: \(error)")
@@ -141,6 +144,7 @@ struct CameraPlaybackView: View {
                 .fullScreenCover(isPresented: $showResultsScreen) {
                     ResultsView(resultOutcome: $resultOutcome,
                                 score: self.score,
+                                mistakes: self.mistakes,
                                 duration: self.selectedVideo!.videoDuration,
                                 recording: self.camera.previousSavedURL,
                                 tutorial: self.selectedVideo!.videoURL,

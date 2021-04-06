@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import AVFoundation
 
 enum ResultsOutcome {
     case discardResult
@@ -22,6 +23,7 @@ struct ResultsView: View {
     @Binding var resultOutcome: ResultsOutcome?
 
     var score: Double
+    var mistakes: [(String, CMTime)]
     var duration: Double
     var recording: URL
     var tutorial: URL
@@ -111,7 +113,7 @@ struct ResultsView: View {
                         Text("Score: \(String(format: "%.2f", score))%")
                             .padding(.bottom, 10)
                             .foregroundColor(Color.black)
-                        Text("Mistakes: MISTAKES")
+                        Text("Mistakes: \(mistakes.count)")
                             .padding(.bottom, 10)
                             .foregroundColor(Color.black)
                         Text("Duration: \(Int(round(duration))) seconds")
