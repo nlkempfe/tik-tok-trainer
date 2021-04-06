@@ -58,7 +58,6 @@ struct CameraPlaybackView: View {
             self.score = (self.score * 10000).rounded() / 100
             self.mistakes = mistakes
             self.showResultsScreen = true
-            print(mistakes)
         }.catch { error in
             print("Error scoring videos: \(error)")
         }
