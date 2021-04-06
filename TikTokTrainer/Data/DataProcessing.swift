@@ -130,19 +130,19 @@ class ScoringFunction {
 
         return prevDistance == 0 ? 1 : percentChange
     }
-      
+
     private func CGPointDistance(from: CGPoint, to: CGPoint) -> CGFloat {
         return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y))
     }
-  
+
     private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[String: CGFloat]] {
 
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
-        
+
         var angleDifferences = [[String: CGFloat]]()
-    
+
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             let slicesToCheck = 3
             // this also works well, need bigger sample size
@@ -163,7 +163,7 @@ class ScoringFunction {
             }
             angleDifferences.append(sliceData)
         }
-        
+
         return angleDifferences
     }
 
@@ -248,7 +248,7 @@ class ScoringFunction {
                 tempSum += pow(angle.value, 2)
             }
             error += sqrt(tempSum)
-            if (tempSum < lowError) {
+            if tempSum < lowError {
                 lowError = tempSum
             }
             tempSum = 0

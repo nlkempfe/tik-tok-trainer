@@ -16,8 +16,8 @@ struct DataController {
 
     init() {
         container = NSPersistentContainer(name: DataController.containerName)
-        
-        container.loadPersistentStores(completionHandler: { description, error in
+
+        container.loadPersistentStores(completionHandler: { _, error in
             if let error = error {
                 fatalError("Could not load CoreData. Error: \(error.localizedDescription)")
             }
@@ -26,7 +26,7 @@ struct DataController {
 
     func save() {
         let context = container.viewContext
-        
+
         if context.hasChanges {
             do {
                 try context.save()

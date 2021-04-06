@@ -35,7 +35,7 @@ struct CameraView: View {
     @State var selectedPlayback = "1.0"
     @State var isPlayRateSelectorShowing = false
     @State var isResultsScreenOpen = false
-    @State var score: CGFloat = CGFloat.init()
+    @State var score: Double = 0.0
     @State var isLandscape: Bool = false
 
     var animatableData: Double {
@@ -43,10 +43,16 @@ struct CameraView: View {
         set { self.opacity = newValue }
     }
 
+    func showDiscardButtonAction() {
+        self.showDiscardAlert = true
+        camera.cameraSession.stopRunning()
+    }
+
     func discard() {
         camera.isVideoRecorded = false
         self.opacity = 0.0
         self.showDiscardAlert = false
+        camera.checkPermissionsAndSetup(permissions)
     }
 
     func reset() {
@@ -67,7 +73,8 @@ struct CameraView: View {
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
         }.then { score in
-            self.score = score
+            self.score = score.isNaN ? Double(0) : Double(score)
+            self.score = (self.score * 10000).rounded() / 100
             self.isLoading = false
             self.isResultsScreenOpen = true
         }.catch { error in
@@ -145,7 +152,7 @@ struct CameraView: View {
         Button(action: {
             submit()
         }, label: {
-            Text("Save Results")
+            Text("Submit Video")
                 .foregroundColor(.white)
                 .clipShape(Rectangle())
                 .padding(.leading, 20)
@@ -153,8 +160,9 @@ struct CameraView: View {
                 .padding(.top, 10)
                 .padding(.bottom, 10)
         })
+
         .fullScreenCover(isPresented: $isResultsScreenOpen) {
-            ResultsView(score: self.score, duration: self.uploadedVideoDuration, url: self.camera.previousSavedURL, playbackRate: self.playbackRate)
+            ResultsView(score: self.score, duration: self.uploadedVideoDuration, recording: self.camera.previousSavedURL, tutorial: self.uploadedVideoURL, playbackRate: self.playbackRate)
                 .ignoresSafeArea(.all, edges: .all)
         }
         .background(Color.blue)
@@ -165,7 +173,7 @@ struct CameraView: View {
 
     var discardButton: some View {
         Button(action: {
-            showDiscardAlert = true
+            showDiscardButtonAction()
         }, label: {
             Image(systemName: "xmark")
                 .foregroundColor(.white)
@@ -466,7 +474,7 @@ struct CameraView: View {
                         VStack {
                             if self.isPlayRateSelectorShowing && !camera.isRecording && !self.isCountingDown {
                                 playRate
-                                    .padding(.bottom, 100)
+                                    .padding(.bottom, 75)
                             }
                             recordButton
                                 .frame(height: 75)

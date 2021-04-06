@@ -33,7 +33,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
-                Text("Tutorial")
+                TutorialView()
                     .tabItem {
                         tabItem(iconName: "questionmark", text: "Tutorial", color: .white)
                     }
