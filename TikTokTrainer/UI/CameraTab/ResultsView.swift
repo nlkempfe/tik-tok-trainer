@@ -45,7 +45,6 @@ struct ResultsView: View {
 
     var saveButton: some View {
         Button(action: {
-            print("submit button pressed")
             submit()
             resultOutcome = .submitResult
             presentationMode.wrappedValue.dismiss()
