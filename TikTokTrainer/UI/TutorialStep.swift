@@ -10,9 +10,9 @@ import SwiftUI
 
 struct TutorialStep: View {
 
-    var step: String
-    var header: String
-    var details: String
+    let step: String
+    let header: String
+    let details: String
 
     var body: some View {
         HStack {
