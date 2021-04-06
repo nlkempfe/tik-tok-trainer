@@ -40,23 +40,21 @@ struct ContentView: View {
 
     var body: some View {
         StatefulTabView(selectedIndex: $selectedTab) {
-            Tab(title: "History", systemImageName: "questionmark") {
-                    HistoryView()
+            Tab(title: "Tutorial", systemImageName: "clock") {
+                    TutorialView()
                         .highPriorityGesture(DragGesture().onEnded(viewDragged))
             }
             Tab(title: "Record", systemImageName: "video") {
                     CameraTabView()
                         .highPriorityGesture(DragGesture().onEnded(viewDragged))
             }
-            Tab(title: "Tutorial", systemImageName: "clock") {
-                    TutorialView()
+            Tab(title: "History", systemImageName: "questionmark") {
+                    HistoryView()
                         .highPriorityGesture(DragGesture().onEnded(viewDragged))
             }
         }
         .barTintColor(.red)
         .unselectedItemTintColor(.gray)
-        .barBackgroundColor(.clear)
-        .barAppearanceConfiguration(.transparent)
     }
 
     private func viewDragged(_ val: DragGesture.Value) {
