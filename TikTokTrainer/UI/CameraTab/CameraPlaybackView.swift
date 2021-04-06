@@ -94,26 +94,28 @@ struct CameraPlaybackView: View {
             VStack(spacing: 30) {
                 HStack {
                     Spacer()
-                    Button(action: {
-                        showDiscardButtonAction()
-                    }, label: {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.white)
-                            .padding()
-                            .clipShape(Circle())
-                    })
-                    .alert(isPresented: $showDiscardAlert) {
-                        Alert(
-                            title: Text("Discard Recording"),
-                            message: Text("Are you sure you want to discard the recording?"),
-                            primaryButton: .destructive(Text("Discard")) {
-                                discard()
-                            },
-                            secondaryButton: .cancel()
-                        )
+                    if !self.showLoadingScreen {
+                        Button(action: {
+                            showDiscardButtonAction()
+                        }, label: {
+                            Image(systemName: "xmark")
+                                .foregroundColor(.white)
+                                .padding()
+                                .clipShape(Circle())
+                        })
+                        .alert(isPresented: $showDiscardAlert) {
+                            Alert(
+                                title: Text("Discard Recording"),
+                                message: Text("Are you sure you want to discard the recording?"),
+                                primaryButton: .destructive(Text("Discard")) {
+                                    discard()
+                                },
+                                secondaryButton: .cancel()
+                            )
+                        }
+                        .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
+                        .padding(.trailing, 5)
                     }
-                    .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
-                    .padding(.trailing, 5)
                 }
                 HStack(spacing: 0) {
                     if self.selectedVideo != nil {
