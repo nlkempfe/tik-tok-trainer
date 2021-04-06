@@ -248,12 +248,14 @@ struct CameraRecordView: View {
                         playRate
                             .padding(.bottom, 75)
                     }
-                    // Record Button
-                    Button(action: {
-                        startCountdown()
-                    }, label: {
-                        countdownButton
-                    }).padding(.bottom, 5)
+                    if self.selectedVideo != nil {
+                        // Record Button
+                        Button(action: {
+                            startCountdown()
+                        }, label: {
+                            countdownButton
+                        }).padding(.bottom, 30)
+                    }
                 }
             }
         }
