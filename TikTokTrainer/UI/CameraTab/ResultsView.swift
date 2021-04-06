@@ -17,12 +17,14 @@ enum ResultsOutcome {
 struct ResultsView: View {
     @State var showDiscardAlert = false
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) var managedObjectContext
 
     @Binding var resultOutcome: ResultsOutcome?
 
     var score: Double
     var duration: Double
-    var url: URL
+    var recording: URL
+    var tutorial: URL
     var playbackRate: Double
 
     func discard() {
@@ -31,9 +33,20 @@ struct ResultsView: View {
         presentationMode.wrappedValue.dismiss()
     }
 
+    func submit() {
+        let dbResult = StoredResult(context: managedObjectContext)
+        dbResult.timestamp = Date.init()
+        dbResult.score = score.isNaN ? 0 : Double(score)
+        dbResult.recording = recording.absoluteURL
+        dbResult.tutorial = tutorial.absoluteURL
+        dbResult.duration = Int64(round(duration))
+        DataController.shared.save()
+    }
+
     var saveButton: some View {
         Button(action: {
             print("submit button pressed")
+            submit()
             resultOutcome = .submitResult
             presentationMode.wrappedValue.dismiss()
         }, label: {
@@ -90,20 +103,22 @@ struct ResultsView: View {
                     Text("Results")
                         .font(.title)
                         .foregroundColor(Color.black)
-                    LoopingPlayer(url: self.url, playbackRate: self.playbackRate, isUploadedVideo: false)
-                        .offset(x: 0, y: -5)
-                        .scaleEffect(x: 0.90, y: 0.90)
+                    HStack(spacing: 0) {
+                        LoopingPlayer(url: self.tutorial, playbackRate: self.playbackRate, isUploadedVideo: true)
+                        LoopingPlayer(url: self.recording, playbackRate: self.playbackRate, isUploadedVideo: false)
+                    }
+                    .scaleEffect(x: 0.90, y: 0.90)
                     VStack {
-                    Text("Score: \(score * 100)%")
-                        .padding(.bottom, 10)
-                        .foregroundColor(Color.black)
-                    Text("Mistakes: MISTAKES")
-                        .padding(.bottom, 10)
-                        .foregroundColor(Color.black)
-                    Text("Duration: \(Int(round(duration))) seconds")
-                        .foregroundColor(Color.black)
-                        .padding(.bottom, 20)
-                    saveButton
+                        Text("Score: \(String(format: "%.2f", score))%")
+                            .padding(.bottom, 10)
+                            .foregroundColor(Color.black)
+                        Text("Mistakes: MISTAKES")
+                            .padding(.bottom, 10)
+                            .foregroundColor(Color.black)
+                        Text("Duration: \(Int(round(duration))) seconds")
+                            .foregroundColor(Color.black)
+                            .padding(.bottom, 20)
+                        saveButton
                     }
                     .padding(.bottom, 30)
                 }

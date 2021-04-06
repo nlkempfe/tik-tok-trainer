@@ -52,6 +52,7 @@ struct CameraPlaybackView: View {
         }.then { score in
             self.showLoadingScreen = false
             self.score = score.isNaN ? 0 : Double(score)
+            self.score = (self.score * 10000).rounded() / 100
             self.showResultsScreen = true
         }.catch { error in
             print("Error scoring videos: \(error)")
@@ -136,7 +137,8 @@ struct CameraPlaybackView: View {
                     ResultsView(resultOutcome: $resultOutcome,
                                 score: self.score,
                                 duration: self.selectedVideo!.videoDuration,
-                                url: self.camera.previousSavedURL,
+                                recording: self.camera.previousSavedURL,
+                                tutorial: self.selectedVideo!.videoURL,
                                 playbackRate: self.selectedVideo!.playbackRate)
                         .ignoresSafeArea(.all, edges: .all)
                 }
