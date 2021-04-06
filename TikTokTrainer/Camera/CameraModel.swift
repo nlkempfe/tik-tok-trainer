@@ -23,7 +23,7 @@ class CameraModel: NSObject,
     @Published var inErrorState = false
     @Published var isVideoRecorded = false
 
-    @Published var hasPermission = true
+    @Published var hasPermission = false
     @Published var currentUIImage: UIImage?
     @Published var currentResult: PoseNetResult?
     @Published var currentOrientation: AVCaptureDevice.Position = .front
@@ -164,6 +164,16 @@ class CameraModel: NSObject,
         }
     }
 
+    func reset() {
+        DispatchQueue.main.async {
+            self.isRecording = false
+            self.isOverlayEnabled = true
+            self.inErrorState = false
+            self.isVideoRecorded = false
+            self.setup()
+        }
+    }
+
     func setupWriter() {
         guard !self.isRecording else { return }
 
@@ -237,8 +247,10 @@ class CameraModel: NSObject,
                     self.previousSavedURL = self.outputURL
                     self.setup()
                 } else {
-                    self.isVideoRecorded = false
-                    print("Could not save video", error as Any)
+                    DispatchQueue.main.async {
+                        self.isVideoRecorded = false
+                    }
+                    print("Could not save video at url \(String(describing: self.outputURL))", error as Any)
                 }
             }
         }
@@ -249,15 +261,21 @@ class CameraModel: NSObject,
         }
     }
 
+    /// Gets the document directory.
+    /// From: https://www.hackingwithswift.com/books/ios-swiftui/writing-data-to-the-documents-directory
+    func getDocumentsDirectory() -> URL {
+        // find all possible documents directories for this user
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+
+        // just send back the first one, which ought to be the only one
+        return paths[0]
+    }
+
     func tempURL() -> URL? {
-        let directory = NSTemporaryDirectory() as NSString
+        let directory = getDocumentsDirectory()
 
-        if directory != "" {
-            let path = directory.appendingPathComponent(NSUUID().uuidString + ".mov")
-            return URL(fileURLWithPath: path)
-        }
-
-        return nil
+        let path = directory.appendingPathComponent(NSUUID().uuidString + ".mov")
+        return path
     }
 
     func switchCameraInput() {

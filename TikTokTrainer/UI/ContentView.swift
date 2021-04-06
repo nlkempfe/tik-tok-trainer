@@ -9,6 +9,12 @@ import Foundation
 import SwiftUI
 import StatefulTabView
 
+enum MainTabs {
+    case tutorialTab,
+         cameraTab,
+         historyTab
+}
+
 struct ContentView: View {
 
     @State private var selectedTab = 1
@@ -35,15 +41,15 @@ struct ContentView: View {
     var body: some View {
         StatefulTabView(selectedIndex: $selectedTab) {
             Tab(title: "History", systemImageName: "questionmark") {
-                    Text("History")
+                    HistoryView()
                         .highPriorityGesture(DragGesture().onEnded(viewDragged))
             }
             Tab(title: "Record", systemImageName: "video") {
-                    CameraView()
+                    CameraTabView()
                         .highPriorityGesture(DragGesture().onEnded(viewDragged))
             }
             Tab(title: "Tutorial", systemImageName: "clock") {
-                    Text("Tutorial")
+                    TutorialView()
                         .highPriorityGesture(DragGesture().onEnded(viewDragged))
             }
         }
