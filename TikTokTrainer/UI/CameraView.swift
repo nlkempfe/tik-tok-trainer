@@ -35,7 +35,7 @@ struct CameraView: View {
     @State var selectedPlayback = "1.0"
     @State var isPlayRateSelectorShowing = false
     @State var isResultsScreenOpen = false
-    @State var score: CGFloat = CGFloat.init()
+    @State var score: Double = 0.0
     @State var isLandscape: Bool = false
 
     var animatableData: Double {
@@ -73,7 +73,8 @@ struct CameraView: View {
         ).then { movieOne, movieTwo in
             return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
         }.then { score in
-            self.score = score
+            self.score = score.isNaN ? Double(0) : Double(score)
+            self.score = (self.score * 10000).rounded() / 100
             self.isLoading = false
             self.isResultsScreenOpen = true
         }.catch { error in
@@ -161,7 +162,7 @@ struct CameraView: View {
         })
 
         .fullScreenCover(isPresented: $isResultsScreenOpen) {
-            ResultsView(score: self.score, duration: self.uploadedVideoDuration, url: self.camera.previousSavedURL, playbackRate: self.playbackRate)
+            ResultsView(score: self.score, duration: self.uploadedVideoDuration, recording: self.camera.previousSavedURL, tutorial: self.uploadedVideoURL, playbackRate: self.playbackRate)
                 .ignoresSafeArea(.all, edges: .all)
         }
         .background(Color.blue)
