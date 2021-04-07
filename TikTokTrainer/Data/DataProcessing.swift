@@ -159,9 +159,10 @@ class ScoringFunction {
         var angleScore: Float = 0.0
         var angleDiffShifts = [[[Float]]]()
         
+        // The number of slices to check ahead of the current frame in the recordedVid
         let slicesToCheck = 3
         
-        
+        // Compute slicesToCheck + 1 many arrays of angle differences so that the frame by frame values can be compared and the lowest error frame can be assigned - closest pose matching
         for shift in 0 ... slicesToCheck {
             var angleDiffs = [[Float]]()
             angleDiffs.reserveCapacity(minSlices)
@@ -172,6 +173,7 @@ class ScoringFunction {
             angleDiffShifts.append(angleDiffs)
         }
         
+        // Do the comparison of each frame by analyzing the error value to find the lowest one
         for angleSlice in 0 ... angleDiffShifts[slicesToCheck].count - 1 {
             var minSliceScore: Float = 100000000
             var lowArr: [Float] = []
@@ -184,9 +186,12 @@ class ScoringFunction {
                 }
             }
             angleScore += sqrt(minSliceScore)
+            
+            // Compute whether there are mistakes in the current slice
             for angleDiff in lowArr {
                 if angleDiff > 80 {
                     let currTime = Float(CMTimeGetSeconds(recordedVid.data[angleSlice].start))
+                    // Second condition doesn't add mistakes if they happen in successive frames because this is almost guaranteed - want to isolate when the mistake started
                     if self.mistakesArray.count == 0 || currTime - self.mistakesArray.last! >= 0.5 {
                         self.mistakesArray.append(currTime)
                         break
@@ -195,36 +200,7 @@ class ScoringFunction {
             }
         }
         
-//        for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
-//            let slicesToCheck = 3
-//            // this also works well, need bigger sample size
-//            // let slicesToCheck = 10
-//            var sliceData = [CGFloat]()
-//            for angle in poseAngles {
-//                var lowestSliceScore = abs(angle - recordedPoses[row][angle.key]!)
-//                for possibleSlice in (row < slicesToCheck ? 0 : row - slicesToCheck)...(row + slicesToCheck > minSlices - 1 ? minSlices - 1 : row + slicesToCheck) {
-//                    let sliceScore = abs(preRecordedPoses[possibleSlice][angle.key]! - recordedPoses[possibleSlice][angle.key]!)
-//                    if sliceScore < lowestSliceScore {
-//                        lowestSliceScore = sliceScore
-//                    }
-//                }
-//                sliceData[angle.key] = lowestSliceScore
-//            }
-//            angleDifferences.append(sliceData)
-//
-//            // Checks once a frame if there are egregious angle discrepencies and appends time in the video to mistakesArray
-//            currCMTime = recordedVid.data[row].start
-//            for angleDiff in sliceData.values {
-//                if angleDiff > 60 {
-//                    let currTime = CGFloat(CMTimeGetSeconds(currCMTime))
-//                    if self.mistakesArray.count == 0 || self.mistakesArray.last! - currTime >= 0 {
-//                        self.mistakesArray.append(currTime)
-//                        break
-//                    }
-//                }
-//            }
-//        }
-        
+        // returning the error from the angles because the computation to find the lowest error frame by frame is already being done
         return angleScore
     }
 
@@ -242,48 +218,30 @@ class ScoringFunction {
             let tempArr = vDSP.subtract(preRotSlice, recRotSlice).map { abs($0) < 0.1 ? abs($0) : abs($0) - 0.1 }
             rotationDifferences.append(tempArr)
         }
-
-//        for (row, rotations) in preRecordedRotations.enumerated() where row < minSlices {
-//            for (_, rotation) in rotations.enumerated() {
-//                tempPercentDiff = abs(rotation.value - recordedRotations[row][rotation.key]!)
-//                // Values of tempPercentChange
-//                tempPercentDiff = tempPercentDiff < 0.1 ? 0 : tempPercentDiff - 0.1
-//                // This is where to add shifts or padding to angle differences
-//                // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
-//                rotationDifferences[row].append(tempPercentDiff)
-//            }
-//        }
+        
         return rotationDifferences
     }
 
     /// Unweighted Mean Squared Error Function - A single data point is a vector of angle differences so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error
-//    private func computeUnweightedAngleMSE() throws -> Float {
-//        guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-//
-//        let prVid = preRecordedVid!
-//        let rVid = recordedVid!
-//        // Computes the max error that can be achieved in one pose
-//        let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2)))
-//
-//        let angleDifferences = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
-//        var error: Float = 0
-//        var tempSum: Float = 0
-//
-//        // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
-//        // so that really bad movements don't penalize too much
-//        for angleSet in angleDifferences {
-//            for angle in angleSet {
-//                tempSum += pow(angle, 2)
-//            }
-//            error += sqrt(tempSum)
-//            tempSum = 0
-//        }
-//        // Instead of returning total error, return the normalized per pose error
-//        // This avoids super high errors for long videos and gives a better indication of how the overall performance was
-//        let length = Float(angleDifferences.count)
-//        return (maxError - error/length)/maxError
-//    }
+    private func computeUnweightedAngleMSE() throws -> Float {
+        guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
+
+        let prVid = preRecordedVid!
+        let rVid = recordedVid!
+        // Computes the max error that can be achieved in one pose
+        let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2)))
+
+        // computeAngleDifferences returns the score
+        let angleError = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
+
+        // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
+        // so that really bad movements don't penalize too much
+        // Instead of returning total error, return the normalized per pose error
+        // This avoids super high errors for long videos and gives a better indication of how the overall performance was
+        let length = Float(recordedVid!.data.count)
+        return (maxError - angleError/length)/maxError
+    }
     
     /// Mean Squared Error Function w/ rotation - A single data point is a vector of angle differences and another of rotation values, so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error, and the same process is repeated for rotations
@@ -304,20 +262,8 @@ class ScoringFunction {
         let rotationDifferences = computeRotationDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: Float = angleScore
         
-//        // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
-//        // so that really bad movements don't penalize too much
-//        var lowError: Float = 9999999999
-//        for angleSet in angleDifferences {
-//            for angle in angleSet {
-//                tempSum += pow(angle, 2)
-//            }
-//            error += sqrt(tempSum)
-//            if tempSum < lowError {
-//                lowError = tempSum
-//            }
-//            tempSum = 0
-//        }
-        
+        // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
+        // so that really bad movements don't penalize too much
         // Rotational differences come as values in [0, 1], and since angle values are in [0, 180] we scale the
         // value of the rotational difference by some weight (currently 180 so that the diff matches angles)
         // We can also scale the result of || rotDiffs || by some weight
