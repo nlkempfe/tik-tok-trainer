@@ -47,6 +47,9 @@ class ScoringFunction {
     // Class variable - both computeAngles and computeRotations can contribute to mistakes
     var mistakesArray: [Float] = []
     
+    // The number of slices to check ahead of the current frame in the recordedVid
+    let slicesToCheck = 3
+    
     /// Initializes ScoringFunction with the two videos
     ///
     /// - Parameters:
@@ -159,9 +162,6 @@ class ScoringFunction {
         var angleScore: Float = 0.0
         var angleDiffShifts = [[[Float]]]()
         
-        // The number of slices to check ahead of the current frame in the recordedVid
-        let slicesToCheck = 3
-        
         // Compute slicesToCheck + 1 many arrays of angle differences so that the frame by frame values can be compared and the lowest error frame can be assigned - closest pose matching
         for shift in 0 ... slicesToCheck {
             var angleDiffs = [[Float]]()
@@ -254,6 +254,10 @@ class ScoringFunction {
         let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2))) + self.rotationWeight * sqrt(Float(rotationTuples.count) * (pow(180, 2)))
         // reset mistakes
         self.mistakesArray = []
+        
+        if prVid.data.count <= self.slicesToCheck || rVid.data.count <= self.slicesToCheck {
+            return Float(0.0)
+        }
 
         // currently the diff arrays are computed separately so the error is || angleDiffs || + || rotationDiffs ||
         // but we could possibly append the arrays for computation and get || angleDiffs + rotDiffs || resulting
