@@ -10,6 +10,7 @@ import SwiftUI
 struct HistoryView: View {
 
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme
     @FetchRequest(
         entity: StoredResult.entity(),
         sortDescriptors: [
@@ -21,7 +22,7 @@ struct HistoryView: View {
     @State var isHistoryDetailViewOpen = false
     @State var selection = 0
 
-    func setBackground() {
+    init() {
         UITableView.appearance().backgroundColor = UIColor.white
         UITableViewCell.appearance().selectedBackgroundView = {
                     let view = UIView()
@@ -81,7 +82,9 @@ struct HistoryView: View {
 
     var body: some View {
         ZStack {
-            background
+            if colorScheme == .dark {
+                background
+            }
             VStack {
                 HStack {
                     if results.count > 0 {
@@ -114,7 +117,6 @@ struct HistoryView: View {
                         HistoryDetailView(result: results[selection])
                             .ignoresSafeArea(.all, edges: .all)
                     }
-                    .onAppear(perform: setBackground)
                     .environment(\.editMode, self.$editMode)
                 } else {
                     Spacer()
