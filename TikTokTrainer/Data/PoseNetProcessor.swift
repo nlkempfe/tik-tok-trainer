@@ -37,6 +37,8 @@ struct PoseNetProcessor: PoseNetProcessorProtocol {
     static func run(url: URL) -> Promise<ProcessedVideo> {
         let promise = Promise<ProcessedVideo> { fulfill, reject in
             var processedVideo = ProcessedVideo(url: url)
+            let procOpts = VNVideoProcessor.RequestProcessingOptions()
+            procOpts.cadence = VNVideoProcessor.FrameRateCadence(2)
             let videoProcessor = VNVideoProcessor(url: url)
             let humanRequest = VNDetectHumanBodyPoseRequest(completionHandler: { request, err in
                 /// Error on the request should fail the whole processing because this may be the sign of a bigger issue.
@@ -59,7 +61,7 @@ struct PoseNetProcessor: PoseNetProcessorProtocol {
 
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
-                    try videoProcessor.addRequest(humanRequest, processingOptions: VNVideoProcessor.RequestProcessingOptions())
+                    try videoProcessor.addRequest(humanRequest, processingOptions: procOpts)
                     try videoProcessor.analyze(CMTimeRange(start: CMTime.zero, end: CMTime.indefinite))
                 } catch {
                     print("Error processing PoseNet for Video with url \(url).\n Error: \(error)")
