@@ -275,8 +275,6 @@ class ScoringFunction {
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
         let length = Float(rVid.data.count)
-        print(self.mistakesArray)
-        print((maxError - error/length)/maxError)
         return (maxError - error/length)/maxError
     }
 
