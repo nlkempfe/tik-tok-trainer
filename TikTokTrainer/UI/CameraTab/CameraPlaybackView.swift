@@ -19,29 +19,29 @@ struct CameraPlaybackView: View {
     @State var dimmerOpacity = 0.8
     @State var showLoadingScreen: Bool = false
     @State var score: Double = Double.nan
-    @State var mistakes: [CGFloat] = []
+    @State var mistakes: [Float] = []
     @State var resultOutcome: ResultsOutcome?
-
+    
     var animatableData: Double {
         get { dimmerOpacity }
         set { self.dimmerOpacity = newValue }
     }
-
+    
     func showDiscardButtonAction() {
         self.showDiscardAlert = true
         camera.cameraSession.stopRunning()
     }
-
+    
     func discard() {
         camera.isVideoRecorded = false
         self.showDiscardAlert = false
         camera.reset()
         camera.checkPermissionsAndSetup(permissions)
     }
-
+    
     func submit() {
         self.showLoadingScreen = true
-
+        
         let dbVideo = StoredVideo(context: managedObjectContext)
         dbVideo.location = self.camera.previousSavedURL
         dbVideo.storedDateTime = Date.init()
@@ -62,7 +62,7 @@ struct CameraPlaybackView: View {
             print("Error scoring videos: \(error)")
         }
     }
-
+    
     var loadingScreen: some View {
         ZStack {
             Rectangle()
@@ -92,7 +92,7 @@ struct CameraPlaybackView: View {
                 .scaleEffect(x: 1.5, y: 1.5)
         }
     }
-
+    
     var body: some View {
         ZStack {
             VStack(spacing: 30) {

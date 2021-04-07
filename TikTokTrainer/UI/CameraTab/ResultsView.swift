@@ -19,22 +19,22 @@ struct ResultsView: View {
     @State var showDiscardAlert = false
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.managedObjectContext) var managedObjectContext
-
+    
     @Binding var resultOutcome: ResultsOutcome?
-
+    
     var score: Double
-    var mistakes: [CGFloat]
+    var mistakes: [Float]
     var duration: Double
     var recording: URL
     var tutorial: URL
     var playbackRate: Double
-
+    
     func discard() {
         self.showDiscardAlert = false
         resultOutcome = .discardResult
         presentationMode.wrappedValue.dismiss()
     }
-
+    
     func submit() {
         let dbResult = StoredResult(context: managedObjectContext)
         dbResult.timestamp = Date.init()
@@ -44,7 +44,7 @@ struct ResultsView: View {
         dbResult.duration = Int64(round(duration))
         DataController.shared.save()
     }
-
+    
     var saveButton: some View {
         Button(action: {
             submit()
@@ -61,7 +61,7 @@ struct ResultsView: View {
         .background(Color.blue)
         .cornerRadius(15)
     }
-
+    
     var discardButton: some View {
         Button(action: {
             showDiscardAlert = true
@@ -84,7 +84,7 @@ struct ResultsView: View {
         .scaleEffect(CGSize(width: NumConstants.iconXScale, height: NumConstants.iconYScale))
         .padding(.trailing, 5)
     }
-
+    
     var background: some View {
         Rectangle()
             .fill()
@@ -92,11 +92,11 @@ struct ResultsView: View {
             .background(Color.white)
             .foregroundColor(Color.white)
     }
-
+    
     var body: some View {
-            ZStack {
-                background
-                VStack(alignment: .leading) {
+        ZStack {
+            background
+            VStack(alignment: .leading) {
                 discardButton
                     .padding(.top, 50)
                     .zIndex(2.0)
@@ -127,5 +127,5 @@ struct ResultsView: View {
             }
         }
     }
-
+    
 }
