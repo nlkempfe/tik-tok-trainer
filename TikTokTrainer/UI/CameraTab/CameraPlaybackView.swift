@@ -19,7 +19,7 @@ struct CameraPlaybackView: View {
     @State var dimmerOpacity = 0.8
     @State var showLoadingScreen: Bool = false
     @State var score: Double = Double.nan
-    @State var mistakes: [CGFloat] = []
+    @State var mistakes: Int = 0
     @State var resultOutcome: ResultsOutcome?
 
     var animatableData: Double {
@@ -41,12 +41,6 @@ struct CameraPlaybackView: View {
 
     func submit() {
         self.showLoadingScreen = true
-
-        let dbVideo = StoredVideo(context: managedObjectContext)
-        dbVideo.location = self.camera.previousSavedURL
-        dbVideo.storedDateTime = Date.init()
-        DataController.shared.save()
-        // Run PoseNetProcessor on two videos and feed result to scoring function
         all(
             PoseNetProcessor.run(url: self.selectedVideo!.videoURL),
             PoseNetProcessor.run(url: self.camera.previousSavedURL)
@@ -56,7 +50,7 @@ struct CameraPlaybackView: View {
             self.showLoadingScreen = false
             self.score = score.isNaN ? 0 : Double(score)
             self.score = (self.score * 10000).rounded() / 100
-            self.mistakes = mistakes
+            self.mistakes = mistakes.count
             self.showResultsScreen = true
         }.catch { error in
             print("Error scoring videos: \(error)")
