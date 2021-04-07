@@ -23,7 +23,7 @@ struct ResultsView: View {
     @Binding var resultOutcome: ResultsOutcome?
 
     var score: Double
-    var mistakes: [CGFloat]
+    var mistakes: Int
     var duration: Double
     var recording: URL
     var tutorial: URL
@@ -39,6 +39,7 @@ struct ResultsView: View {
         let dbResult = StoredResult(context: managedObjectContext)
         dbResult.timestamp = Date.init()
         dbResult.score = score.isNaN ? 0 : Double(score)
+        dbResult.mistakes = Int64(mistakes)
         dbResult.recording = recording.absoluteURL
         dbResult.tutorial = tutorial.absoluteURL
         dbResult.duration = Int64(round(duration))
@@ -113,7 +114,7 @@ struct ResultsView: View {
                         Text("Score: \(String(format: "%.2f", score))%")
                             .padding(.bottom, 10)
                             .foregroundColor(Color.black)
-                        Text("Mistakes: \(mistakes.count)")
+                        Text("Mistakes: \(mistakes)")
                             .padding(.bottom, 10)
                             .foregroundColor(Color.black)
                         Text("Duration: \(Int(round(duration))) seconds")

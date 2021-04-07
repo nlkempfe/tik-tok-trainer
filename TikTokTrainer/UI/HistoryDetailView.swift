@@ -59,7 +59,7 @@ struct HistoryDetailView: View {
                         Text("Score: \(String(format: "%.2f", result.score))%")
                         .padding(.bottom, 10)
                         .foregroundColor(Color.black)
-                    Text("Mistakes: MISTAKES")
+                    Text("Mistakes: \(result.mistakes)")
                         .padding(.bottom, 10)
                         .foregroundColor(Color.black)
                         Text("Duration: \(result.duration) seconds")
