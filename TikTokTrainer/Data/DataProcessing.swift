@@ -16,14 +16,14 @@ import Accelerate
 class ScoringFunction {
     var preRecordedVid: ProcessedVideo?
     var recordedVid: ProcessedVideo?
-    
+
     // constants for scoring
     let rotationMultiplier: Float = 180
     let rotationWeight: Float = 2
     
     // Angle is measured for the middle joint in each triple
     // Bottom two measure rotation along z axis
-    
+
     let jointTriples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName)] = [
         (.leftWrist, .leftElbow, .leftShoulder),
         (.rightShoulder, .rightElbow, .rightWrist),
@@ -38,7 +38,7 @@ class ScoringFunction {
         (.leftShoulder, .leftHip, .leftKnee),
         (.rightKnee, .rightHip, .rightShoulder)
     ]
-    
+
     let rotationTuples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, String)] = [
         (.leftShoulder, .rightShoulder, "y-axis"),
         (.neck, .root, "x-axis")
@@ -56,7 +56,7 @@ class ScoringFunction {
         self.preRecordedVid = preRecordedVid
         self.recordedVid = recordedVid
     }
-    
+
     /// Computes angles of PoseNet data with trig
     /// Cycles through sets of joints to track which angles are available for capture, otherwise angle is marked as 0
     ///
@@ -65,7 +65,7 @@ class ScoringFunction {
     private func computeAngles(video: ProcessedVideo) -> [[Float]] {
         var angles = [[Float]]()
         angles.reserveCapacity(video.data.count)
-        
+
         // Loops through data slices which contain pose points and computes joint angles
         for slice in video.data {
             var sliceData = [Float]()
@@ -75,7 +75,7 @@ class ScoringFunction {
                 let pntTwo = triple.1.rawValue
                 let pntThree = triple.2.rawValue
                 var angle: Float = 0.0
-                
+
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
                     angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
                 }
@@ -85,7 +85,7 @@ class ScoringFunction {
         }
         return angles
     }
-    
+
     /// Computes rotations in PoseNet data
     ///
     /// - Parameters:
@@ -100,12 +100,12 @@ class ScoringFunction {
             var sliceData = [Float]()
             sliceData.reserveCapacity(self.jointTriples.count)
             let prevSlice = video.data[index - 1]
-            
+
             for tuple in rotationTuples {
                 let pntOne = tuple.0.rawValue
                 let pntTwo = tuple.1.rawValue
                 var percentChange: Float = 0
-                
+
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && prevSlice.points[pntOne] != nil && prevSlice.points[pntTwo] != nil {
                     percentChange = computePercentChange(cPointOne: slice.points[pntOne]!, cPointTwo: slice.points[pntTwo]!, pPointOne: prevSlice.points[pntOne]!, pPointTwo: prevSlice.points[pntTwo]!)
                 }
@@ -120,7 +120,7 @@ class ScoringFunction {
         let leftCGPoint = leftPoint.location
         let middleCGPoint = middlePoint.location
         let rightCGPoint = rightPoint.location
-        
+
         let rightVector = (x: rightCGPoint.x - middleCGPoint.x, y: rightCGPoint.y - middleCGPoint.y)
         let leftVector = (x: leftCGPoint.x - middleCGPoint.x, y: leftCGPoint.y - middleCGPoint.y)
         let dotProduct = rightVector.x * leftVector.x + rightVector.y * leftVector.y
@@ -137,13 +137,13 @@ class ScoringFunction {
         let currPointTwo = cPointTwo.location
         let prevPointOne = pPointOne.location
         let prevPointTwo = pPointTwo.location
-        
+
         let currDistance = CGPointDistance(from: currPointOne, to: currPointTwo)
         let prevDistance = CGPointDistance(from: prevPointOne, to: prevPointTwo)
         
         var percentChange: Float = ((currDistance - prevDistance) / prevDistance)
         percentChange = percentChange > 2 ? 2 : percentChange
-        
+
         return prevDistance == 0 ? 1 : percentChange
     }
     
@@ -227,7 +227,7 @@ class ScoringFunction {
         
         return angleScore
     }
-    
+
     // Calls computeRotations which returns percent changes in torso width and height to measure rotations
     // and then uses data to compute the differences in such movement between the two videos
     private func computeRotationDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[Float]] {
@@ -255,7 +255,7 @@ class ScoringFunction {
 //        }
         return rotationDifferences
     }
-    
+
     /// Unweighted Mean Squared Error Function - A single data point is a vector of angle differences so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error
 //    private func computeUnweightedAngleMSE() throws -> Float {
@@ -289,14 +289,14 @@ class ScoringFunction {
     /// is sqrted and then added to the total error, and the same process is repeated for rotations
     private func computeMSE() throws -> Float {
         guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-        
+
         let prVid = preRecordedVid!
         let rVid = recordedVid!
         // Computes the max error that can be achieved in one pose
         let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2))) + self.rotationWeight * sqrt(Float(rotationTuples.count) * (pow(180, 2)))
         // reset mistakes
         self.mistakesArray = []
-        
+
         // currently the diff arrays are computed separately so the error is || angleDiffs || + || rotationDiffs ||
         // but we could possibly append the arrays for computation and get || angleDiffs + rotDiffs || resulting
         // in a different score
@@ -333,9 +333,8 @@ class ScoringFunction {
         print((maxError - error/length)/maxError)
         return (maxError - error/length)/maxError
     }
-    
+
     // computes score using any scoring function (currently MSE w/ rotations) and feeds result to callback
-    
     func computeScore() -> Promise<(Float, [Float])> {
         let promise = Promise<(Float, [Float])> { fulfill, reject in
             do {
