@@ -28,8 +28,6 @@ struct ContentView: View {
 
     func resetTabBarColor() {
         UITabBar.appearance().isTranslucent = false
-        UITabBar.appearance().barTintColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
-        UITabBar.appearance().backgroundColor = (selectedTab == 1 ? UIColor.black : UIColor.white)
     }
 
     func tabItem(iconName: String, text: String, color: Color) -> some View {
