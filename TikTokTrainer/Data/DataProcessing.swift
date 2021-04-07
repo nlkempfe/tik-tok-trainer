@@ -44,7 +44,7 @@ class ScoringFunction {
     ]
 
     // Class variable - both computeAngles and computeRotations can contribute to mistakes
-    var mistakesArray: [(String, CMTime)] = []
+    var mistakesArray: [CGFloat] = []
 
     /// Initializes ScoringFunction with the two videos
     ///
@@ -61,12 +61,12 @@ class ScoringFunction {
     ///
     /// - Parameters:
     ///     - video: The video uploaded by the user and processed by the PoseNetProcessor
-    private func computeAngles(video: ProcessedVideo) -> [[String: (CGFloat, CMTime)]] {
-        var angles = [[String: (CGFloat, CMTime)]]()
+    private func computeAngles(video: ProcessedVideo) -> [[String: CGFloat]] {
+        var angles = [[String: CGFloat]]()
 
         // Loops through data slices which contain pose points and computes joint angles
         for slice in video.data {
-            var sliceData = [String: (CGFloat, CMTime)]()
+            var sliceData = [String: CGFloat]()
             for triple in jointTriples {
                 let pntOne = triple.0.rawValue
                 let pntTwo = triple.1.rawValue
@@ -76,7 +76,7 @@ class ScoringFunction {
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
                     angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
                 }
-                sliceData[pntTwo.rawValue] = (angle, slice.start)
+                sliceData[pntTwo.rawValue] = angle
             }
             angles.append(sliceData)
         }
@@ -153,26 +153,36 @@ class ScoringFunction {
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
 
         var angleDifferences = [[String: CGFloat]]()
+        var currCMTime: CMTime = CMTime.init()
 
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             let slicesToCheck = 3
             // this also works well, need bigger sample size
             // let slicesToCheck = 10
             var sliceData = [String: CGFloat]()
-            for angleTimeTuple in poseAngles {
-                var lowestSliceScore = abs(angleTimeTuple.value.0 - recordedPoses[row][angleTimeTuple.key]!.0)
+            for angle in poseAngles {
+                var lowestSliceScore = abs(angle.value - recordedPoses[row][angle.key]!)
                 for possibleSlice in (row < slicesToCheck ? 0 : row - slicesToCheck)...(row + slicesToCheck > minSlices - 1 ? minSlices - 1 : row + slicesToCheck) {
-                    let sliceScore = abs(preRecordedPoses[possibleSlice][angleTimeTuple.key]!.0 - recordedPoses[possibleSlice][angleTimeTuple.key]!.0)
+                    let sliceScore = abs(preRecordedPoses[possibleSlice][angle.key]! - recordedPoses[possibleSlice][angle.key]!)
                     if sliceScore < lowestSliceScore {
                         lowestSliceScore = sliceScore
                     }
                 }
-                sliceData[angleTimeTuple.key] = lowestSliceScore
-                if lowestSliceScore > 100 {
-                    self.mistakesArray.append((angleTimeTuple.key, angleTimeTuple.value.1))
-                }
+                sliceData[angle.key] = lowestSliceScore
             }
             angleDifferences.append(sliceData)
+
+            // Checks once a frame if there are egregious angle discrepencies and appends time in the video to mistakesArray
+            currCMTime = recordedVid.data[row].start
+            for angleDiff in sliceData.values {
+                if angleDiff > 60 {
+                    let currTime = CGFloat(CMTimeGetSeconds(currCMTime))
+                    if self.mistakesArray.count == 0 || self.mistakesArray.last! - currTime >= 0 {
+                        self.mistakesArray.append(currTime)
+                        break
+                    }
+                }
+            }
         }
 
         return angleDifferences
@@ -285,8 +295,8 @@ class ScoringFunction {
 
     // computes score using any scoring function (currently MSE w/ rotations) and feeds result to callback
 
-    func computeScore() -> Promise<(CGFloat, [(String, CMTime)])> {
-        let promise = Promise<(CGFloat, [(String, CMTime)])> { fulfill, reject in
+    func computeScore() -> Promise<(CGFloat, [CGFloat])> {
+        let promise = Promise<(CGFloat, [CGFloat])> { fulfill, reject in
             do {
                 let score = try self.computeMSE()
                 return fulfill((score, self.mistakesArray))

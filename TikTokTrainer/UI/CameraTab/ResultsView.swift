@@ -23,7 +23,7 @@ struct ResultsView: View {
     @Binding var resultOutcome: ResultsOutcome?
 
     var score: Double
-    var mistakes: [(String, CMTime)]
+    var mistakes: [CGFloat]
     var duration: Double
     var recording: URL
     var tutorial: URL
