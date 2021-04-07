@@ -39,6 +39,7 @@ struct ResultsView: View {
         let dbResult = StoredResult(context: managedObjectContext)
         dbResult.timestamp = Date.init()
         dbResult.score = score.isNaN ? 0 : Double(score)
+        dbResult.mistakes = Int64(mistakes.count)
         dbResult.recording = recording.absoluteURL
         dbResult.tutorial = tutorial.absoluteURL
         dbResult.duration = Int64(round(duration))

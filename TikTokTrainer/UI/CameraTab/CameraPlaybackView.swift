@@ -41,11 +41,6 @@ struct CameraPlaybackView: View {
     
     func submit() {
         self.showLoadingScreen = true
-        
-        let dbVideo = StoredVideo(context: managedObjectContext)
-        dbVideo.location = self.camera.previousSavedURL
-        dbVideo.storedDateTime = Date.init()
-        DataController.shared.save()
         // Run PoseNetProcessor on two videos and feed result to scoring function
         all(
             PoseNetProcessor.run(url: self.selectedVideo!.videoURL),
