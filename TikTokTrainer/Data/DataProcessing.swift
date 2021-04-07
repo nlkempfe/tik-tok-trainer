@@ -10,6 +10,7 @@ import SwiftUI
 import AVKit
 import Vision
 import Promises
+import Accelerate
 
 /// Process the PoseNet overlays on the pre-recorded and user-recorded videos and return a score
 class ScoringFunction {
@@ -41,6 +42,10 @@ class ScoringFunction {
     let rotationTuples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, String)] = [
         (.leftShoulder, .rightShoulder, "y-axis"),
         (.neck, .root, "x-axis")
+    ]
+    
+    let upperBodyJoints: [VNHumanBodyPoseObservation.JointName] = [
+        .leftElbow, .rightElbow, .leftShoulder, .neck, .rightShoulder, .neck
     ]
 
     // Class variable - both computeAngles and computeRotations can contribute to mistakes
@@ -76,7 +81,7 @@ class ScoringFunction {
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
                     angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
                 }
-                sliceData[pntTwo.rawValue] = (angle, slice.start)
+                sliceData[pntOne.rawValue + "/" + pntTwo.rawValue + "/" + pntThree.rawValue] = (angle, slice.start)
             }
             angles.append(sliceData)
         }
@@ -190,6 +195,8 @@ class ScoringFunction {
             repeating: [CGFloat](),
             count: minSlices
         )
+        
+        vDSP.subtract(preRecordedRotations, recordedRotations)
 
         for (row, rotations) in preRecordedRotations.enumerated() where row < minSlices {
             for (_, rotation) in rotations.enumerated() {
