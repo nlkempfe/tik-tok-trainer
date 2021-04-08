@@ -19,28 +19,29 @@ struct CameraPlaybackView: View {
     @State var dimmerOpacity = 0.8
     @State var showLoadingScreen: Bool = false
     @State var score: Double = Double.nan
-    @State var mistakes: Int = 0
+    @State var mistakes: [Float] = []
     @State var resultOutcome: ResultsOutcome?
-
+    
     var animatableData: Double {
         get { dimmerOpacity }
         set { self.dimmerOpacity = newValue }
     }
-
+    
     func showDiscardButtonAction() {
         self.showDiscardAlert = true
         camera.cameraSession.stopRunning()
     }
-
+    
     func discard() {
         camera.isVideoRecorded = false
         self.showDiscardAlert = false
         camera.reset()
         camera.checkPermissionsAndSetup(permissions)
     }
-
+    
     func submit() {
         self.showLoadingScreen = true
+        // Run PoseNetProcessor on two videos and feed result to scoring function
         all(
             PoseNetProcessor.run(url: self.selectedVideo!.videoURL),
             PoseNetProcessor.run(url: self.camera.previousSavedURL)
@@ -50,13 +51,13 @@ struct CameraPlaybackView: View {
             self.showLoadingScreen = false
             self.score = score.isNaN ? 0 : Double(score)
             self.score = (self.score * 10000).rounded() / 100
-            self.mistakes = mistakes.count
+            self.mistakes = mistakes
             self.showResultsScreen = true
         }.catch { error in
             print("Error scoring videos: \(error)")
         }
     }
-
+    
     var loadingScreen: some View {
         ZStack {
             Rectangle()
@@ -86,7 +87,7 @@ struct CameraPlaybackView: View {
                 .scaleEffect(x: 1.5, y: 1.5)
         }
     }
-
+    
     var body: some View {
         ZStack {
             VStack(spacing: 30) {
