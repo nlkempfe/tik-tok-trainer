@@ -21,6 +21,11 @@
 		0E1BDB8B25D5940800F6CFA8 /* PoseNetProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1BDB8A25D5940800F6CFA8 /* PoseNetProcessor.swift */; };
 		0E23B85625E6B89B00008FFD /* TestDance.mov in Resources */ = {isa = PBXBuildFile; fileRef = 0E23B85525E6B89B00008FFD /* TestDance.mov */; };
 		0E3650D026192CB000C50F93 /* CameraTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3650CF26192CB000C50F93 /* CameraTabView.swift */; };
+		0E72CF57261F96D200EF1399 /* DataProcessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E72CF56261F96D200EF1399 /* DataProcessingTests.swift */; };
+		0E72CF61261F995E00EF1399 /* DataProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB9D38125E43EEC00C7DC9B /* DataProcessing.swift */; };
+		0E72CF65261F999600EF1399 /* ProcessedVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0CF787261BD0AD00B23149 /* ProcessedVideo.swift */; };
+		0E72CF69261F99A200EF1399 /* PoseNetProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1BDB8A25D5940800F6CFA8 /* PoseNetProcessor.swift */; };
+		0E72CF6D261F99F700EF1399 /* PoseNetResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E12CFE625D7AF02003880B7 /* PoseNetResult.swift */; };
 		0EB0DA3F25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA3D25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodeld */; };
 		0EB0DA4425EF0A1300A1F2A3 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA4325EF0A1300A1F2A3 /* DataController.swift */; };
 		0EB0DA4925EF0B9C00A1F2A3 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */; };
@@ -99,6 +104,7 @@
 		0E1BDB8A25D5940800F6CFA8 /* PoseNetProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNetProcessor.swift; sourceTree = "<group>"; };
 		0E23B85525E6B89B00008FFD /* TestDance.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = TestDance.mov; sourceTree = "<group>"; };
 		0E3650CF26192CB000C50F93 /* CameraTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTabView.swift; sourceTree = "<group>"; };
+		0E72CF56261F96D200EF1399 /* DataProcessingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProcessingTests.swift; sourceTree = "<group>"; };
 		0EB0DA3E25EF076500A1F2A3 /* ProcessedVideoModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProcessedVideoModel.xcdatamodel; sourceTree = "<group>"; };
 		0EB0DA4325EF0A1300A1F2A3 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		0EB0DA4825EF0B9C00A1F2A3 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
@@ -222,6 +228,7 @@
 			children = (
 				0E02D16525AFA56A00004B2A /* TikTokTrainerTests.swift */,
 				0E02D16725AFA56A00004B2A /* Info.plist */,
+				0E72CF56261F96D200EF1399 /* DataProcessingTests.swift */,
 			);
 			path = TikTokTrainerTests;
 			sourceTree = "<group>";
@@ -636,7 +643,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E72CF57261F96D200EF1399 /* DataProcessingTests.swift in Sources */,
+				0E72CF61261F995E00EF1399 /* DataProcessing.swift in Sources */,
+				0E72CF65261F999600EF1399 /* ProcessedVideo.swift in Sources */,
 				0E02D16625AFA56A00004B2A /* TikTokTrainerTests.swift in Sources */,
+				0E72CF69261F99A200EF1399 /* PoseNetProcessor.swift in Sources */,
+				0E72CF6D261F99F700EF1399 /* PoseNetResult.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
