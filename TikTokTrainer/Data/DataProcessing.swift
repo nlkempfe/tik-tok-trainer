@@ -167,7 +167,7 @@ class ScoringFunction {
             var angleDiffs = [[Float]]()
             angleDiffs.reserveCapacity(minSlices)
             for (row, (preAngleSlice, recAngleSlice)) in zip(preRecordedPoses, recordedPoses.dropFirst(shift)).enumerated() where row < minSlices - shift {
-                let tempArr = vDSP.subtract(preAngleSlice, recAngleSlice).map { abs($0) < 15 ? abs($0) : abs($0) - 15 }
+                let tempArr = vDSP.subtract(preAngleSlice, recAngleSlice).map { abs($0) < 15 ? 0 : abs($0) - 15 }
                 angleDiffs.append(tempArr)
             }
             angleDiffShifts.append(angleDiffs)
@@ -189,7 +189,7 @@ class ScoringFunction {
             
             // Compute whether there are mistakes in the current slice
             for angleDiff in lowArr {
-                if angleDiff > 80 {
+                if angleDiff > 90 {
                     let currTime = Float(CMTimeGetSeconds(recordedVid.data[angleSlice].start))
                     // Second condition doesn't add mistakes if they happen in successive frames because this is almost guaranteed - want to isolate when the mistake started
                     if self.mistakesArray.count == 0 || currTime - self.mistakesArray.last! >= 0.5 {
@@ -215,7 +215,7 @@ class ScoringFunction {
         rotationDifferences.reserveCapacity(minSlices)
         
         for (row, (preRotSlice, recRotSlice)) in zip(preRecordedRotations, recordedRotations).enumerated() where row < minSlices {
-            let tempArr = vDSP.subtract(preRotSlice, recRotSlice).map { abs($0) < 0.1 ? abs($0) : abs($0) - 0.1 }
+            let tempArr = vDSP.subtract(preRotSlice, recRotSlice).map { abs($0) < 0.1 ? 0 : abs($0) - 0.1 }
             rotationDifferences.append(tempArr)
         }
         
@@ -273,12 +273,12 @@ class ScoringFunction {
         // We can also scale the result of || rotDiffs || by some weight
         for rotations in rotationDifferences {
             let tempSum = rotations.map{ self.rotationMultiplier * $0 * self.rotationMultiplier * $0 }.reduce(0, +)
-            error += tempSum
+            error += sqrt(tempSum)
         }
         
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
-        let length = Float(rVid.data.count)
+        let length = Float(max(prVid.data.count, rVid.data.count))
         return (maxError - error/length)/maxError
     }
 
