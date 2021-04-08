@@ -268,12 +268,12 @@ class ScoringFunction {
         
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
         // so that really bad movements don't penalize too much
-        // Rotational differences come as values in [0, 1], and since angle values are in [0, 180] we scale the
+        // Rotational differences usually come as values in [0, 1], and since angle values are in [0, 360] we scale the
         // value of the rotational difference by some weight (currently 180 so that the diff matches angles)
         // We can also scale the result of || rotDiffs || by some weight
         for rotations in rotationDifferences {
-            let tempSum = rotations.map{ self.rotationMultiplier * $0 * self.rotationMultiplier * $0 }.reduce(0, +)
-            error += sqrt(tempSum)
+            let tempSum = rotations.map{ pow(self.rotationMultiplier * $0, 2) }.reduce(0, +)
+            error += self.rotationWeight * sqrt(tempSum)
         }
         
         // Instead of returning total error, return the normalized per pose error
