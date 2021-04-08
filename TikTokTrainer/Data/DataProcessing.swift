@@ -12,10 +12,11 @@ import Vision
 import Promises
 import Accelerate
 
+typealias ScoreResult = (Float, [Float])
 /// Process the PoseNet overlays on the pre-recorded and user-recorded videos and return a score
 class ScoringFunction {
-    var preRecordedVid: ProcessedVideo?
-    var recordedVid: ProcessedVideo?
+    let preRecordedVid: ProcessedVideo
+    let recordedVid: ProcessedVideo
 
     // constants for scoring
     let rotationMultiplier: Float = 180
@@ -80,7 +81,7 @@ class ScoringFunction {
                 var angle: Float = 0.0
 
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
-                    angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
+                    angle = angleBetweenPoints(leftCGPoint: slice.points[pntThree]!.location, middleCGPoint: slice.points[pntTwo]!.location, rightCGPoint: slice.points[pntOne]!.location)
                 }
                 sliceData.append(angle)
             }
@@ -119,11 +120,7 @@ class ScoringFunction {
         return rotations
     }
     
-    private func angleBetweenPoints(leftPoint: VNRecognizedPoint, middlePoint: VNRecognizedPoint, rightPoint: VNRecognizedPoint) -> Float {
-        let leftCGPoint = leftPoint.location
-        let middleCGPoint = middlePoint.location
-        let rightCGPoint = rightPoint.location
-
+    internal func angleBetweenPoints(leftCGPoint: CGPoint, middleCGPoint: CGPoint, rightCGPoint: CGPoint) -> Float {
         let rightVector = (x: rightCGPoint.x - middleCGPoint.x, y: rightCGPoint.y - middleCGPoint.y)
         let leftVector = (x: leftCGPoint.x - middleCGPoint.x, y: leftCGPoint.y - middleCGPoint.y)
         let dotProduct = rightVector.x * leftVector.x + rightVector.y * leftVector.y
@@ -225,10 +222,8 @@ class ScoringFunction {
     /// Unweighted Mean Squared Error Function - A single data point is a vector of angle differences so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error
     private func computeUnweightedAngleMSE() throws -> Float {
-        guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-
-        let prVid = preRecordedVid!
-        let rVid = recordedVid!
+        let prVid = preRecordedVid
+        let rVid = recordedVid
         // Computes the max error that can be achieved in one pose
         let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2)))
 
@@ -239,17 +234,15 @@ class ScoringFunction {
         // so that really bad movements don't penalize too much
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
-        let length = Float(recordedVid!.data.count)
+        let length = Float(recordedVid.data.count)
         return (maxError - angleError/length)/maxError
     }
     
     /// Mean Squared Error Function w/ rotation - A single data point is a vector of angle differences and another of rotation values, so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error, and the same process is repeated for rotations
     private func computeMSE() throws -> Float {
-        guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-
-        let prVid = preRecordedVid!
-        let rVid = recordedVid!
+        let prVid = preRecordedVid
+        let rVid = recordedVid
         // Computes the max error that can be achieved in one pose
         let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2))) + self.rotationWeight * sqrt(Float(rotationTuples.count) * (pow(180, 2)))
         // reset mistakes
@@ -283,8 +276,8 @@ class ScoringFunction {
     }
 
     // computes score using any scoring function (currently MSE w/ rotations) and feeds result to callback
-    func computeScore() -> Promise<(Float, [Float])> {
-        let promise = Promise<(Float, [Float])> { fulfill, reject in
+    func computeScore() -> Promise<ScoreResult> {
+        let promise = Promise<ScoreResult> { fulfill, reject in
             do {
                 let score = try self.computeMSE()
                 return fulfill((score, self.mistakesArray))
