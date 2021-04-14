@@ -14,9 +14,10 @@ struct LoopingPlayer: UIViewRepresentable {
     var url: URL
     var playbackRate: Double
     var isUploadedVideo: Bool
+    var isMuted: Bool
 
     func makeUIView(context: Context) -> some UIView {
-        return QueuePlayerUIView(frame: .zero, videoURL: url, playbackRate: playbackRate, isUploadedVideo: isUploadedVideo)
+        return QueuePlayerUIView(frame: .zero, videoURL: url, playbackRate: playbackRate, isUploadedVideo: isUploadedVideo, isMuted: isMuted)
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
@@ -41,7 +42,7 @@ class QueuePlayerUIView: UIView {
     private var playerLayer = AVPlayerLayer()
     private var playerLooper: AVPlayerLooper?
 
-    init(frame: CGRect, videoURL: URL, playbackRate: Double, isUploadedVideo: Bool) {
+    init(frame: CGRect, videoURL: URL, playbackRate: Double, isUploadedVideo: Bool, isMuted: Bool) {
         super.init(frame: frame)
 
         let playerItem = AVPlayerItem(url: videoURL)
@@ -51,6 +52,7 @@ class QueuePlayerUIView: UIView {
         layer.addSublayer(playerLayer)
 
         playerLooper = AVPlayerLooper(player: player, templateItem: playerItem)
+        player.isMuted = isMuted
         player.play()
         if isUploadedVideo {
             player.rate = Float(playbackRate)
