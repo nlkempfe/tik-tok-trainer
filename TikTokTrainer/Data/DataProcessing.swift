@@ -80,13 +80,17 @@ class ScoringFunction {
             var sliceData = [Float]()
             sliceData.reserveCapacity(self.jointTriples.count)
             for triple in jointTriples {
-                let pntOne = triple.0.rawValue
-                let pntTwo = triple.1.rawValue
-                let pntThree = triple.2.rawValue
+                let jntOne = triple.0.rawValue
+                let jntTwo = triple.1.rawValue
+                let jntThree = triple.2.rawValue
                 var angle: Float = 0.0
+                
+                guard let pntOne = slice.points[jntOne] else { break; }
+                guard let pntTwo = slice.points[jntTwo] else { break; }
+                guard let pntThree = slice.points[jntThree] else { break; }
 
-                if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
-                    angle = angleBetweenPoints(leftCGPoint: slice.points[pntThree]!.location, middleCGPoint: slice.points[pntTwo]!.location, rightCGPoint: slice.points[pntOne]!.location)
+                if pntOne.confidence > 0.2 && pntTwo.confidence > 0.2 && pntThree.confidence > 0.2 {
+                    angle = angleBetweenPoints(leftCGPoint: pntThree.location, middleCGPoint: pntTwo.location, rightCGPoint: pntOne.location)
                 }
                 sliceData.append(angle)
             }
@@ -283,7 +287,7 @@ class ScoringFunction {
 
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
-        let length = Float(max(prVid.data.count, rVid.data.count))
+        let length = Float(rVid.data.count)
         print(self.mistakesArray)
         print((maxError - error/length)/maxError)
         return (maxError - error/length)/maxError

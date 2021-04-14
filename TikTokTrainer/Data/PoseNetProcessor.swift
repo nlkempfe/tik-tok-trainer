@@ -51,7 +51,6 @@ struct PoseNetProcessor: PoseNetProcessorProtocol {
                             try? $0.recognizedPoints(forGroupKey: .all) else {
                         return
                     }
-
                     let slice = VideoDataSlice(start: $0.timeRange.start, points: recognizedPoints)
                     videoWriteBlockingQueue.async {
                         processedVideo.data.append(slice)
