@@ -19,7 +19,12 @@ class ScoringFunction {
 
     // constants for scoring
     let rotationMultiplier: Float = 180
-    let rotationWeight: Float = 2
+    let rotationWeight: Float = 0.25
+    let numUpperBodyJoints: Int = 6
+    let upperBodyJointWeight: Float = 40
+    let lowerBodyJointWeight: Float = 0.25
+    let anglePadding: Float = 10
+    let rotPadding: Float = 0.1
     
     // Angle is measured for the middle joint in each triple
     // Bottom two measure rotation along z axis
@@ -167,7 +172,7 @@ class ScoringFunction {
             var angleDiffs = [[Float]]()
             angleDiffs.reserveCapacity(minSlices)
             for (row, (preAngleSlice, recAngleSlice)) in zip(preRecordedPoses, recordedPoses.dropFirst(shift)).enumerated() where row < minSlices - shift {
-                let tempArr = vDSP.subtract(preAngleSlice, recAngleSlice).map { abs($0) < 15 ? 0 : abs($0) - 15 }
+                let tempArr = vDSP.subtract(preAngleSlice, recAngleSlice).map { abs($0) < self.anglePadding ? 0.0 : abs($0) - self.anglePadding }
                 angleDiffs.append(tempArr)
             }
             angleDiffShifts.append(angleDiffs)
@@ -178,14 +183,21 @@ class ScoringFunction {
             var minSliceScore: Float = 100000000
             var lowArr: [Float] = []
             for index in 0 ... slicesToCheck {
-                let tempArr = angleDiffShifts[index][angleSlice]
-                let tempScore = tempArr.map{ $0 * $0 }.reduce(0, +)
+                // Current slice of data in one of the shifted frames (composed of data containing angle differences between recorded frame and one of the shifted pre-recorded frames)
+                let tempArr = angleDiffShifts[index][angleSlice].map{ $0 * $0 }
+                // Upper body angles
+                let tempUpperArr = tempArr[..<self.numUpperBodyJoints]
+                // Lower body angles
+                let tempLowerArr = tempArr[self.numUpperBodyJoints...]
+                print(sqrt(tempUpperArr.reduce(0.0, +)))
+                print(sqrt(tempLowerArr.reduce(0.0, +)))
+                let tempScore = self.upperBodyJointWeight * sqrt(tempUpperArr.reduce(0.0, +)) + self.lowerBodyJointWeight * sqrt(tempLowerArr.reduce(0.0, +))
                 if tempScore < minSliceScore {
                     minSliceScore = tempScore
                     lowArr = tempArr
                 }
             }
-            angleScore += sqrt(minSliceScore)
+            angleScore += minSliceScore
             
             // Compute whether there are mistakes in the current slice
             for angleDiff in lowArr {
@@ -215,7 +227,7 @@ class ScoringFunction {
         rotationDifferences.reserveCapacity(minSlices)
         
         for (row, (preRotSlice, recRotSlice)) in zip(preRecordedRotations, recordedRotations).enumerated() where row < minSlices {
-            let tempArr = vDSP.subtract(preRotSlice, recRotSlice).map { abs($0) < 0.1 ? 0 : abs($0) - 0.1 }
+            let tempArr = vDSP.subtract(preRotSlice, recRotSlice).map { abs($0) < self.rotPadding ? 0.0 : abs($0) - self.rotPadding }
             rotationDifferences.append(tempArr)
         }
         
@@ -251,7 +263,7 @@ class ScoringFunction {
         let prVid = preRecordedVid!
         let rVid = recordedVid!
         // Computes the max error that can be achieved in one pose
-        let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2))) + self.rotationWeight * sqrt(Float(rotationTuples.count) * (pow(180, 2)))
+        let maxError: Float = self.upperBodyJointWeight * sqrt(Float(self.numUpperBodyJoints) * pow(180, 2)) + self.lowerBodyJointWeight * sqrt(Float(jointTriples.count - self.numUpperBodyJoints) * pow(180, 2)) + self.rotationWeight * sqrt(Float(rotationTuples.count) * (pow(180, 2)))
         // reset mistakes
         self.mistakesArray = []
         
@@ -279,6 +291,8 @@ class ScoringFunction {
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
         let length = Float(max(prVid.data.count, rVid.data.count))
+        print(self.mistakesArray)
+        print((maxError - error/length)/maxError)
         return (maxError - error/length)/maxError
     }
 
