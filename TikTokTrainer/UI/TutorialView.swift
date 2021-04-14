@@ -33,6 +33,11 @@ struct TutorialView: View {
                           TutorialStep(step: "5", header: "Review your video.", details: "If you like the way your video looks, hit the \'Submit Video\' button. Your video will then be analyzed against the tutorial video.")
                           TutorialStep(step: "6", header: "Review results.", details: "After the analysis is complete, you can view your score, how many mistakes you made, and the duration of your video. If you'd like to save these results, press the \'Save\' button.")
                           TutorialStep(step: "7", header: "View history.", details: "To view your saved results, go to the history tab.")
+                          Text("Note: All data is processed locally and is not stored anywhere other than your device.")
+                            .foregroundColor(Color.gray)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, 12)
+                            .font(.system(size: 16))
                       }
                       .padding(.bottom, 10)
                       .padding(.leading, 20)

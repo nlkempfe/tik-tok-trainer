@@ -12,10 +12,11 @@ import Vision
 import Promises
 import Accelerate
 
+typealias ScoreResult = (Float, [Float])
 /// Process the PoseNet overlays on the pre-recorded and user-recorded videos and return a score
 class ScoringFunction {
-    var preRecordedVid: ProcessedVideo?
-    var recordedVid: ProcessedVideo?
+    let preRecordedVid: ProcessedVideo
+    let recordedVid: ProcessedVideo
 
     // constants for scoring
     let rotationMultiplier: Float = 180
@@ -51,10 +52,10 @@ class ScoringFunction {
 
     // Class variable - both computeAngles and computeRotations can contribute to mistakes
     var mistakesArray: [Float] = []
-    
+
     // The number of slices to check ahead of the current frame in the recordedVid
     let slicesToCheck = 3
-    
+
     /// Initializes ScoringFunction with the two videos
     ///
     /// - Parameters:
@@ -85,7 +86,7 @@ class ScoringFunction {
                 var angle: Float = 0.0
 
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
-                    angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
+                    angle = angleBetweenPoints(leftCGPoint: slice.points[pntThree]!.location, middleCGPoint: slice.points[pntTwo]!.location, rightCGPoint: slice.points[pntOne]!.location)
                 }
                 sliceData.append(angle)
             }
@@ -102,7 +103,7 @@ class ScoringFunction {
         var rotations = [[Float]]()
         // reserveCapacity will shorten the time for appending
         rotations.reserveCapacity(video.data.count)
-        
+
         // Loop through data slices which have a previous frame and compute the change in distance
         for (index, slice) in video.data.enumerated() where index > 0 {
             var sliceData = [Float]()
@@ -123,12 +124,8 @@ class ScoringFunction {
         }
         return rotations
     }
-    
-    private func angleBetweenPoints(leftPoint: VNRecognizedPoint, middlePoint: VNRecognizedPoint, rightPoint: VNRecognizedPoint) -> Float {
-        let leftCGPoint = leftPoint.location
-        let middleCGPoint = middlePoint.location
-        let rightCGPoint = rightPoint.location
 
+    internal func angleBetweenPoints(leftCGPoint: CGPoint, middleCGPoint: CGPoint, rightCGPoint: CGPoint) -> Float {
         let rightVector = (x: rightCGPoint.x - middleCGPoint.x, y: rightCGPoint.y - middleCGPoint.y)
         let leftVector = (x: leftCGPoint.x - middleCGPoint.x, y: leftCGPoint.y - middleCGPoint.y)
         let dotProduct = rightVector.x * leftVector.x + rightVector.y * leftVector.y
@@ -139,7 +136,7 @@ class ScoringFunction {
         }
         return Float(angle)
     }
-    
+
     private func computePercentChange(cPointOne: VNRecognizedPoint, cPointTwo: VNRecognizedPoint, pPointOne: VNRecognizedPoint, pPointTwo: VNRecognizedPoint) -> Float {
         let currPointOne = cPointOne.location
         let currPointTwo = cPointTwo.location
@@ -148,25 +145,25 @@ class ScoringFunction {
 
         let currDistance = CGPointDistance(from: currPointOne, to: currPointTwo)
         let prevDistance = CGPointDistance(from: prevPointOne, to: prevPointTwo)
-        
+
         var percentChange: Float = ((currDistance - prevDistance) / prevDistance)
         percentChange = percentChange > 2 ? 2 : percentChange
 
         return prevDistance == 0 ? 1 : percentChange
     }
-    
+
     private func CGPointDistance(from: CGPoint, to: CGPoint) -> Float {
         return Float(sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y)))
     }
-    
+
     private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> Float {
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
-        
+
         var angleScore: Float = 0.0
         var angleDiffShifts = [[[Float]]]()
-        
+
         // Compute slicesToCheck + 1 many arrays of angle differences so that the frame by frame values can be compared and the lowest error frame can be assigned - closest pose matching
         for shift in 0 ... slicesToCheck {
             var angleDiffs = [[Float]]()
@@ -177,7 +174,7 @@ class ScoringFunction {
             }
             angleDiffShifts.append(angleDiffs)
         }
-        
+
         // Do the comparison of each frame by analyzing the error value to find the lowest one
         for angleSlice in 0 ... angleDiffShifts[slicesToCheck].count - 1 {
             var minSliceScore: Float = 100000000
@@ -211,7 +208,7 @@ class ScoringFunction {
                 }
             }
         }
-        
+
         // returning the error from the angles because the computation to find the lowest error frame by frame is already being done
         return angleScore
     }
@@ -222,25 +219,23 @@ class ScoringFunction {
         let preRecordedRotations = computeRotations(video: preRecordedVid)
         let recordedRotations = computeRotations(video: recordedVid)
         let minSlices = min(preRecordedRotations.count, recordedRotations.count)
-        
+
         var rotationDifferences = [[Float]]()
         rotationDifferences.reserveCapacity(minSlices)
-        
+
         for (row, (preRotSlice, recRotSlice)) in zip(preRecordedRotations, recordedRotations).enumerated() where row < minSlices {
             let tempArr = vDSP.subtract(preRotSlice, recRotSlice).map { abs($0) < self.rotPadding ? 0.0 : abs($0) - self.rotPadding }
             rotationDifferences.append(tempArr)
         }
-        
+
         return rotationDifferences
     }
 
     /// Unweighted Mean Squared Error Function - A single data point is a vector of angle differences so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error
     private func computeUnweightedAngleMSE() throws -> Float {
-        guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-
-        let prVid = preRecordedVid!
-        let rVid = recordedVid!
+        let prVid = preRecordedVid
+        let rVid = recordedVid
         // Computes the max error that can be achieved in one pose
         let maxError: Float = sqrt(Float(jointTriples.count) * (pow(180, 2)))
 
@@ -251,22 +246,20 @@ class ScoringFunction {
         // so that really bad movements don't penalize too much
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
-        let length = Float(recordedVid!.data.count)
+        let length = Float(recordedVid.data.count)
         return (maxError - angleError/length)/maxError
     }
-    
+
     /// Mean Squared Error Function w/ rotation - A single data point is a vector of angle differences and another of rotation values, so each angle difference is squared, all of the differences are summed, and the result
     /// is sqrted and then added to the total error, and the same process is repeated for rotations
     private func computeMSE() throws -> Float {
-        guard self.preRecordedVid != nil && self.recordedVid != nil else { throw ScoringFunctionError.improperVideo }
-
-        let prVid = preRecordedVid!
-        let rVid = recordedVid!
+        let prVid = preRecordedVid
+        let rVid = recordedVid
         // Computes the max error that can be achieved in one pose
         let maxError: Float = self.upperBodyJointWeight * sqrt(Float(self.numUpperBodyJoints) * pow(180, 2)) + self.lowerBodyJointWeight * sqrt(Float(jointTriples.count - self.numUpperBodyJoints) * pow(180, 2)) + self.rotationWeight * sqrt(Float(rotationTuples.count) * (pow(180, 2)))
         // reset mistakes
         self.mistakesArray = []
-        
+
         if prVid.data.count <= self.slicesToCheck || rVid.data.count <= self.slicesToCheck {
             return Float(0.0)
         }
@@ -277,17 +270,17 @@ class ScoringFunction {
         let angleScore = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
         let rotationDifferences = computeRotationDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: Float = angleScore
-        
+
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
         // so that really bad movements don't penalize too much
         // Rotational differences usually come as values in [0, 1], and since angle values are in [0, 360] we scale the
         // value of the rotational difference by some weight (currently 180 so that the diff matches angles)
         // We can also scale the result of || rotDiffs || by some weight
         for rotations in rotationDifferences {
-            let tempSum = rotations.map{ pow(self.rotationMultiplier * $0, 2) }.reduce(0, +)
+            let tempSum = rotations.map { pow(self.rotationMultiplier * $0, 2) }.reduce(0, +)
             error += self.rotationWeight * sqrt(tempSum)
         }
-        
+
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
         let length = Float(max(prVid.data.count, rVid.data.count))
@@ -297,8 +290,8 @@ class ScoringFunction {
     }
 
     // computes score using any scoring function (currently MSE w/ rotations) and feeds result to callback
-    func computeScore() -> Promise<(Float, [Float])> {
-        let promise = Promise<(Float, [Float])> { fulfill, reject in
+    func computeScore() -> Promise<ScoreResult> {
+        let promise = Promise<ScoreResult> { fulfill, reject in
             do {
                 let score = try self.computeMSE()
                 return fulfill((score, self.mistakesArray))
