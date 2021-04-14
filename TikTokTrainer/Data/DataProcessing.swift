@@ -21,8 +21,8 @@ class ScoringFunction {
     let rotationMultiplier: Float = 180
     let rotationWeight: Float = 0.25
     let numUpperBodyJoints: Int = 6
-    let upperBodyJointWeight: Float = 40
-    let lowerBodyJointWeight: Float = 0.25
+    let upperBodyJointWeight: Float = 2
+    let lowerBodyJointWeight: Float = 1
     let anglePadding: Float = 10
     let rotPadding: Float = 0.1
     
