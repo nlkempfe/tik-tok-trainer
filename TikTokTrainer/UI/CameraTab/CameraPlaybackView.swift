@@ -19,7 +19,7 @@ struct CameraPlaybackView: View {
     @State var dimmerOpacity = 0.8
     @State var showLoadingScreen: Bool = false
     @State var score: Double = Double.nan
-    @State var mistakes: [(String, CMTime)] = []
+    @State var mistakes: [CGFloat] = []
     @State var resultOutcome: ResultsOutcome?
 
     var animatableData: Double {
