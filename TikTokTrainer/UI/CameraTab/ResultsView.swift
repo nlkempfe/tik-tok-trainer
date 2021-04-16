@@ -39,6 +39,7 @@ struct ResultsView: View {
         let dbResult = StoredResult(context: managedObjectContext)
         dbResult.timestamp = Date.init()
         dbResult.score = score.isNaN ? 0 : Double(score)
+        dbResult.mistakes = Int64(mistakes.count)
         dbResult.recording = recording.absoluteURL
         dbResult.tutorial = tutorial.absoluteURL
         dbResult.duration = Int64(round(duration))
@@ -94,9 +95,9 @@ struct ResultsView: View {
     }
 
     var body: some View {
-            ZStack {
-                background
-                VStack(alignment: .leading) {
+        ZStack {
+            background
+            VStack(alignment: .leading) {
                 discardButton
                     .padding(.top, 50)
                     .zIndex(2.0)

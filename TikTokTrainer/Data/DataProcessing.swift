@@ -11,6 +11,7 @@ import AVKit
 import Vision
 import Promises
 
+typealias ScoreResult = (CGFloat, [CGFloat])
 /// Process the PoseNet overlays on the pre-recorded and user-recorded videos and return a score
 class ScoringFunction {
     var preRecordedVid: ProcessedVideo?
@@ -165,7 +166,6 @@ class ScoringFunction {
     }
 
     private func computeAngleDifferences(preRecordedVid: ProcessedVideo, recordedVid: ProcessedVideo) -> [[String: CGFloat]] {
-
         let preRecordedPoses = computeAngles(video: preRecordedVid)
         let recordedPoses = computeAngles(video: recordedVid)
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
@@ -228,7 +228,7 @@ class ScoringFunction {
             for (_, rotation) in rotations.enumerated() {
                 tempPercentDiff = abs(rotation.value - recordedRotations[row][rotation.key]!)
                 // Values of tempPercentChange
-                tempPercentDiff = tempPercentDiff < 0.1 ? 0 : tempPercentDiff - 0.1
+                tempPercentDiff = tempPercentDiff < self.rotPadding ? 0 : tempPercentDiff - self.rotPadding
                 // This is where to add shifts or padding to angle differences
                 // i.e. we can ignore 3 degree differences in the angle by subtracting 3 from the abs(...)
                 rotationDifferences[row].append(tempPercentDiff)
@@ -277,6 +277,10 @@ class ScoringFunction {
         // reset mistakes
         self.mistakesArray = []
 
+        if prVid.data.count <= self.slicesToCheck || rVid.data.count <= self.slicesToCheck {
+            return CGFloat(0)
+        }
+
         // currently the diff arrays are computed separately so the error is || angleDiffs || + || rotationDiffs ||
         // but we could possibly append the arrays for computation and get || angleDiffs + rotDiffs || resulting
         // in a different score
@@ -313,6 +317,7 @@ class ScoringFunction {
             error += self.rotationWeight * sqrt(tempSum)
             tempSum = 0
         }
+        
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
         let length = CGFloat(angleDifferences.count)

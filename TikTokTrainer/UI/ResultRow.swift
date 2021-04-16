@@ -29,7 +29,7 @@ struct ResultRow: View {
                     .foregroundColor(Color.black)
                 Text("Duration: \(result.duration) seconds")
                     .foregroundColor(Color.black)
-                Text("Mistakes: MISTAKES")
+                Text("Mistakes: \(result.mistakes)")
                     .foregroundColor(Color.black)
             }
         }
