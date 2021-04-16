@@ -49,6 +49,7 @@ class ScoringFunction {
     let numUpperBodyJoints: Int = 6
     let upperBodyJointWeight: CGFloat = 20
     let lowerBodyJointWeight: CGFloat = 0.5
+    let jointWeight: CGFloat = 3
     let anglePadding: CGFloat = 10
     let rotPadding: CGFloat = 0.1
     
@@ -294,7 +295,7 @@ class ScoringFunction {
         print(avgNumJoints)
 
         // Computes the max error that can be achieved in one pose
-        let maxError: CGFloat = sqrt(avgNumJoints * (pow(180, 2))) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
+        let maxError: CGFloat = self.jointWeight * sqrt(avgNumJoints * (pow(180, 2))) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
         self.numJointsPresent = 0
 
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
@@ -303,7 +304,7 @@ class ScoringFunction {
             for angle in angleSet {
                 tempSum += pow(angle.value, 2)
             }
-            error += sqrt(tempSum)
+            error += self.jointWeight * sqrt(tempSum)
             tempSum = 0
         }
 
