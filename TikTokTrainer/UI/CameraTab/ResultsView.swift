@@ -106,8 +106,8 @@ struct ResultsView: View {
                         .font(.title)
                         .foregroundColor(Color.black)
                     HStack(spacing: 0) {
-                        LoopingPlayer(url: self.tutorial, playbackRate: self.playbackRate, isUploadedVideo: true)
-                        LoopingPlayer(url: self.recording, playbackRate: self.playbackRate, isUploadedVideo: false)
+                        LoopingPlayer(url: self.tutorial, playbackRate: self.playbackRate, isUploadedVideo: true, isMuted: true)
+                        LoopingPlayer(url: self.recording, playbackRate: self.playbackRate, isUploadedVideo: false, isMuted: true)
                     }
                     .scaleEffect(x: 0.90, y: 0.90)
                     VStack {

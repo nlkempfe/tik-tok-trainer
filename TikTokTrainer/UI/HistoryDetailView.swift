@@ -14,8 +14,8 @@ struct HistoryDetailView: View {
 
     var playbackView: some View {
         HStack(spacing: 0) {
-            LoopingPlayer(url: result.tutorial!, playbackRate: 1.0, isUploadedVideo: true)
-            LoopingPlayer(url: result.recording!, playbackRate: 1.0, isUploadedVideo: false)
+            LoopingPlayer(url: result.tutorial!, playbackRate: 1.0, isUploadedVideo: true, isMuted: false)
+            LoopingPlayer(url: result.recording!, playbackRate: 1.0, isUploadedVideo: false, isMuted: true)
         }
         .zIndex(1.0)
     }
