@@ -21,18 +21,22 @@ class ScoringFunction {
     // Bottom two measure rotation along z axis
 
     let jointTriples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName)] = [
+        // Arm joints
         (.leftWrist, .leftElbow, .leftShoulder),
         (.rightShoulder, .rightElbow, .rightWrist),
         (.neck, .leftShoulder, .leftElbow),
-        (.nose, .neck, .leftShoulder),
         (.neck, .rightShoulder, .rightElbow),
+        // Neck joints
+        (.nose, .neck, .leftShoulder),
         (.nose, .neck, .rightShoulder),
+        // Waist joints - to track rotation
+        (.leftShoulder, .leftHip, .leftKnee),
+        (.rightKnee, .rightHip, .rightShoulder),
+        // Leg joints
+        (.rightHip, .rightKnee, .rightAnkle),
         (.leftAnkle, .leftKnee, .leftHip),
         (.leftKnee, .leftHip, .root),
-        (.rightHip, .rightKnee, .rightAnkle),
-        (.root, .rightHip, .rightKnee),
-        (.leftShoulder, .leftHip, .leftKnee),
-        (.rightKnee, .rightHip, .rightShoulder)
+        (.root, .rightHip, .rightKnee)
     ]
 
     let rotationTuples: [(VNHumanBodyPoseObservation.JointName, VNHumanBodyPoseObservation.JointName, String)] = [
@@ -46,14 +50,15 @@ class ScoringFunction {
     // constants for scoring
     let rotationMultiplier: CGFloat = 180
     let rotationWeight: CGFloat = 0.25
-    let numUpperBodyJoints: Int = 6
-    let upperBodyJointWeight: CGFloat = 20
-    let lowerBodyJointWeight: CGFloat = 0.5
-    let jointWeight: CGFloat = 3
+    let numArmBodyJoints: Int = 4
+    let armJointWeight: CGFloat = 10
+    let otherBodyJointWeight: CGFloat = 1
     let anglePadding: CGFloat = 10
     let rotPadding: CGFloat = 0.1
     
-    var numJointsPresent: CGFloat = 0
+    var numArmJointsPresent: CGFloat = 0
+    var numOtherJointsPresent: CGFloat = 0
+    var armJointKeys: Set<String> = []
     
     // if joint angle can't be calculated assign negative value (since computeAngle only returns positive values)
     let invalidJoint: CGFloat = -42
@@ -91,11 +96,14 @@ class ScoringFunction {
                 let pntThree = triple.2.rawValue
                 var angle: CGFloat = 0
 
+                // Compute the angle if required joints are present
                 if slice.points[pntOne] != nil && slice.points[pntTwo] != nil && slice.points[pntThree] != nil {
                     angle = angleBetweenPoints(leftPoint: slice.points[pntThree]!, middlePoint: slice.points[pntTwo]!, rightPoint: slice.points[pntOne]!)
                 } else {
                     angle = self.invalidJoint
                 }
+                
+                // Key is all joints
                 sliceData[pntOne.rawValue + " / " + pntTwo.rawValue + " / " + pntThree.rawValue] = angle
             }
             angles.append(sliceData)
@@ -172,6 +180,10 @@ class ScoringFunction {
         let minSlices = min(preRecordedVid.data.count, recordedVid.data.count)
 
         var angleDifferences = [[String: CGFloat]]()
+        
+        for (index, jointTriple) in self.jointTriples.enumerated() where index < self.numArmBodyJoints {
+            self.armJointKeys.insert(jointTriple.0.rawValue.rawValue + " / " + jointTriple.1.rawValue.rawValue + " / " + jointTriple.2.rawValue.rawValue)
+        }
 
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             let slicesToCheck = 3
@@ -186,6 +198,12 @@ class ScoringFunction {
                     continue
                 } else if angle == self.invalidJoint && recordedPoses[row][key] == self.invalidJoint {
                     continue
+                }
+                
+                if armJointKeys.contains(key) {
+                    self.numArmJointsPresent += CGFloat(1)
+                } else {
+                    self.numOtherJointsPresent += CGFloat(1)
                 }
                 
                 var lowestSliceScore = abs(angle - recordedPoses[row][key]!)
@@ -206,7 +224,6 @@ class ScoringFunction {
                 }
             }
             angleDifferences.append(sliceData)
-            self.numJointsPresent += CGFloat(sliceData.keys.count)
         }
 
         return angleDifferences
@@ -288,35 +305,44 @@ class ScoringFunction {
         let angleDifferences = computeAngleDifferences(preRecordedVid: prVid, recordedVid: rVid)
         let rotationDifferences = computeRotationDifferences(preRecordedVid: prVid, recordedVid: rVid)
         var error: CGFloat = 0
-        var tempSum: CGFloat = 0
         
         
-        let avgNumJoints: CGFloat = self.numJointsPresent / CGFloat(min(prVid.data.count, rVid.data.count))
-        print(avgNumJoints)
+        let avgNumArmJoints: CGFloat = self.numArmJointsPresent / CGFloat(angleDifferences.count)
+        let avgNumOtherJoints: CGFloat = self.numOtherJointsPresent / CGFloat(angleDifferences.count)
+        print(avgNumArmJoints)
+        print(avgNumOtherJoints)
 
         // Computes the max error that can be achieved in one pose
-        let maxError: CGFloat = self.jointWeight * sqrt(avgNumJoints * (pow(180, 2))) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
-        self.numJointsPresent = 0
+        let maxError: CGFloat = self.armJointWeight * sqrt(avgNumArmJoints * (pow(180, 2))) + self.otherBodyJointWeight * sqrt(avgNumOtherJoints * pow(100, 2)) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
+        self.numArmJointsPresent = 0
+        self.numOtherJointsPresent = 0
 
         // For future modifications we can either "clip" or weight lower the super large error values and super small error values per set of angles
         // so that really bad movements don't penalize too much
         for angleSet in angleDifferences {
-            for angle in angleSet {
-                tempSum += pow(angle.value, 2)
+            var tempArmSum: CGFloat = 0
+            var tempOtherJointSum: CGFloat = 0
+            
+            // Separate arm and other body joint weights
+            for (key, angleDiff) in angleSet {
+                if self.armJointKeys.contains(key) {
+                    tempArmSum += pow(angleDiff, 2)
+                } else {
+                    tempOtherJointSum += pow(angleDiff, 2)
+                }
             }
-            error += self.jointWeight * sqrt(tempSum)
-            tempSum = 0
+            error += self.armJointWeight * sqrt(tempArmSum) + self.otherBodyJointWeight * sqrt(tempOtherJointSum)
         }
 
         // Rotational differences come as values in [0, 1], and since angle values are in [0, 180] we scale the
         // value of the rotational difference by some weight (currently 180 so that the diff matches angles)
         // We can also scale the result of || rotDiffs || by some weight
         for rotations in rotationDifferences {
+            var tempSum: CGFloat = 0
             for rotation in rotations {
                 tempSum += pow(self.rotationMultiplier * rotation, 2)
             }
             error += self.rotationWeight * sqrt(tempSum)
-            tempSum = 0
         }
         
         // Instead of returning total error, return the normalized per pose error
