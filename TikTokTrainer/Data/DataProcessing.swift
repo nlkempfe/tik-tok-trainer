@@ -50,7 +50,7 @@ class ScoringFunction {
     // constants for scoring
     let rotationMultiplier: CGFloat = 180
     let rotationWeight: CGFloat = 0.25
-    let armJointWeight: CGFloat = 12
+    let armJointWeight: CGFloat = 8
     let legJointWeight: CGFloat = 2
     let otherBodyJointWeight: CGFloat = 0.5
     let anglePadding: CGFloat = 10
