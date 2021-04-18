@@ -50,15 +50,19 @@ class ScoringFunction {
     // constants for scoring
     let rotationMultiplier: CGFloat = 180
     let rotationWeight: CGFloat = 0.25
-    let numArmBodyJoints: Int = 4
-    let armJointWeight: CGFloat = 10
-    let otherBodyJointWeight: CGFloat = 1
+    let armJointWeight: CGFloat = 12
+    let legJointWeight: CGFloat = 2
+    let otherBodyJointWeight: CGFloat = 0.5
     let anglePadding: CGFloat = 10
     let rotPadding: CGFloat = 0.1
+    let numArmBodyJoints: Int = 4
+    let numLegBodyJoints: Int = 4
     
     var numArmJointsPresent: CGFloat = 0
+    var numLegJointsPresent: CGFloat = 0
     var numOtherJointsPresent: CGFloat = 0
     var armJointKeys: Set<String> = []
+    var legJointKeys: Set<String> = []
     
     // if joint angle can't be calculated assign negative value (since computeAngle only returns positive values)
     let invalidJoint: CGFloat = -42
@@ -184,6 +188,10 @@ class ScoringFunction {
         for (index, jointTriple) in self.jointTriples.enumerated() where index < self.numArmBodyJoints {
             self.armJointKeys.insert(jointTriple.0.rawValue.rawValue + " / " + jointTriple.1.rawValue.rawValue + " / " + jointTriple.2.rawValue.rawValue)
         }
+        
+        for jointTriple in self.jointTriples.suffix(self.numLegBodyJoints) {
+            self.legJointKeys.insert(jointTriple.0.rawValue.rawValue + " / " + jointTriple.1.rawValue.rawValue + " / " + jointTriple.2.rawValue.rawValue)
+        }
 
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
             let slicesToCheck = 3
@@ -202,6 +210,8 @@ class ScoringFunction {
                 
                 if armJointKeys.contains(key) {
                     self.numArmJointsPresent += CGFloat(1)
+                } else if legJointKeys.contains(key) {
+                    self.numLegJointsPresent += CGFloat(1)
                 } else {
                     self.numOtherJointsPresent += CGFloat(1)
                 }
@@ -308,12 +318,14 @@ class ScoringFunction {
         
         
         let avgNumArmJoints: CGFloat = self.numArmJointsPresent / CGFloat(angleDifferences.count)
+        let avgNumLegJoints: CGFloat = self.numLegJointsPresent / CGFloat(angleDifferences.count)
         let avgNumOtherJoints: CGFloat = self.numOtherJointsPresent / CGFloat(angleDifferences.count)
         print(avgNumArmJoints)
+        print(avgNumLegJoints)
         print(avgNumOtherJoints)
 
         // Computes the max error that can be achieved in one pose
-        let maxError: CGFloat = self.armJointWeight * sqrt(avgNumArmJoints * (pow(180, 2))) + self.otherBodyJointWeight * sqrt(avgNumOtherJoints * pow(100, 2)) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
+        let maxError: CGFloat = self.armJointWeight * sqrt(avgNumArmJoints * (pow(180, 2))) + self.legJointWeight * sqrt(avgNumLegJoints * (pow(100, 2))) + self.otherBodyJointWeight * sqrt(avgNumOtherJoints * pow(100, 2)) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
         self.numArmJointsPresent = 0
         self.numOtherJointsPresent = 0
 
@@ -321,17 +333,20 @@ class ScoringFunction {
         // so that really bad movements don't penalize too much
         for angleSet in angleDifferences {
             var tempArmSum: CGFloat = 0
+            var tempLegSum: CGFloat = 0
             var tempOtherJointSum: CGFloat = 0
             
             // Separate arm and other body joint weights
             for (key, angleDiff) in angleSet {
                 if self.armJointKeys.contains(key) {
                     tempArmSum += pow(angleDiff, 2)
+                } else if self.legJointKeys.contains(key) {
+                    tempLegSum += pow(angleDiff, 2)
                 } else {
                     tempOtherJointSum += pow(angleDiff, 2)
                 }
             }
-            error += self.armJointWeight * sqrt(tempArmSum) + self.otherBodyJointWeight * sqrt(tempOtherJointSum)
+            error += self.armJointWeight * sqrt(tempArmSum) + self.legJointWeight * sqrt(tempLegSum) + self.otherBodyJointWeight * sqrt(tempOtherJointSum)
         }
 
         // Rotational differences come as values in [0, 1], and since angle values are in [0, 180] we scale the
