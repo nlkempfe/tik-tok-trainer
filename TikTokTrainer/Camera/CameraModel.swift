@@ -161,6 +161,13 @@ class CameraModel: NSObject,
             self.cameraSession.commitConfiguration()
             self.cameraSession.startRunning()
             self.setupWriter()
+
+            let audioSession = AVAudioSession.sharedInstance()
+                do {
+                    try audioSession.setCategory(.playback, mode: .moviePlayback)
+                } catch {
+                    print("Setting category to AVAudioSessionCategoryPlayback failed.")
+                }
         }
     }
 

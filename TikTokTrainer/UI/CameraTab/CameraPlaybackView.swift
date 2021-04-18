@@ -118,8 +118,8 @@ struct CameraPlaybackView: View {
                 }
                 HStack(spacing: 0) {
                     if self.selectedVideo != nil {
-                        LoopingPlayer(url: self.selectedVideo!.videoURL, playbackRate: self.selectedVideo?.playbackRate ?? 1.0, isUploadedVideo: true)
-                        LoopingPlayer(url: camera.outputURL, playbackRate: self.selectedVideo?.playbackRate ?? 1.0, isUploadedVideo: false)
+                        LoopingPlayer(url: self.selectedVideo!.videoURL, playbackRate: self.selectedVideo?.playbackRate ?? 1.0, isUploadedVideo: true, isMuted: true)
+                        LoopingPlayer(url: camera.outputURL, playbackRate: self.selectedVideo?.playbackRate ?? 1.0, isUploadedVideo: false, isMuted: true)
                     }
                 }.zIndex(1.0)
                 .offset(y: 25)
