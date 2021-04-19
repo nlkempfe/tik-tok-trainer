@@ -22,13 +22,4 @@ struct TikTokTrainerApp: App {
             dataController.save()
         }
     }
-    
-    init() {
-        all(
-            PoseNetProcessor.run(url: Bundle.main.url(forResource: "preRecordedVid", withExtension: ".mp4")!),
-            PoseNetProcessor.run(url: Bundle.main.url(forResource: "recordedVid", withExtension: ".mp4")!)
-        ).then { movieOne, movieTwo in
-            return ScoringFunction(preRecordedVid: movieOne, recordedVid: movieTwo).computeScore()
-        }
-    }
 }
