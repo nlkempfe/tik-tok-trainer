@@ -54,7 +54,7 @@ class ScoringFunction {
     var mistakesArray: [Float] = []
 
     // The number of slices to check ahead of the current frame in the recordedVid
-    let slicesToCheck = 3
+    let slicesToCheck = 2
 
     /// Initializes ScoringFunction with the two videos
     ///
