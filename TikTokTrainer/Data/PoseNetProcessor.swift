@@ -45,14 +45,23 @@ struct PoseNetProcessor: PoseNetProcessorProtocol {
                 guard err == nil else { return reject(err!) }
                 guard let observations =
                         request.results as? [VNRecognizedPointsObservation] else { return }
+                
+                var parsedPoints: [VNRecognizedPointKey: VNRecognizedPoint] = [:]
 
                 observations.forEach {
                     guard let recognizedPoints =
                             try? $0.recognizedPoints(forGroupKey: .all) else {
                         return
                     }
+                    
+                    for pnt in recognizedPoints {
+                        if pnt.value.confidence <= 0 {
+                            continue
+                        }
+                        parsedPoints[pnt.key] = pnt.value
+                    }
 
-                    let slice = VideoDataSlice(start: $0.timeRange.start, points: recognizedPoints)
+                    let slice = VideoDataSlice(start: $0.timeRange.start, points: parsedPoints)
                     videoWriteBlockingQueue.async {
                         processedVideo.data.append(slice)
                     }
