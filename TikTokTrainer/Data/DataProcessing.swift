@@ -194,7 +194,7 @@ class ScoringFunction {
         }
 
         for (row, poseAngles) in preRecordedPoses.enumerated() where row < minSlices {
-            let slicesToCheck = 3
+            let slicesToCheck = 2
             // this also works well, need bigger sample size
             // let slicesToCheck = 10
             var sliceData = [String: CGFloat]()
