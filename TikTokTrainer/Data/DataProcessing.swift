@@ -69,7 +69,7 @@ class ScoringFunction {
     let invalidJointPresent: CGFloat = 90
     
     // The number of slices to check ahead of the current frame in the recordedVid
-    let slicesToCheck = 3
+    let slicesToCheck = 2
 
     /// Initializes ScoringFunction with the two videos
     ///
@@ -320,9 +320,6 @@ class ScoringFunction {
         let avgNumArmJoints: CGFloat = self.numArmJointsPresent / CGFloat(angleDifferences.count)
         let avgNumLegJoints: CGFloat = self.numLegJointsPresent / CGFloat(angleDifferences.count)
         let avgNumOtherJoints: CGFloat = self.numOtherJointsPresent / CGFloat(angleDifferences.count)
-        print(avgNumArmJoints)
-        print(avgNumLegJoints)
-        print(avgNumOtherJoints)
 
         // Computes the max error that can be achieved in one pose
         let maxError: CGFloat = self.armJointWeight * sqrt(avgNumArmJoints * (pow(180, 2))) + self.legJointWeight * sqrt(avgNumLegJoints * (pow(100, 2))) + self.otherBodyJointWeight * sqrt(avgNumOtherJoints * pow(100, 2)) + self.rotationWeight * sqrt(CGFloat(rotationTuples.count) * (pow(180, 2)))
@@ -363,8 +360,6 @@ class ScoringFunction {
         // Instead of returning total error, return the normalized per pose error
         // This avoids super high errors for long videos and gives a better indication of how the overall performance was
         let length = CGFloat(angleDifferences.count)
-        print(self.mistakesArray)
-        print((maxError - error/length)/maxError)
         return (maxError - error/length)/maxError
     }
 
