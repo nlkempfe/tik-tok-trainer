@@ -51,7 +51,7 @@ class ScoringFunction {
     let rotationMultiplier: CGFloat = 180
     let rotationWeight: CGFloat = 0.25
     let armJointWeight: CGFloat = 8
-    let legJointWeight: CGFloat = 2
+    let legJointWeight: CGFloat = 8
     let otherBodyJointWeight: CGFloat = 0.5
     let anglePadding: CGFloat = 10
     let rotPadding: CGFloat = 0.1
